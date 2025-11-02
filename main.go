@@ -45,11 +45,11 @@ func main() {
 	// Define routes
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/health", healthHandler).Methods("GET")
-	
+
 	// Microservice testing routes
 	router.HandleFunc("/test", microserviceTestHandler).Methods("GET", "POST")
 	router.HandleFunc("/test/{service}", serviceTestHandler).Methods("GET", "POST")
-	
+
 	// API endpoints for HTMX interactions
 	router.HandleFunc("/api/services", servicesAPIHandler).Methods("GET")
 	router.HandleFunc("/api/test", runTestAPIHandler).Methods("POST")
@@ -81,7 +81,7 @@ func main() {
 	<-c
 
 	log.Println("Shutting down server...")
-	
+
 	// Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -116,7 +116,7 @@ func microserviceTestHandler(w http.ResponseWriter, r *http.Request) {
 func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	serviceName := vars["service"]
-	
+
 	w.Header().Set("Content-Type", "text/html")
 	component := Layout(fmt.Sprintf("Testing %s", serviceName), ServiceTestContent(serviceName))
 	component.Render(r.Context(), w)
@@ -126,7 +126,7 @@ func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
 
 func servicesAPIHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Simple response for now - we'll implement real service discovery later
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{
@@ -141,17 +141,57 @@ func servicesAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Parse form data
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	
+
 	serviceURL := r.FormValue("service_url")
 	testType := r.FormValue("test_type")
-	
+
 	// Create test result component
 	component := TestResult(serviceURL, testType, "success", "Test completed successfully!")
 	component.Render(r.Context(), w)
+}
+
+// Helper functions for styling
+func getStatusColor(status string) string {
+	switch status {
+	case "success":
+		return "w-4 h-4 rounded-full bg-green-500"
+	case "error":
+		return "w-4 h-4 rounded-full bg-red-500"
+	case "warning":
+		return "w-4 h-4 rounded-full bg-yellow-500"
+	default:
+		return "w-4 h-4 rounded-full bg-gray-500"
+	}
+}
+
+func getStatusTextColor(status string) string {
+	switch status {
+	case "success":
+		return "text-green-700"
+	case "error":
+		return "text-red-700"
+	case "warning":
+		return "text-yellow-700"
+	default:
+		return "text-gray-700"
+	}
+}
+
+func getStatusIcon(status string) string {
+	switch status {
+	case "success":
+		return "✓"
+	case "error":
+		return "✗"
+	case "warning":
+		return "⚠"
+	default:
+		return "?"
+	}
 }

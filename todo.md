@@ -1,30 +1,18 @@
-# Go Templ HTMX Microservice Testing Project
+# Task: Run Application Continuously
 
-## Project Setup and Structure
-- [ ] Initialize Go modules and project structure
-- [ ] Install and configure templ templating engine
-- [ ] Install and configure htmx dependencies
-- [ ] Create main application with HTTP server setup
+## Objectives
+Run the Go microservice test harness application continuously with proper setup and monitoring
 
-## Application Components
-- [ ] Create templ templates for dynamic UI
-- [ ] Implement microservice testing endpoints
-- [ ] Add HTTP client configuration for service calls
-- [ ] Create forms and controls for service interaction
+## Steps
+- [x] Analyze project structure and dependencies
+- [ ] Install dependencies using Makefile
+- [ ] Generate Templ components
+- [ ] Build the application
+- [ ] Run the application continuously
+- [ ] Verify the server is running and accessible
 
-## Configuration and Development
-- [ ] Set up development and production configurations
-- [ ] Create Makefile for build and development commands
-- [ ] Add environment variable configuration
-- [ ] Implement proper error handling and logging
-
-## Documentation and Examples
-- [ ] Create README with setup and usage instructions
-- [ ] Add example microservice testing scenarios
-- [ ] Document API endpoints and usage patterns
-
-## Testing and Validation
-- [ ] Test basic server functionality
-- [ ] Validate templ template compilation
-- [ ] Test htmx integration and dynamic updates
-- [ ] Verify microservice communication
+## Notes
+- Application runs on port 8080 by default
+- Includes hot-reload functionality for development
+- Serves endpoints: /, /health, /test, /test/{service}
+- API endpoints: /api/services, /api/test
