@@ -4,7 +4,7 @@
 BINARY_NAME=microservice-test
 BUILD_DIR=bin
 SOURCE_DIR=.
-TEMPLATES_DIR=.
+TEMPLATES_DIR=templates
 
 # Go parameters
 GOCMD=go
@@ -37,15 +37,16 @@ deps:
 # Generate templ components
 generate:
 	@echo "Generating templ components..."
-	templ generate
+	templ generate -path $(TEMPLATES_DIR)
 	@echo "Templ components generated!"
 
 # Watch for changes and rebuild automatically
 dev: generate
 	@echo "Starting development server with hot reload..."
 	while true; do \
-		inotifywait -e modify -r $(SOURCE_DIR) --include '\.go$$|\.templ$$' 2>/dev/null || break; \
+		inotifywait -e modify -r $(TEMPLATES_DIR) --include '\.templ$$' 2>/dev/null || break; \
 		echo "Changes detected, rebuilding..."; \
+		$(MAKE) generate; \
 		$(MAKE) build; \
 	done
 
