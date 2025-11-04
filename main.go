@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
-	template "star/templates"
+	templates "star/templates"
 )
 
 // Config holds application configuration
@@ -105,7 +105,7 @@ func main() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := template.Layout("Home", template.HomeContent())
+	component := templates.Layout("Home", templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
@@ -117,7 +117,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func microserviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := template.Layout("Microservice Testing", template.MicroserviceTestContent())
+	component := templates.Layout("Microservice Testing", templates.MicroserviceTestContent())
 	component.Render(r.Context(), w)
 }
 
@@ -126,7 +126,7 @@ func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	serviceName := vars["service"]
 
 	w.Header().Set("Content-Type", "text/html")
-	component := template.Layout(fmt.Sprintf("Testing %s", serviceName), template.ServiceTestContent(serviceName))
+	component := templates.Layout(fmt.Sprintf("Testing %s", serviceName), templates.ServiceTestContent(serviceName))
 	component.Render(r.Context(), w)
 }
 
@@ -160,7 +160,7 @@ func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 	testType := r.FormValue("test_type")
 
 	// Create test result component
-	component := template.TestResult(serviceURL, testType, "success", "Test completed successfully!")
+	component := templates.TestResult(serviceURL, testType, "success", "Test completed successfully!")
 	component.Render(r.Context(), w)
 }
 
