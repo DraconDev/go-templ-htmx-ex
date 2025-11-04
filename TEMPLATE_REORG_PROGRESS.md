@@ -1,0 +1,8 @@
+- [x] Analyze requirements
+- [x] Move template source files to templates directory
+- [x] Fix Makefile to generate from templates directory
+- [x] Move generated template files back to templates directory
+- [ ] Create templates package structure
+- [ ] Update main.go to import from templates package
+- [ ] Fix import paths and package structure
+- [ ] Test the application works
