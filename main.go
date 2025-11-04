@@ -117,7 +117,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func microserviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Microservice Testing", templates.MicroserviceTestContent())
+	component := template.Layout("Microservice Testing", template.MicroserviceTestContent())
 	component.Render(r.Context(), w)
 }
 
@@ -126,7 +126,7 @@ func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	serviceName := vars["service"]
 
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout(fmt.Sprintf("Testing %s", serviceName), templates.ServiceTestContent(serviceName))
+	component := template.Layout(fmt.Sprintf("Testing %s", serviceName), template.ServiceTestContent(serviceName))
 	component.Render(r.Context(), w)
 }
 
