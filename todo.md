@@ -1,6 +1,0 @@
-- [ ] Examine Makefile to understand current watch/run commands
-- [ ] Review server startup implementation in main.go and helpers.go
-- [ ] Identify current server process management approach
-- [ ] Modify commands to kill previous server processes
-- [ ] Test the updated watch/run commands
-- [ ] Verify no server conflicts occur
