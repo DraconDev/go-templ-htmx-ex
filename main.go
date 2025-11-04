@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
-	"star/template"
+	"./templates"
 )
 
 // Config holds application configuration
