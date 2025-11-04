@@ -1,81 +1,77 @@
-package main
+package template
 
 //go:generate templ generate
-
 templ MicroserviceTestContent() {
-    <div class="max-w-6xl mx-auto">
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Microservice Testing Dashboard</h2>
-            <p class="text-gray-600">Test and monitor your microservices health and functionality</p>
-        </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Service Discovery -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-4">Service Discovery</h3>
-                <div class="space-y-4">
-                    <button 
-                        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        hx-get="/api/services"
-                        hx-target="#discovered-services"
-                        hx-swap="innerHTML"
-                        hx-indicator=".spinner"
-                    >
-                        Discover Services
-                    </button>
-                    <div id="discovered-services" class="min-h-[100px] text-gray-600">
-                        Click "Discover Services" to scan for available microservices
-                    </div>
-                    <div class="htmx-indicator spinner text-blue-600">Scanning for services...</div>
-                </div>
-            </div>
-            
-            <!-- Manual Test -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-4">Manual Service Test</h3>
-                <form 
-                    hx-post="/api/test"
-                    hx-target="#test-result"
-                    hx-swap="innerHTML"
-                    class="space-y-4"
-                >
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Service URL</label>
-                        <input 
-                            type="url" 
-                            name="service_url" 
-                            placeholder="http://localhost:8001/health"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Test Type</label>
-                        <select name="test_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="health">Health Check</option>
-                            <option value="api">API Test</option>
-                            <option value="stress">Stress Test</option>
-                        </select>
-                    </div>
-                    <button 
-                        type="submit"
-                        class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Run Test
-                    </button>
-                </form>
-                <div id="test-result" class="mt-4 min-h-[100px] text-gray-600">
-                    Test results will appear here
-                </div>
-            </div>
-        </div>
-        
-        <!-- Test History -->
-        <div class="mt-8 bg-white rounded-lg shadow p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Tests</h3>
-            <div id="test-history" class="text-gray-600">
-                Test history will appear here as you run tests
-            </div>
-        </div>
-    </div>
+	<div class="max-w-6xl mx-auto">
+		<div class="mb-8">
+			<h2 class="text-3xl font-bold text-gray-900 mb-4">Microservice Testing Dashboard</h2>
+			<p class="text-gray-600">Test and monitor your microservices health and functionality</p>
+		</div>
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<!-- Service Discovery -->
+			<div class="bg-white rounded-lg shadow p-6">
+				<h3 class="text-xl font-semibold text-gray-900 mb-4">Service Discovery</h3>
+				<div class="space-y-4">
+					<button
+						class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+						hx-get="/api/services"
+						hx-target="#discovered-services"
+						hx-swap="innerHTML"
+						hx-indicator=".spinner"
+					>
+						Discover Services
+					</button>
+					<div id="discovered-services" class="min-h-[100px] text-gray-600">
+						Click "Discover Services" to scan for available microservices
+					</div>
+					<div class="htmx-indicator spinner text-blue-600">Scanning for services...</div>
+				</div>
+			</div>
+			<!-- Manual Test -->
+			<div class="bg-white rounded-lg shadow p-6">
+				<h3 class="text-xl font-semibold text-gray-900 mb-4">Manual Service Test</h3>
+				<form
+					hx-post="/api/test"
+					hx-target="#test-result"
+					hx-swap="innerHTML"
+					class="space-y-4"
+				>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">Service URL</label>
+						<input
+							type="url"
+							name="service_url"
+							placeholder="http://localhost:8001/health"
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">Test Type</label>
+						<select name="test_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+							<option value="health">Health Check</option>
+							<option value="api">API Test</option>
+							<option value="stress">Stress Test</option>
+						</select>
+					</div>
+					<button
+						type="submit"
+						class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+					>
+						Run Test
+					</button>
+				</form>
+				<div id="test-result" class="mt-4 min-h-[100px] text-gray-600">
+					Test results will appear here
+				</div>
+			</div>
+		</div>
+		<!-- Test History -->
+		<div class="mt-8 bg-white rounded-lg shadow p-6">
+			<h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Tests</h3>
+			<div id="test-history" class="text-gray-600">
+				Test history will appear here as you run tests
+			</div>
+		</div>
+	</div>
 }

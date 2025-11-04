@@ -1,40 +1,36 @@
-package main
+package template
 
 //go:generate templ generate
-
 templ HomeContent() {
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Welcome to the Microservice Test Harness</h2>
-            <p class="text-lg text-gray-600">Test and monitor your microservices with ease</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Health Checks</h3>
-                <p class="text-gray-600 mb-4">Monitor the health status of your microservices</p>
-                <a href="/test" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Start Testing
-                </a>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">API Testing</h3>
-                <p class="text-gray-600 mb-4">Send requests and test API endpoints</p>
-                <button 
-                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    hx-get="/api/services"
-                    hx-target="#services-list"
-                    hx-swap="innerHTML"
-                >
-                    Load Services
-                </button>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-3">Available Services</h3>
-            <div id="services-list" class="text-gray-600">Click "Load Services" to see available microservices</div>
-        </div>
-    </div>
+	<div class="max-w-4xl mx-auto">
+		<div class="text-center mb-8">
+			<h2 class="text-3xl font-bold text-gray-900 mb-4">Welcome to the Microservice Test Harness</h2>
+			<p class="text-lg text-gray-600">Test and monitor your microservices with ease</p>
+		</div>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+			<div class="bg-white rounded-lg shadow p-6">
+				<h3 class="text-xl font-semibold text-gray-900 mb-3">Health Checks</h3>
+				<p class="text-gray-600 mb-4">Monitor the health status of your microservices</p>
+				<a href="/test" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+					Start Testing
+				</a>
+			</div>
+			<div class="bg-white rounded-lg shadow p-6">
+				<h3 class="text-xl font-semibold text-gray-900 mb-3">API Testing</h3>
+				<p class="text-gray-600 mb-4">Send requests and test API endpoints</p>
+				<button
+					class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+					hx-get="/api/services"
+					hx-target="#services-list"
+					hx-swap="innerHTML"
+				>
+					Load Services
+				</button>
+			</div>
+		</div>
+		<div class="bg-white rounded-lg shadow p-6">
+			<h3 class="text-xl font-semibold text-gray-900 mb-3">Available Services</h3>
+			<div id="services-list" class="text-gray-600">Click "Load Services" to see available microservices</div>
+		</div>
+	</div>
 }

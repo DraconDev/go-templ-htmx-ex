@@ -1,148 +1,142 @@
-package main
+package template
 
 //go:generate templ generate
-
 templ AuthTestContent() {
-    <div class="max-w-6xl mx-auto">
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Authentication Service Testing</h2>
-            <p class="text-gray-600">Test your Cerberus Auth Service endpoints and functionality</p>
-        </div>
-        
-        <!-- Auth Service Status -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Service Status</h3>
-            <div class="flex items-center space-x-4">
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    hx-get="/api/auth/health"
-                    hx-target="#auth-health-result"
-                    hx-swap="innerHTML"
-                    hx-indicator=".auth-spinner"
-                >
-                    Check Auth Service Health
-                </button>
-                <div id="auth-health-result" class="text-gray-600">
-                    Click to check if the auth service is available
-                </div>
-                <div class="htmx-indicator auth-spinner text-blue-600">Checking service status...</div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Login Test -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-4">Test Login</h3>
-                <form 
-                    hx-post="/api/auth/login"
-                    hx-target="#auth-result"
-                    hx-swap="innerHTML"
-                    class="space-y-4"
-                >
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            placeholder="test@example.com"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            placeholder="password123"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <button 
-                        type="submit"
-                        class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Test Login
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Register Test -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-4">Test Registration</h3>
-                <form 
-                    hx-post="/api/auth/register"
-                    hx-target="#auth-result"
-                    hx-swap="innerHTML"
-                    class="space-y-4"
-                >
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            placeholder="newuser@example.com"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            placeholder="password123"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <button 
-                        type="submit"
-                        class="w-full bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Test Registration
-                    </button>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Session Validation Test -->
-        <div class="mt-8 bg-white rounded-lg shadow p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Validate Session Token</h3>
-            <form 
-                hx-post="/api/auth/validate"
-                hx-target="#auth-result"
-                hx-swap="innerHTML"
-                class="flex space-x-4"
-            >
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Session Token</label>
-                    <input 
-                        type="text" 
-                        name="session_token" 
-                        placeholder="demo-session-token-456"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
-                </div>
-                <div class="flex items-end">
-                    <button 
-                        type="submit"
-                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Validate Session
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- Test Results -->
-        <div class="mt-8 bg-white rounded-lg shadow p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Test Results</h3>
-            <div id="auth-result" class="min-h-[100px] text-gray-600">
-                Auth test results will appear here
-            </div>
-        </div>
-    </div>
+	<div class="max-w-6xl mx-auto">
+		<div class="mb-8">
+			<h2 class="text-3xl font-bold text-gray-900 mb-4">Authentication Service Testing</h2>
+			<p class="text-gray-600">Test your Cerberus Auth Service endpoints and functionality</p>
+		</div>
+		<!-- Auth Service Status -->
+		<div class="bg-white rounded-lg shadow p-6 mb-8">
+			<h3 class="text-xl font-semibold text-gray-900 mb-4">Service Status</h3>
+			<div class="flex items-center space-x-4">
+				<button
+					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+					hx-get="/api/auth/health"
+					hx-target="#auth-health-result"
+					hx-swap="innerHTML"
+					hx-indicator=".auth-spinner"
+				>
+					Check Auth Service Health
+				</button>
+				<div id="auth-health-result" class="text-gray-600">
+					Click to check if the auth service is available
+				</div>
+				<div class="htmx-indicator auth-spinner text-blue-600">Checking service status...</div>
+			</div>
+		</div>
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<!-- Login Test -->
+			<div class="bg-white rounded-lg shadow p-6">
+				<h3 class="text-xl font-semibold text-gray-900 mb-4">Test Login</h3>
+				<form
+					hx-post="/api/auth/login"
+					hx-target="#auth-result"
+					hx-swap="innerHTML"
+					class="space-y-4"
+				>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+						<input
+							type="email"
+							name="email"
+							placeholder="test@example.com"
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+						<input
+							type="password"
+							name="password"
+							placeholder="password123"
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+					</div>
+					<button
+						type="submit"
+						class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+					>
+						Test Login
+					</button>
+				</form>
+			</div>
+			<!-- Register Test -->
+			<div class="bg-white rounded-lg shadow p-6">
+				<h3 class="text-xl font-semibold text-gray-900 mb-4">Test Registration</h3>
+				<form
+					hx-post="/api/auth/register"
+					hx-target="#auth-result"
+					hx-swap="innerHTML"
+					class="space-y-4"
+				>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+						<input
+							type="email"
+							name="email"
+							placeholder="newuser@example.com"
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+						<input
+							type="password"
+							name="password"
+							placeholder="password123"
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+					</div>
+					<button
+						type="submit"
+						class="w-full bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+					>
+						Test Registration
+					</button>
+				</form>
+			</div>
+		</div>
+		<!-- Session Validation Test -->
+		<div class="mt-8 bg-white rounded-lg shadow p-6">
+			<h3 class="text-xl font-semibold text-gray-900 mb-4">Validate Session Token</h3>
+			<form
+				hx-post="/api/auth/validate"
+				hx-target="#auth-result"
+				hx-swap="innerHTML"
+				class="flex space-x-4"
+			>
+				<div class="flex-1">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Session Token</label>
+					<input
+						type="text"
+						name="session_token"
+						placeholder="demo-session-token-456"
+						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+				</div>
+				<div class="flex items-end">
+					<button
+						type="submit"
+						class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+					>
+						Validate Session
+					</button>
+				</div>
+			</form>
+		</div>
+		<!-- Test Results -->
+		<div class="mt-8 bg-white rounded-lg shadow p-6">
+			<h3 class="text-xl font-semibold text-gray-900 mb-4">Test Results</h3>
+			<div id="auth-result" class="min-h-[100px] text-gray-600">
+				Auth test results will appear here
+			</div>
+		</div>
+	</div>
 }
