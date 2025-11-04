@@ -34,9 +34,12 @@ generate:
 
 dev: generate
 	@echo "Starting development server with hot reload..."
+	@pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
+	echo "Killed any existing server processes"; \
 	while true; do \
 		inotifywait -e modify -r . --include '\.(go|templ)$$' 2>/dev/null || break; \
 		echo "Changes detected, rebuilding..."; \
+		pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
 		$(MAKE) generate; \
 		$(MAKE) build; \
 		./$(BUILD_DIR)/$(BINARY_NAME); \
@@ -48,19 +51,17 @@ watch: generate
 		while true; do \
 			inotifywait -e modify -r . --include '\.(go|templ)$$' 2>/dev/null || break; \
 			echo "File changes detected, rebuilding and restarting..."; \
+			pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
 			$(MAKE) generate && \
 			$(MAKE) build && \
 			./$(BUILD_DIR)/$(BINARY_NAME) & \
-			PID=$$!; \
-			sleep 2; \
-			if [ ! -d "/proc/$$PID" ]; then \
-				echo "Previous process stopped, continuing..."; \
-			fi; \
+			echo "Server restarted with PID $$!"; \
 		done; \
 	else \
 		echo "inotifywait not found. Install with: sudo apt-get install inotify-tools (Debian/Ubuntu)"; \
 		echo "Falling back to simple file watching with find..."; \
 		while true; do \
+			pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
 			find . -name "*.go" -o -name "*.templ" | while read file; do \
 				if [ "$$file" -nt /tmp/last_build ]; then \
 					touch /tmp/last_build; \
@@ -94,9 +95,10 @@ dev-watch: generate
 		./$(BUILD_DIR)/$(BINARY_NAME); \
 	fi
 
-
 run: build
 	@echo "Starting $(BINARY_NAME)..."
+	@pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
+	echo "Killed any existing server processes"; \
 	./$(BUILD_DIR)/$(BINARY_NAME)
 
 test:
