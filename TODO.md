@@ -1,5 +1,5 @@
 - [x] Analyze the codebase to locate where getStatusColor is referenced
 - [x] Identify the source of the undeclared name error
-- [x] Implement or fix the getStatusColor function
-- [x] Test the changes to ensure the error is resolved
+- [x] Fix duplicate templ files in root directory
+- [x] Fix import/function issues in main.go
 - [x] Verify the application builds successfully
