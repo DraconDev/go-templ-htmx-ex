@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	""
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -167,10 +166,10 @@ func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Check if auth service is available
 	authServiceURL := "https://cerberus-auth-ms-548010171143.europe-west1.run.app"
-	
+
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(authServiceURL + "/api/health")
 	if err != nil {
@@ -179,23 +178,23 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer resp.Body.Close()
-	
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"status": "available", "url": "` + authServiceURL + `", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`))
 }
 
 func authLoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Parse form data
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	
+
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	
+
 	// For demo purposes, create a test response
 	// In production, this would make a real gRPC call to the auth service
 	if email != "" && password != "" {
@@ -213,16 +212,16 @@ func authLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func authRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Parse form data
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	
+
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	
+
 	// For demo purposes, create a test response
 	if email != "" && password != "" {
 		w.WriteHeader(http.StatusOK)
@@ -238,15 +237,15 @@ func authRegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Parse form data
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	
+
 	sessionToken := r.FormValue("session_token")
-	
+
 	// For demo purposes, create a test response
 	if sessionToken != "" {
 		w.WriteHeader(http.StatusOK)
