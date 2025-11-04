@@ -105,7 +105,7 @@ func main() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := Layout("Home", HomeContent())
+	component := templates.Layout("Home", templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
@@ -117,7 +117,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func microserviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := Layout("Microservice Testing", MicroserviceTestContent())
+	component := templates.Layout("Microservice Testing", templates.MicroserviceTestContent())
 	component.Render(r.Context(), w)
 }
 
@@ -126,7 +126,7 @@ func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
 	serviceName := vars["service"]
 
 	w.Header().Set("Content-Type", "text/html")
-	component := Layout(fmt.Sprintf("Testing %s", serviceName), ServiceTestContent(serviceName))
+	component := templates.Layout(fmt.Sprintf("Testing %s", serviceName), templates.ServiceTestContent(serviceName))
 	component.Render(r.Context(), w)
 }
 
