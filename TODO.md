@@ -1,5 +1,5 @@
-- [ ] Analyze the codebase to locate where getStatusColor is referenced
-- [ ] Identify the source of the undeclared name error
-- [ ] Implement or fix the getStatusColor function
-- [ ] Test the changes to ensure the error is resolved
-- [ ] Verify the application builds successfully
+- [x] Analyze the codebase to locate where getStatusColor is referenced
+- [x] Identify the source of the undeclared name error
+- [x] Implement or fix the getStatusColor function
+- [x] Test the changes to ensure the error is resolved
+- [x] Verify the application builds successfully
