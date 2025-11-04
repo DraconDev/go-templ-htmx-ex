@@ -29,7 +29,7 @@ deps:
 
 generate:
 	@echo "Generating templ components..."
-	templ generate -path .
+	templ generate -path templates
 	@echo "Templ components generated!"
 
 dev: generate
