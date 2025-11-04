@@ -1,4 +1,4 @@
-package templates
+package template
 
 // Helper functions for styling and status management
 
