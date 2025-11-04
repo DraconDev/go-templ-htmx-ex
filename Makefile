@@ -11,7 +11,7 @@ GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
 GOFMT=$(GOCMD) fmt
 
-build: clean
+build: generate clean
 	@echo "Building $(BINARY_NAME)..."
 	$(GOBUILD) -o $(BUILD_DIR)/$(BINARY_NAME) .
 	@echo "Built $(BINARY_NAME) successfully!"
