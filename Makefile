@@ -94,13 +94,6 @@ dev-watch: generate
 		./$(BUILD_DIR)/$(BINARY_NAME); \
 	fi
 
-air: generate
-	@echo "Starting Air development server..."
-	go run github.com/air-verse/air@latest
-
-live: generate
-	@echo "Starting Air live reload server..."
-	go run github.com/air-verse/air@latest
 
 run: build
 	@echo "Starting $(BINARY_NAME)..."
@@ -117,4 +110,4 @@ fmt:
 all: deps generate build
 	@echo "Setup complete!"
 
-.PHONY: build clean deps generate dev watch dev-watch air live run test fmt all
+.PHONY: build clean deps generate dev watch dev-watch run test fmt all
