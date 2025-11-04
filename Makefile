@@ -120,4 +120,4 @@ fmt:
 all: deps generate build
 	@echo "Setup complete!"
 
-.PHONY: build clean deps generate dev watch dev-watch run test fmt all
+.PHONY: build clean deps generate dev watch air air-watch dev-watch run test fmt all
