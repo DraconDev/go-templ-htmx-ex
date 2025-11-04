@@ -174,6 +174,111 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Get(authServiceURL + "/api/health")
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"status": "unavailable", "error": "Service not reachable", "url": "` + authServiceURL + `"}`))
+		return
+	}
+	defer resp.Body.Close()
+	
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status": "available", "url": "` + authServiceURL + `", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`))
+}
+
+func authLoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	
+	// For demo purposes, create a test response
+	// In production, this would make a real gRPC call to the auth service
+	if email != "" && password != "" {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{
+			"user_id": "demo-user-123",
+			"session_token": "demo-session-token-456",
+			"email": "` + email + `"
+		}`))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "Email and password are required"}`))
+	}
+}
+
+func authRegisterHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	projectID := r.FormValue("project_id")
+	
+	// For demo purposes, create a test response
+	if email != "" && password != "" {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{
+			"user_id": "demo-user-789",
+			"session_token": "demo-session-token-012"
+		}`))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "Email and password are required"}`))
+	}
+}
+
+func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	
+	sessionToken := r.FormValue("session_token")
+	
+	// For demo purposes, create a test response
+	if sessionToken != "" {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{
+			"user_id": "demo-user-123",
+			"valid": true,
+			"project_ids": ["demo-project-1", "demo-project-2"]
+		}`))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "Session token is required"}`))
+	}
+}
+
+// Helper functions for styling
+func getStatusColor(status string) string {
+	switch status {
+	case "success":
+		return "w-4 h-4 rounded-full bg-green-500"
+	case "error":
+		return "w-4 h-4 rounded-full bg-red-500"
+	case "warning":
+		return "w-4 h-4 rounded-full bg-yellow-500"
+	default:
+		return "w-4 h-4 rounded-full bg-gray-500"
+	}
+}
+
+func getStatusTextColor(status string) string {
+	switch status {
+	case "success":
+		return "text-green-700"
 	case "error":
 		return "text-red-700"
 	case "warning":
