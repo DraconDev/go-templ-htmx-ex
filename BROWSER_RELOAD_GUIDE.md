@@ -11,13 +11,13 @@ For HTMX applications, traditional browser auto-reload can be **problematic** be
 
 ## Auto Reload Options
 
-### Option 1: Air Proxy with Browser Reload
-**Command**: `make air` (now with proxy enabled)
+### Option 1: Air Proxy with Browser Reload (CURRENT SETUP)
+**Command**: `make air` (proxy enabled)
 
 **What happens**:
 - Air creates a proxy server on port 4200
 - Your app runs on port 8080  
-- Browser connects to proxy (http://localhost:4200)
+- Browser connects to proxy (http://localhost:4200) for **automatic reload**
 - **Full page reload** when code changes
 
 **Pros**:
@@ -29,8 +29,8 @@ For HTMX applications, traditional browser auto-reload can be **problematic** be
 - ❌ **Disrupts development flow** with constant page reloads
 - ❌ **Loses dynamic content** like filtered results, pagination
 
-### Option 2: No Browser Reload (Recommended for HTMX)
-**Command**: `make air` (with proxy disabled)
+### Option 2: No Browser Reload (Alternative for HTMX)
+**Command**: `make air` (with proxy disabled in .air.toml)
 
 **What happens**:
 - Only server reloads when code changes
@@ -46,36 +46,28 @@ For HTMX applications, traditional browser auto-reload can be **problematic** be
 **Cons**:
 - ❌ Requires manual browser refresh
 
-### Option 3: Hybrid Approach (Advanced)
-Use browser reload only for **non-interactive pages**:
-- Static content pages: Browser reload enabled
-- HTMX forms/pages: Browser reload disabled
-
-## Recommended Setup for HTMX Development
-
-### For HTMX Applications:
-1. **Disable proxy** (current setup)
-2. **Use manual refresh** (F5 or Ctrl+R)
-3. **Benefit from fast server reload** (~3ms builds)
-
-### For Traditional Multi-page Applications:
-1. **Enable proxy** (Air proxy with browser reload)
-2. **Full page reload** works well
-3. **No state preservation needed**
-
 ## Quick Setup Commands
 
 ```bash
-# For HTMX development (recommended)
+# Start development with browser auto-reload (CURRENT)
 make air
+# Then open: http://localhost:4200
 
-# For traditional development
-# Edit .air.toml to enable proxy
+# For HTMX work (manual refresh):
+# Edit .air.toml to disable proxy
 # Then: make air
+# Then open: http://localhost:8080
 ```
 
 ## Testing Your Setup
 
+### With Browser Auto-Reload (Port 4200):
+1. **Start the dev server**: `make air`
+2. **Open browser**: http://localhost:4200
+3. **Make a code change** in any `.go` or `.templ` file
+4. **Watch the browser** automatically reload with changes
+
+### Without Browser Auto-Reload (Port 8080):
 1. **Start the dev server**: `make air`
 2. **Open browser**: http://localhost:8080
 3. **Make a code change** in any `.go` or `.templ` file
@@ -91,14 +83,44 @@ make air
 
 ## Best Practices for HTMX Development
 
-1. **Use manual refresh** during active form editing
-2. **Test HTMX interactions** before and after code changes
-3. **Keep browser console open** to monitor network requests
-4. **Use browser dev tools** for debugging HTMX behavior
+### When Working with Forms/HTMX:
+- Use **manual refresh mode** (disable proxy)
+- Open: http://localhost:8080
+- **Preserves form state** during development
+
+### When Working with Static Content:
+- Use **auto-reload mode** (enable proxy) 
+- Open: http://localhost:4200
+- **Quick iteration** for non-interactive pages
+
+## Switching Between Modes
+
+### Enable Browser Auto-Reload:
+```bash
+# Edit .air.toml:
+[proxy]
+  enabled = true
+  proxy_port = 4200
+
+# Then:
+make air
+# Browser: http://localhost:4200
+```
+
+### Disable Browser Auto-Reload:
+```bash
+# Edit .air.toml:
+[proxy]
+  enabled = false
+
+# Then:
+make air
+# Browser: http://localhost:8080
+```
 
 ## Troubleshooting
 
-**If server won't start (port 8080 in use)**:
+**If server won't start (port 8080 or 4200 in use)**:
 ```bash
 pkill -f "microservice-test"
 pkill -f "air"
@@ -115,3 +137,8 @@ make air
 - Air automatically runs `templ generate` before each build
 - Check Templ syntax errors in build output
 - Manually run `make generate` if needed
+
+**If browser reload isn't working**:
+- Ensure you're accessing http://localhost:4200 (not 8080)
+- Check browser console for errors
+- Verify proxy is enabled in .air.toml
