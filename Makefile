@@ -35,11 +35,64 @@ generate:
 dev: generate
 	@echo "Starting development server with hot reload..."
 	while true; do \
-		inotifywait -e modify -r . --include '\.templ$$' 2>/dev/null || break; \
+		inotifywait -e modify -r . --include '\.(go|templ)$$' 2>/dev/null || break; \
 		echo "Changes detected, rebuilding..."; \
 		$(MAKE) generate; \
 		$(MAKE) build; \
+		./$(BUILD_DIR)/$(BINARY_NAME); \
 	done
+
+watch: generate
+	@echo "Starting comprehensive watch mode (Go + Templ files)..."
+	@if command -v inotifywait >/dev/null 2>&1; then \
+		while true; do \
+			inotifywait -e modify -r . --include '\.(go|templ)$$' 2>/dev/null || break; \
+			echo "File changes detected, rebuilding and restarting..."; \
+			$(MAKE) generate && \
+			$(MAKE) build && \
+			./$(BUILD_DIR)/$(BINARY_NAME) & \
+			PID=$$!; \
+			sleep 2; \
+			if [ ! -d "/proc/$$PID" ]; then \
+				echo "Previous process stopped, continuing..."; \
+			fi; \
+		done; \
+	else \
+		echo "inotifywait not found. Install with: sudo apt-get install inotify-tools (Debian/Ubuntu)"; \
+		echo "Falling back to simple file watching with find..."; \
+		while true; do \
+			find . -name "*.go" -o -name "*.templ" | while read file; do \
+				if [ "$$file" -nt /tmp/last_build ]; then \
+					touch /tmp/last_build; \
+					echo "Changes detected, rebuilding and restarting..."; \
+					$(MAKE) generate && \
+					$(MAKE) build && \
+					./$(BUILD_DIR)/$(BINARY_NAME) & \
+					break; \
+				fi; \
+			done; \
+			sleep 5; \
+		done; \
+	fi
+
+dev-watch: generate
+	@echo "Starting development server with comprehensive file watching..."
+	@if command -v inotifywait >/dev/null 2>&1; then \
+		while true; do \
+			inotifywait -e modify -r . --include '\.(go|templ)$$' 2>/dev/null || break; \
+			echo "File changes detected, rebuilding and restarting..."; \
+			pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
+			$(MAKE) generate && \
+			$(MAKE) build && \
+			./$(BUILD_DIR)/$(BINARY_NAME) & \
+			echo "Server restarted with PID $$!"; \
+		done; \
+	else \
+		echo "inotifywait not found. Please install inotify-tools for optimal file watching."; \
+		echo "Install with: sudo apt-get install inotify-tools (Debian/Ubuntu) or brew install inotify-tools (macOS)"; \
+		echo "Running once without live reload..."; \
+		./$(BUILD_DIR)/$(BINARY_NAME); \
+	fi
 
 air: generate
 	@echo "Starting Air development server..."
@@ -64,4 +117,4 @@ fmt:
 all: deps generate build
 	@echo "Setup complete!"
 
-.PHONY: build clean deps generate dev air live run test fmt all
+.PHONY: build clean deps generate dev watch dev-watch air live run test fmt all
