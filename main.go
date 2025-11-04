@@ -105,7 +105,7 @@ func main() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Home", templates.HomeContent())
+	component := template.Layout("Home", template.HomeContent())
 	component.Render(r.Context(), w)
 }
 
