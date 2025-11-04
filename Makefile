@@ -95,7 +95,7 @@ dev-watch: generate
 		./$(BUILD_DIR)/$(BINARY_NAME); \
 	fi
 
-run: build
+run: generate build
 	@echo "Starting $(BINARY_NAME)..."
 	@pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
 	echo "Killed any existing server processes"; \
