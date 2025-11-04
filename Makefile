@@ -41,6 +41,14 @@ dev: generate
 		$(MAKE) build; \
 	done
 
+air: generate
+	@echo "Starting Air development server..."
+	go run github.com/air-verse/air@latest
+
+live: generate
+	@echo "Starting Air live reload server..."
+	go run github.com/air-verse/air@latest
+
 run: build
 	@echo "Starting $(BINARY_NAME)..."
 	./$(BUILD_DIR)/$(BINARY_NAME)
@@ -56,4 +64,4 @@ fmt:
 all: deps generate build
 	@echo "Setup complete!"
 
-.PHONY: build clean deps generate dev run test fmt all
+.PHONY: build clean deps generate dev air live run test fmt all
