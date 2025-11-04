@@ -261,42 +261,4 @@ func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Helper functions for styling
-func getStatusColor(status string) string {
-	switch status {
-	case "success":
-		return "w-4 h-4 rounded-full bg-green-500"
-	case "error":
-		return "w-4 h-4 rounded-full bg-red-500"
-	case "warning":
-		return "w-4 h-4 rounded-full bg-yellow-500"
-	default:
-		return "w-4 h-4 rounded-full bg-gray-500"
-	}
-}
 
-func getStatusTextColor(status string) string {
-	switch status {
-	case "success":
-		return "text-green-700"
-	case "error":
-		return "text-red-700"
-	case "warning":
-		return "text-yellow-700"
-	default:
-		return "text-gray-700"
-	}
-}
-
-func getStatusIcon(status string) string {
-	switch status {
-	case "success":
-		return "✓"
-	case "error":
-		return "✗"
-	case "warning":
-		return "⚠"
-	default:
-		return "?"
-	}
-}
