@@ -76,6 +76,14 @@ watch: generate
 		done; \
 	fi
 
+air: generate
+	@echo "Starting development server with Air live reload..."
+	air
+
+air-watch: generate
+	@echo "Starting development server with Air live reload (alternative name)..."
+	air
+
 dev-watch: generate
 	@echo "Starting development server with comprehensive file watching..."
 	@if command -v inotifywait >/dev/null 2>&1; then \
