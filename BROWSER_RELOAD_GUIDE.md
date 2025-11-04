@@ -15,9 +15,9 @@ For HTMX applications, traditional browser auto-reload can be **problematic** be
 **Command**: `make air` (now with proxy enabled)
 
 **What happens**:
-- Air creates a proxy server on port 3001
+- Air creates a proxy server on port 4200
 - Your app runs on port 8080  
-- Browser connects to proxy (http://localhost:3001)
+- Browser connects to proxy (http://localhost:4200)
 - **Full page reload** when code changes
 
 **Pros**:
