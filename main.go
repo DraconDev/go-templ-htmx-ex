@@ -54,6 +54,12 @@ func main() {
 	router.HandleFunc("/api/services", servicesAPIHandler).Methods("GET")
 	router.HandleFunc("/api/test", runTestAPIHandler).Methods("POST")
 
+	// Auth service API endpoints
+	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
+	router.HandleFunc("/api/auth/login", authLoginHandler).Methods("POST")
+	router.HandleFunc("/api/auth/register", authRegisterHandler).Methods("POST")
+	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
+
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
@@ -156,24 +162,18 @@ func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 	component.Render(r.Context(), w)
 }
 
-// Helper functions for styling
-func getStatusColor(status string) string {
-	switch status {
-	case "success":
-		return "w-4 h-4 rounded-full bg-green-500"
-	case "error":
-		return "w-4 h-4 rounded-full bg-red-500"
-	case "warning":
-		return "w-4 h-4 rounded-full bg-yellow-500"
-	default:
-		return "w-4 h-4 rounded-full bg-gray-500"
-	}
-}
+// Auth Service Handlers
 
-func getStatusTextColor(status string) string {
-	switch status {
-	case "success":
-		return "text-green-700"
+func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	// Check if auth service is available
+	authServiceURL := "https://cerberus-auth-ms-548010171143.europe-west1.run.app"
+	
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(authServiceURL + "/api/health")
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
 	case "error":
 		return "text-red-700"
 	case "warning":
