@@ -9,7 +9,7 @@ tmp_dir = "tmp"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []
-  exclude_regex = ["_test.go"]
+  exclude_regex = ["_test\\.go"]
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
@@ -26,6 +26,30 @@ tmp_dir = "tmp"
   rerun_delay = 500
   send_interrupt = false
   stop_on_error = false
+
+[color]
+  app = ""
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  main_only = false
+  silent = false
+  time = false
+
+[misc]
+  clean_on_exit = false
+
+[proxy]
+  app_port = 8080
+  enabled = true
+  proxy_port = 4200
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true
 
 [color]
   app = ""
