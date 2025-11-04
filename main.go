@@ -260,5 +260,3 @@ func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error": "Session token is required"}`))
 	}
 }
-
-
