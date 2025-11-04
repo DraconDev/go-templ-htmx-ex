@@ -2,28 +2,27 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  args_bin = []
-  bin = "./tmp/main"
-  cmd = "templ generate && go build -o ./tmp/main ."
-  delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "testdata", "bin"]
-  exclude_regex = ["_test.go"]
-  include_ext = ["go", "templ", "html", "css", "js"]
+bin = "./tmp/main"
+cmd = "templ generate && go build -o ./tmp/main ."
+delay = 1000
+exclude_dir = ["assets", "tmp", "vendor", "testdata", "bin"]
+exclude_regex = ["_test.go"]
+include_ext = ["go", "templ", "html", "css", "js"]
 
 [color]
-  app = ""
-  build = "yellow"
-  main = "magenta"
-  runner = "green"
-  watcher = "cyan"
+app = ""
+build = "yellow"
+main = "magenta"
+runner = "green"
+watcher = "cyan"
 
 [log]
-  main_only = false
-  time = false
+main_only = false
+time = false
 
 [misc]
-  clean_on_exit = false
+clean_on_exit = false
 
 [screen]
-  clear_on_rebuild = false
-  keep_scroll = true
+clear_on_rebuild = false
+keep_scroll = true
