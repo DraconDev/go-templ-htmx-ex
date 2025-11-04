@@ -221,7 +221,6 @@ func authRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	projectID := r.FormValue("project_id")
 	
 	// For demo purposes, create a test response
 	if email != "" && password != "" {
