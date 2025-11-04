@@ -5,4 +5,4 @@
 - [x] Create new git branch
 - [x] Verify the branch was created successfully
 - [x] Optionally switch to the new branch
-- [ ] Push branch to remote repository
+- [x] Push branch to remote repository
