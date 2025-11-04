@@ -160,7 +160,7 @@ func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 	testType := r.FormValue("test_type")
 
 	// Create test result component
-	component := templates.TestResult(serviceURL, testType, "success", "Test completed successfully!")
+	component := template.TestResult(serviceURL, testType, "success", "Test completed successfully!")
 	component.Render(r.Context(), w)
 }
 
