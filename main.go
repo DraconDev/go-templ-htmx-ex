@@ -64,6 +64,7 @@ func main() {
 	router.HandleFunc("/api/auth/login", authLoginHandler).Methods("POST")
 	router.HandleFunc("/api/auth/register", authRegisterHandler).Methods("POST")
 	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/user-details", authGetUserDetailsHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
@@ -294,5 +295,37 @@ func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 		"valid":       authResp.Valid,
 		"project_ids": authResp.ProjectIDs,
 		"status":      "validated",
+	})
+}
+
+func authGetUserDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Parse JSON request body
+	var userDetailsReq struct {
+		UserID string `json:"user_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&userDetailsReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Use the auth client to get user details
+	authResp, err := authClient.GetUserDetails(userDetailsReq.UserID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Return user details
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id": authResp.UserID,
+		"email":   authResp.Email,
+		"status":  "success",
 	})
 }
