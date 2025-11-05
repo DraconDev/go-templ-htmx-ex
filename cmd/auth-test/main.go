@@ -27,18 +27,18 @@ type AuthResponse struct {
 func main() {
 	fmt.Println("🔐 Cerberus Auth Service Test Client")
 	fmt.Println("====================================")
-	
+
 	baseURL := "http://localhost:8080"
-	
+
 	// Test 1: Health check
 	fmt.Println("\n1. Testing Auth Health Check...")
 	testHealthCheck(baseURL)
-	
+
 	// Test 2: Login
 	fmt.Println("\n2. Testing Login...")
 	testLogin(baseURL)
-	
-	// Test 3: Register  
+
+	// Test 3: Register
 	fmt.Println("\n3. Testing Registration...")
 	testRegister(baseURL)
 }
@@ -54,7 +54,7 @@ func testHealthCheck(baseURL string) {
 
 	if resp.StatusCode == 200 {
 		fmt.Println("✅ Auth service is healthy")
-		
+
 		var result map[string]interface{}
 		if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {
 			fmt.Printf("   Response: %v\n", result)
@@ -69,7 +69,7 @@ func testLogin(baseURL string) {
 		Email:    "test@example.com",
 		Password: "testpassword",
 	}
-	
+
 	jsonData, _ := json.Marshal(loginData)
 	resp, err := http.Post(baseURL+"/api/auth/login", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -89,7 +89,7 @@ func testLogin(baseURL string) {
 		fmt.Printf("   User ID: %s\n", result.UserID)
 		fmt.Printf("   JWT Token: %s\n", result.SessionToken)
 		fmt.Printf("   Email: %s\n", result.Email)
-		
+
 		// Test session validation with the token
 		fmt.Println("\n   Testing session validation...")
 		testValidateSession(baseURL, result.SessionToken)
@@ -104,7 +104,7 @@ func testRegister(baseURL string) {
 		Password:  "newpassword123",
 		ProjectID: "test-project",
 	}
-	
+
 	jsonData, _ := json.Marshal(registerData)
 	resp, err := http.Post(baseURL+"/api/auth/register", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -132,7 +132,7 @@ func testValidateSession(baseURL, token string) {
 	validateData := AuthRequest{
 		SessionToken: token,
 	}
-	
+
 	jsonData, _ := json.Marshal(validateData)
 	resp, err := http.Post(baseURL+"/api/auth/validate", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
