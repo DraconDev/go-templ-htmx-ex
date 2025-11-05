@@ -38,6 +38,11 @@ type RegisterRequest struct {
 	ProjectID string `json:"project_id"`
 }
 
+// GetUserDetailsRequest represents request for user details
+type GetUserDetailsRequest struct {
+	UserID string `json:"user_id"`
+}
+
 // NewAuthClient creates a new authentication client
 func NewAuthClient(baseURL string) *AuthClient {
 	return &AuthClient{
@@ -80,6 +85,15 @@ func (c *AuthClient) ValidateSession(sessionToken string) (*AuthResponse, error)
 	}
 
 	return c.makeRequest("/api/auth/validate", "POST", validateReq)
+}
+
+// GetUserDetails retrieves user details by user ID
+func (c *AuthClient) GetUserDetails(userID string) (*AuthResponse, error) {
+	userDetailsReq := GetUserDetailsRequest{
+		UserID: userID,
+	}
+
+	return c.makeRequest("/api/auth/user-details", "POST", userDetailsReq)
 }
 
 // HealthCheck checks if the auth service is available
