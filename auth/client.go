@@ -16,7 +16,14 @@ type AuthClient struct {
 }
 
 // AuthResponse represents the standard response from auth service
-
+type AuthResponse struct {
+	UserID       string `json:"user_id"`
+	SessionToken string `json:"session_token"`
+	Email        string `json:"email,omitempty"`
+	Valid        bool   `json:"valid,omitempty"`
+	ProjectIDs   []string `json:"project_ids,omitempty"`
+	Error        string `json:"error,omitempty"`
+}
 
 // LoginRequest represents login credentials
 type LoginRequest struct {
