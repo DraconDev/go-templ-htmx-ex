@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth;
 
-option go_package = "github.com/DraconDev/protos/auth-cerberus";
+option go_package = "github.com/DraconDev/protos/auth-cerberus;auth_cerberus";
 
 service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
