@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"star/templates"
+	"star/auth"
 )
 
 // Config holds application configuration
@@ -25,6 +27,7 @@ var (
 	config = &Config{
 		ServerPort: getEnvOrDefault("PORT", "8080"),
 	}
+	authClient = auth.NewAuthClient("https://cerberus-auth-ms-548010171143.europe-west1.run.app")
 )
 
 // getEnvOrDefault returns environment variable or default value
@@ -169,95 +172,127 @@ func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Check if auth service is available
-	authServiceURL := "https://cerberus-auth-ms-548010171143.europe-west1.run.app"
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Get(authServiceURL + "/api/health")
+	// Use the real auth client to check health
+	resp, err := authClient.HealthCheck()
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte(`{"status": "unavailable", "error": "Service not reachable", "url": "` + authServiceURL + `"}`))
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  "unavailable",
+			"error":   err.Error(),
+			"url":     "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
+			"service": "auth",
+		})
 		return
 	}
-	defer resp.Body.Close()
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status": "available", "url": "` + authServiceURL + `", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`))
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":     "available",
+		"url":        "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
+		"timestamp":  time.Now().Format(time.RFC3339),
+		"user_id":    resp.UserID,
+		"message":    "Auth service is reachable",
+	})
 }
 
 func authLoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Parse form data
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+	// Parse JSON request body instead of form
+	var loginReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	// For demo purposes, create a test response
-	// In production, this would make a real gRPC call to the auth service
-	if email != "" && password != "" {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{
-			"user_id": "demo-user-123",
-			"session_token": "demo-session-token-456",
-			"email": "` + email + `"
-		}`))
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"error": "Email and password are required"}`))
+	// Use the real auth client to login
+	authResp, err := authClient.Login(loginReq.Email, loginReq.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
 	}
+
+	// Return successful response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id":       authResp.UserID,
+		"session_token": authResp.SessionToken,
+		"email":         authResp.Email,
+		"status":        "success",
+	})
 }
 
 func authRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Parse form data
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+	// Parse JSON request body
+	var registerReq struct {
+		Email     string `json:"email"`
+		Password  string `json:"password"`
+		ProjectID string `json:"project_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&registerReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	// For demo purposes, create a test response
-	if email != "" && password != "" {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{
-			"user_id": "demo-user-789",
-			"session_token": "demo-session-token-012"
-		}`))
-	} else {
+	// Use the real auth client to register
+	authResp, err := authClient.Register(registerReq.Email, registerReq.Password, registerReq.ProjectID)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"error": "Email and password are required"}`))
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
 	}
+
+	// Return successful response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id":       authResp.UserID,
+		"session_token": authResp.SessionToken,
+		"status":        "success",
+	})
 }
 
 func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Parse form data
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+	// Parse JSON request body
+	var validateReq struct {
+		SessionToken string `json:"session_token"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&validateReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
-	sessionToken := r.FormValue("session_token")
-
-	// For demo purposes, create a test response
-	if sessionToken != "" {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{
-			"user_id": "demo-user-123",
-			"valid": true,
-			"project_ids": ["demo-project-1", "demo-project-2"]
-		}`))
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"error": "Session token is required"}`))
+	// Use the real auth client to validate session
+	authResp, err := authClient.ValidateSession(validateReq.SessionToken)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+			"valid": false,
+		})
+		return
 	}
+
+	// Return validation result
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id":     authResp.UserID,
+		"valid":       authResp.Valid,
+		"project_ids": authResp.ProjectIDs,
+		"status":      "validated",
+	})
 }
