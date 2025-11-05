@@ -9,3 +9,10 @@ require (
 )
 
 require github.com/google/go-cmp v0.7.0 // indirect
+
+replace github.com/DraconDev/protos/auth-cerberus => ./github.com/DraconDev/protos/auth-cerberus
+
+require (
+	google.golang.org/grpc v1.76.0
+	google.golang.org/protobuf v1.36.10
+)
