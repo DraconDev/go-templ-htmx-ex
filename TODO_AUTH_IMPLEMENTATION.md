@@ -1,6 +1,7 @@
 - [x] Analyze existing project structure and auth.proto
 - [x] Review main.go to understand current setup
-- [ ] Implement authentication service/client
-- [ ] Create code to call the auth endpoint
-- [ ] Test JWT retrieval functionality
-- [ ] Verify implementation works correctly
+- [x] Implement authentication service/client
+- [ ] Add proper imports and client initialization
+- [ ] Update auth handlers to use real client
+- [ ] Create test script to verify JWT retrieval
+- [ ] Test the complete authentication flow
