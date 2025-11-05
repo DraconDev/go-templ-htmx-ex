@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
-	"github.com/DraconDev/protos/auth-cerberus"
+	auth_cerberus "github.com/DraconDev/protos/auth-cerberus"
 )
 
 // GRPCAuthClient handles communication with the Cerberus authentication service via gRPC
