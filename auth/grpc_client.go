@@ -9,7 +9,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
-	"google.golang.org/grpc/codes"
 
 	"github.com/DraconDev/protos/auth-cerberus"
 )
@@ -41,7 +40,11 @@ func NewGRPCAuthClient(baseURL string) (*GRPCAuthClient, error) {
 	
 	// Set up gRPC connection with insecure credentials for now
 	// In production, you would use proper TLS certificates
-	conn, err := grpc.NewClient(baseURL, grpc.WithTransportCredentials(insecureCredentials{}))
+	conn, err := grpc.NewClient(
+		baseURL,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to connect to auth service: %w", err)
@@ -56,22 +59,6 @@ func NewGRPCAuthClient(baseURL string) (*GRPCAuthClient, error) {
 		cancel:  cancel,
 		baseURL: baseURL,
 	}, nil
-}
-
-// insecureCredentials is a simple implementation for demo purposes
-// In production, use proper TLS certificates
-type insecureCredentials struct{}
-
-func (insecureCredentials) ClientHandshake(ctx context.Context, string, *grpc.ClientConnInfo) (context.Context, error) {
-	return ctx, nil
-}
-
-func (insecureCredentials) ServerHandshake(context.Context, *grpc.ServerConnInfo) (context.Context, error) {
-	return context.Background(), nil
-}
-
-func (insecureCredentials) Info() grpc.ProtocolInfo {
-	return grpc.ProtocolInfo{}
 }
 
 // Close closes the gRPC connection
