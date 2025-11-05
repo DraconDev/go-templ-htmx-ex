@@ -1,4 +1,4 @@
-module star
+module https://github.com/DraconDev/go-templ-htmx-ex
 
 go 1.25
 
