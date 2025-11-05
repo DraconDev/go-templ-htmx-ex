@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"star/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/auth"
 )
 
 func main() {

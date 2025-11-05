@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
-	"star/templates"
-	"star/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
 // Config holds application configuration
@@ -188,11 +188,11 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":     "available",
-		"url":        "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
-		"timestamp":  time.Now().Format(time.RFC3339),
-		"user_id":    resp.UserID,
-		"message":    "Auth service is reachable",
+		"status":    "available",
+		"url":       "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
+		"timestamp": time.Now().Format(time.RFC3339),
+		"user_id":   resp.UserID,
+		"message":   "Auth service is reachable",
 	})
 }
 

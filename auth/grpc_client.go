@@ -9,16 +9,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
-	"star/auth/cerberus"
+	"github.com/DraconDev/go-templ-htmx-ex/auth/cerberus"
 )
 
 // GRPCAuthClient handles communication with the Cerberus authentication service via gRPC
 type GRPCAuthClient struct {
-	client    auth_cerberus.AuthServiceClient
-	conn      *grpc.ClientConn
-	ctx       context.Context
-	cancel    context.CancelFunc
-	baseURL   string
+	client  auth_cerberus.AuthServiceClient
+	conn    *grpc.ClientConn
+	ctx     context.Context
+	cancel  context.CancelFunc
+	baseURL string
 }
 
 // GRPCAuthResponse represents the response from gRPC auth service
@@ -36,7 +36,7 @@ type GRPCAuthResponse struct {
 // NewGRPCAuthClient creates a new gRPC authentication client
 func NewGRPCAuthClient(baseURL string) (*GRPCAuthClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	
+
 	// Set up gRPC connection with insecure credentials for now
 	// In production, you would use proper TLS certificates
 	conn, err := grpc.NewClient(
@@ -50,7 +50,7 @@ func NewGRPCAuthClient(baseURL string) (*GRPCAuthClient, error) {
 	}
 
 	client := auth_cerberus.NewAuthServiceClient(conn)
-	
+
 	return &GRPCAuthClient{
 		client:  client,
 		conn:    conn,
