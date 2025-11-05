@@ -209,21 +209,3 @@ func (c *GRPCAuthClient) HealthCheck() (*GRPCAuthResponse, error) {
 		Message: resp.GetMessage(),
 	}, nil
 }
-
-// IsHealthy checks if the gRPC connection is healthy
-func (c *GRPCAuthClient) IsHealthy() bool {
-	// Simple health check - try to establish connection
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	
-	// Attempt a simple health check call
-	_, err := c.HealthCheck()
-	if err != nil {
-		log.Printf("gRPC client health check failed: %v", err)
-		return false
-	}
-	
-	// Check if connection state is ready
-	state := c.conn.GetState()
-	return state == grpc.Ready
-}
