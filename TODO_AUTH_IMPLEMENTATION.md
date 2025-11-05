@@ -3,5 +3,6 @@
 - [x] Implement authentication service/client
 - [x] Add proper imports and client initialization
 - [x] Update auth handlers to use real client
-- [ ] Create test script to verify JWT retrieval
+- [x] Create test script to verify JWT retrieval
+- [ ] Fix compilation issues with test files
 - [ ] Test the complete authentication flow
