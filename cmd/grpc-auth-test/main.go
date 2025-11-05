@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/dracon/go-templ-htmx-ex/auth"
+	"github.com/draconDev/go-templ-htmx-ex/auth"
 )
 
 func main() {
