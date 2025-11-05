@@ -1,144 +1,176 @@
 package auth
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/DraconDev/cerberus-auth-ms/proto"
 )
 
-// AuthClient handles communication with the authentication service
+// AuthClient handles communication with the authentication service via gRPC
 type AuthClient struct {
-	baseURL    string
-	httpClient *http.Client
+	conn         *grpc.ClientConn
+	authService  proto.AuthServiceClient
 }
 
 // AuthResponse represents the standard response from auth service
 type AuthResponse struct {
-	UserID       string `json:"user_id"`
-	SessionToken string `json:"session_token"`
-	Email        string `json:"email,omitempty"`
-	Valid        bool   `json:"valid,omitempty"`
+	UserID       string   `json:"user_id"`
+	SessionToken string   `json:"session_token"`
+	Email        string   `json:"email,omitempty"`
+	Valid        bool     `json:"valid,omitempty"`
 	ProjectIDs   []string `json:"project_ids,omitempty"`
-	Error        string `json:"error,omitempty"`
+	Error        string   `json:"error,omitempty"`
 }
 
-// LoginRequest represents login credentials
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// RegisterRequest represents registration data
-type RegisterRequest struct {
-	Email      string `json:"email"`
-	Password   string `json:"password"`
-	ProjectID  string `json:"project_id"`
-}
-
-// NewAuthClient creates a new authentication client
+// NewAuthClient creates a new authentication client with gRPC connection
 func NewAuthClient(baseURL string) *AuthClient {
-	return &AuthClient{
-		baseURL: baseURL,
-		httpClient: &http.Client{
-			Timeout: 10 * time.Second,
-		},
+	// Create gRPC connection
+	conn, err := grpc.Dial(baseURL, grpc.WithTransportCredentials(insecureCredentials()))
+	if err != nil {
+		fmt.Printf("Failed to connect to auth service: %v\n", err)
+		return nil
 	}
+
+	// Create gRPC client
+	authService := proto.NewAuthServiceClient(conn)
+
+	return &AuthClient{
+		conn:        conn,
+		authService: authService,
+	}
+}
+
+// insecureCredentials returns credentials that skip TLS verification (for development)
+func insecureCredentials() grpc.DialOption {
+	return grpc.WithTransportCredentials(insecure.NewCredentials())
 }
 
 // Login attempts to authenticate a user and returns JWT token
 func (c *AuthClient) Login(email, password string) (*AuthResponse, error) {
-	loginReq := LoginRequest{
+	if c.authService == nil {
+		return nil, fmt.Errorf("auth service not available")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Create gRPC request
+	loginReq := &proto.LoginRequest{
 		Email:    email,
 		Password: password,
 	}
 
-	return c.makeRequest("/api/auth/login", "POST", loginReq)
+	// Make gRPC call
+	loginResp, err := c.authService.Login(ctx, loginReq)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC login failed: %w", err)
+	}
+
+	// Convert gRPC response to our response format
+	return &AuthResponse{
+		UserID:       loginResp.GetUserId(),
+		SessionToken: loginResp.GetSessionToken(),
+		Email:        email,
+		Valid:        true,
+	}, nil
 }
 
 // Register creates a new user account
 func (c *AuthClient) Register(email, password, projectID string) (*AuthResponse, error) {
-	registerReq := RegisterRequest{
-		Email:     email,
-		Password:  password,
-		ProjectID: projectID,
+	if c.authService == nil {
+		return nil, fmt.Errorf("auth service not available")
 	}
 
-	return c.makeRequest("/api/auth/register", "POST", registerReq)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Create gRPC request
+	registerReq := &proto.RegisterRequest{
+		Email:     email,
+		Password:  password,
+		ProjectId: projectID,
+	}
+
+	// Make gRPC call
+	registerResp, err := c.authService.Register(ctx, registerReq)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC register failed: %w", err)
+	}
+
+	// Convert gRPC response to our response format
+	return &AuthResponse{
+		UserID:       registerResp.GetUserId(),
+		SessionToken: registerResp.GetSessionToken(),
+		Email:        email,
+		Valid:        true,
+		ProjectIDs:   []string{projectID},
+	}, nil
 }
 
 // ValidateSession checks if a session token is valid
 func (c *AuthClient) ValidateSession(sessionToken string) (*AuthResponse, error) {
-	type ValidateRequest struct {
-		SessionToken string `json:"session_token"`
+	if c.authService == nil {
+		return nil, fmt.Errorf("auth service not available")
 	}
-	
-	validateReq := ValidateRequest{
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Create gRPC request
+	validateReq := &proto.ValidateSessionRequest{
 		SessionToken: sessionToken,
 	}
 
-	return c.makeRequest("/api/auth/validate", "POST", validateReq)
+	// Make gRPC call
+	validateResp, err := c.authService.ValidateSession(ctx, validateReq)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC validate session failed: %w", err)
+	}
+
+	// Convert gRPC response to our response format
+	return &AuthResponse{
+		UserID:     validateResp.GetUserId(),
+		Valid:      validateResp.GetValid(),
+		ProjectIDs: validateResp.GetProjectIds(),
+	}, nil
 }
 
 // HealthCheck checks if the auth service is available
 func (c *AuthClient) HealthCheck() (*AuthResponse, error) {
-	return c.makeRequest("/api/health", "GET", nil)
+	if c.authService == nil {
+		return nil, fmt.Errorf("auth service not available")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Create gRPC request
+	healthReq := &proto.HealthCheckRequest{
+		Service: "go-templ-htmx-ex",
+	}
+
+	// Make gRPC call
+	healthResp, err := c.authService.HealthCheck(ctx, healthReq)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC health check failed: %w", err)
+	}
+
+	// Convert gRPC response to our response format
+	return &AuthResponse{
+		UserID: "health-check",
+		Valid:  healthResp.GetStatus() == "healthy",
+	}, nil
 }
 
-// makeRequest handles the HTTP communication with the auth service
-func (c *AuthClient) makeRequest(endpoint, method string, data interface{}) (*AuthResponse, error) {
-	var reqBody io.Reader
-	var err error
-
-	// Prepare request body
-	if data != nil {
-		jsonData, err := json.Marshal(data)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal request data: %w", err)
-		}
-		reqBody = bytes.NewBuffer(jsonData)
-	} else {
-		reqBody = nil
+// Close closes the gRPC connection
+func (c *AuthClient) Close() error {
+	if c.conn != nil {
+		return c.conn.Close()
 	}
-
-	// Create HTTP request
-	url := c.baseURL + endpoint
-	req, err := http.NewRequest(method, url, reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	// Set headers
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "Go-Auth-Client/1.0")
-
-	// Execute request
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	// Read response body
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	// Parse response
-	var authResp AuthResponse
-	if err := json.Unmarshal(body, &authResp); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	// Check HTTP status code
-	if resp.StatusCode >= 400 {
-		if authResp.Error == "" {
-			authResp.Error = fmt.Sprintf("HTTP %d: %s", resp.StatusCode, string(body))
-		}
-	}
-
-	return &authResp, nil
+	return nil
 }
