@@ -7,86 +7,125 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 )
 
-// TestCerberusConnection demonstrates the connection logic
-// Even though the service might be down, this shows the correct usage pattern
+// TestCerberusConnection tests the actual gRPC connection to Cerberus
 func TestCerberusConnection(t *testing.T) {
-	fmt.Println("🧪 Testing Cerberus Connection Logic")
+	fmt.Println("🧪 Testing Cerberus gRPC Connection")
 	fmt.Println("=====================================")
 
-	// Test that the client can be created (this doesn't require network connectivity)
-	fmt.Println("1. Testing client creation...")
-	
-	// For Cloud Run services, the correct format is: service-url:port
-	// Note: The service URL should not include https:// prefix for gRPC
+	// Test that the client can be created
+	fmt.Println("1. Creating auth client...")
 	authClient := auth.NewAuthClient("cerberus-auth-ms-548010171143.europe-west1.run.app:443")
 	
 	if authClient == nil {
 		t.Error("Failed to create auth client")
-	} else {
-		fmt.Println("✅ Auth client created successfully")
-		fmt.Printf("   Client type: %T\n", authClient)
+		return
 	}
+	fmt.Println("✅ Auth client created successfully")
 	
-	// Test that we can attempt a health check
-	// This will fail due to service unavailability, but shows the proper call pattern
-	fmt.Println("\n2. Testing health check call...")
+	// Test health check
+	fmt.Println("\n2. Testing health check...")
 	resp, err := authClient.HealthCheck()
 	
 	if err != nil {
-		fmt.Printf("❌ Health check failed (expected): %v\n", err)
-		fmt.Println("   This is normal if the service is down or misconfigured")
+		fmt.Printf("❌ Health check failed: %v\n", err)
+		t.Errorf("Health check failed: %v", err)
 	} else {
-		fmt.Printf("✅ Health check successful: %+v\n", resp)
+		fmt.Printf("✅ Health check successful!\n")
+		fmt.Printf("   Status: %s\n", resp.Status)
+		fmt.Printf("   Message: %s\n", resp.Message)
 	}
 	
-	// Test other method calls (these will also fail but show the pattern)
-	fmt.Println("\n3. Testing register call pattern...")
-	registerResp, err := authClient.Register("test@example.com", "password", "project-123")
+	// Test register
+	fmt.Println("\n3. Testing register...")
+	registerResp, err := authClient.Register("test@example.com", "password123", "test-project-123")
 	if err != nil {
-		fmt.Printf("❌ Register failed (expected): %v\n", err)
+		fmt.Printf("❌ Register failed: %v\n", err)
+		t.Errorf("Register failed: %v", err)
 	} else {
-		fmt.Printf("✅ Register successful: %+v\n", registerResp)
+		fmt.Printf("✅ Register successful!\n")
+		fmt.Printf("   User ID: %s\n", registerResp.UserID)
+		fmt.Printf("   Session Token: %s\n", registerResp.SessionToken)
+		
+		// Test login with the same credentials
+		fmt.Println("\n4. Testing login...")
+		loginResp, err := authClient.Login("test@example.com", "password123")
+		if err != nil {
+			fmt.Printf("❌ Login failed: %v\n", err)
+			t.Errorf("Login failed: %v", err)
+		} else {
+			fmt.Printf("✅ Login successful!\n")
+			fmt.Printf("   User ID: %s\n", loginResp.UserID)
+			fmt.Printf("   Session Token: %s\n", loginResp.SessionToken)
+			
+			// Test session validation
+			fmt.Println("\n5. Testing session validation...")
+			validatResp, err := authClient.ValidateSession(loginResp.SessionToken)
+			if err != nil {
+				fmt.Printf("❌ Session validation failed: %v\n", err)
+				t.Errorf("Session validation failed: %v", err)
+			} else {
+				fmt.Printf("✅ Session validation successful!\n")
+				fmt.Printf("   Valid: %t\n", validatResp.Valid)
+				fmt.Printf("   Project IDs: %v\n", validatResp.ProjectIDs)
+				
+				// Test get user details
+				fmt.Println("\n6. Testing get user details...")
+				userDetailsResp, err := authClient.GetUserDetails(loginResp.UserID)
+				if err != nil {
+					fmt.Printf("❌ Get user details failed: %v\n", err)
+					t.Errorf("Get user details failed: %v", err)
+				} else {
+					fmt.Printf("✅ Get user details successful!\n")
+					fmt.Printf("   User ID: %s\n", userDetailsResp.UserID)
+					fmt.Printf("   Email: %s\n", userDetailsResp.Email)
+				}
+			}
+		}
 	}
 	
-	fmt.Println("\n🎉 Connection test completed!")
-	fmt.Println("==============================")
-	fmt.Println("Note: Service appears to be down (502 errors)")
-	fmt.Println("The client logic is correct, but the service may need debugging")
+	fmt.Println("\n🎉 Cerberus gRPC Test Completed!")
+	fmt.Println("=================================")
 }
 
-// TestAuthClientCreation tests that the client can be created without network calls
-func TestAuthClientCreation(t *testing.T) {
-	// Test different URL formats to show what works
+// TestConnectionFormats tests different connection URL formats
+func TestConnectionFormats(t *testing.T) {
+	fmt.Println("🧪 Testing Different Connection Formats")
+	fmt.Println("========================================")
+	
 	testCases := []struct {
-		name        string
-		url         string
-		expectPanic bool
+		name string
+		url  string
 	}{
 		{
-			name:        "Cloud Run format",
-			url:         "cerberus-auth-ms-548010171143.europe-west1.run.app:443",
-			expectPanic: false,
+			name: "Cloud Run with port 443",
+			url:  "cerberus-auth-ms-548010171143.europe-west1.run.app:443",
 		},
 		{
-			name:        "HTTPS URL (should work for HTTP client)",
-			url:         "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
-			expectPanic: true, // This will panic because gRPC expects different format
+			name: "Cloud Run with port 80",
+			url:  "cerberus-auth-ms-548010171143.europe-west1.run.app:80",
+		},
+		{
+			name: "Just domain (default port)",
+			url:  "cerberus-auth-ms-548010171143.europe-west1.run.app",
 		},
 	}
 	
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			defer func() {
-				if r := recover(); r != nil {
-					if !tc.expectPanic {
-						t.Errorf("Unexpected panic: %v", r)
-					}
-				}
-			}()
+			fmt.Printf("\n🔗 Testing: %s\n", tc.url)
 			
 			authClient := auth.NewAuthClient(tc.url)
-			if authClient == nil && !tc.expectPanic {
-				t.Error("Auth client is nil")
+			if authClient == nil {
+				t.Errorf("Failed to create client for %s", tc.url)
+				return
+			}
+			
+			// Try health check
+			resp, err := authClient.HealthCheck()
+			if err != nil {
+				fmt.Printf("❌ Health check failed: %v\n", err)
+			} else {
+				fmt.Printf("✅ Health check successful: %s - %s\n", resp.Status, resp.Message)
 			}
 		})
 	}
