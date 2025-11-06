@@ -51,6 +51,10 @@ func main() {
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/health", healthHandler).Methods("GET")
 
+	// Test login routes
+	router.HandleFunc("/test-login", testLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/test", authTestHandler).Methods("POST")
+
 	// Microservice testing routes
 	router.HandleFunc("/test", microserviceTestHandler).Methods("GET", "POST")
 	router.HandleFunc("/test/{service}", serviceTestHandler).Methods("GET", "POST")
