@@ -65,9 +65,10 @@ func main() {
 
 	// Auth service API endpoints
 	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
-	router.HandleFunc("/api/auth/login", authLoginHandler).Methods("POST")
-	router.HandleFunc("/api/auth/register", authRegisterHandler).Methods("POST")
-	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
+	// Test endpoints (override real endpoints for local testing)
+	router.HandleFunc("/api/auth/login", authTestHandler).Methods("POST")
+	router.HandleFunc("/api/auth/register", authTestHandler).Methods("POST")
+	router.HandleFunc("/api/auth/validate", authTestHandler).Methods("POST")
 	router.HandleFunc("/api/auth/user-details", authGetUserDetailsHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
