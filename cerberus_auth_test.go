@@ -17,7 +17,7 @@ func TestCerberusAuth(t *testing.T) {
 	// Create auth client
 	fmt.Println("Creating auth client...")
 	// For Cloud Run services, use domain:port format without https://
-	authClient := auth.NewAuthClient("cerberus-auth-ms-548010171143.europe-west1.run.app:55001")
+	authClient := auth.NewAuthClient("cerberus-auth-ms-548010171143.europe-west1.run.app:50051")
 	
 	// Test 1: Health Check
 	fmt.Println("\n1. Testing Health Check...")
