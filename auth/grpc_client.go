@@ -60,6 +60,16 @@ func NewGRPCAuthClient(baseURL string) (*GRPCAuthClient, error) {
 	}, nil
 }
 
+// NewAuthClient creates a new auth client wrapper for main.go
+// This is a convenience function that returns the GRPCAuthClient directly
+func NewAuthClient(baseURL string) *GRPCAuthClient {
+	client, err := NewGRPCAuthClient(baseURL)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create auth client: %v", err))
+	}
+	return client
+}
+
 // Close closes the gRPC connection
 func (c *GRPCAuthClient) Close() error {
 	if c.cancel != nil {
