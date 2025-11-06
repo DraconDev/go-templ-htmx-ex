@@ -188,11 +188,11 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":    "available",
+		"status":    resp.Status,
 		"url":       "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
 		"timestamp": time.Now().Format(time.RFC3339),
-		"user_id":   resp.UserID,
-		"message":   "Auth service is reachable",
+		"message":   resp.Message,
+		"service":   "auth",
 	})
 }
 
