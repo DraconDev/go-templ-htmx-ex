@@ -86,6 +86,3 @@ func TestCerberus() {
 	fmt.Println("=====================================")
 }
 
-func main() {
-	TestCerberus()
-}
