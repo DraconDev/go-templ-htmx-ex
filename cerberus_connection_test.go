@@ -14,7 +14,7 @@ func TestCerberusConnection(t *testing.T) {
 
 	// Test that the client can be created
 	fmt.Println("1. Creating auth client...")
-	authClient := auth.NewAuthClient("https://cerberus-auth-ms-548010171143.europe-west1.run.app/")
+	authClient := auth.NewAuthClient("cerberus-auth-ms-548010171143.europe-west1.run.app:443")
 
 	if authClient == nil {
 		t.Error("Failed to create auth client")
