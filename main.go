@@ -178,10 +178,11 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"status":  "unavailable",
-			"error":   err.Error(),
-			"url":     "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
-			"service": "auth",
+			"status":     "unavailable",
+			"error":      err.Error(),
+			"url":        "cerberus-auth-ms-548010171143.europe-west1.run.app:443",
+			"service":    "auth",
+			"full_error": fmt.Sprintf("%+v", err),
 		})
 		return
 	}
