@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
-	"log"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth/cerberus"
+	auth_cerberus "github.com/DraconDev/go-templ-htmx-ex/auth/cerberus"
 )
 
 // TestDifferentTLSConfigs tests various TLS configurations to find the working one
