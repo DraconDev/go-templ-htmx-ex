@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 )
 
-func main() {
+func TestCerberus() {
 	fmt.Println("🧪 Starting Cerberus Auth Service Test")
 	fmt.Println("=====================================")
 
