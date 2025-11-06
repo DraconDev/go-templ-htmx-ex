@@ -2,11 +2,14 @@ package auth
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/status"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth/cerberus"
