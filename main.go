@@ -27,7 +27,7 @@ var (
 	config = &Config{
 		ServerPort: getEnvOrDefault("PORT", "8080"),
 	}
-	authClient = auth.NewAuthClient("https://cerberus-auth-ms-548010171143.europe-west1.run.app")
+	authClient = auth.NewAuthClient("cerberus-auth-ms-548010171143.europe-west1.run.app:443")
 )
 
 // getEnvOrDefault returns environment variable or default value
