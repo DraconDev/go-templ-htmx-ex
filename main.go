@@ -347,43 +347,77 @@ func testLoginHandler(w http.ResponseWriter, r *http.Request) {
 func authTestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Handle test authentication without requiring backend service
-	var testAuthReq struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Action   string `json:"action"` // "login", "register", "validate"
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&testAuthReq); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	// Determine action based on the URL path
+	var action string
+	switch r.URL.Path {
+	case "/api/auth/login":
+		action = "login"
+	case "/api/auth/register":
+		action = "register"
+	case "/api/auth/validate":
+		action = "validate"
+	case "/api/auth/user-details":
+		action = "user-details"
+	default:
+		http.Error(w, "Invalid endpoint", http.StatusBadRequest)
 		return
 	}
 
-	// Simulate different test scenarios
-	switch testAuthReq.Action {
+	// Handle different authentication scenarios
+	switch action {
 	case "login":
+		// Parse login credentials
+		var loginReq struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
 		// Demo login - accepts any credentials
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"user_id":       "demo-user-123",
 			"session_token": "demo-session-token-456",
-			"email":         testAuthReq.Email,
+			"email":         loginReq.Email,
 			"status":        "success",
 			"message":       "Test login successful (demo mode)",
 		})
 
 	case "register":
+		// Parse registration credentials
+		var registerReq struct {
+			Email     string `json:"email"`
+			Password  string `json:"password"`
+			ProjectID string `json:"project_id"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&registerReq); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
 		// Demo registration - accepts any credentials
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"user_id":       "demo-user-" + fmt.Sprintf("%d", time.Now().Unix()),
 			"session_token": "demo-session-token-" + fmt.Sprintf("%d", time.Now().Unix()),
-			"email":         testAuthReq.Email,
+			"email":         registerReq.Email,
 			"status":        "success",
 			"message":       "Test registration successful (demo mode)",
 		})
 
 	case "validate":
+		// Parse validation request
+		var validateReq struct {
+			SessionToken string `json:"session_token"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&validateReq); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
 		// Demo session validation
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -394,15 +428,23 @@ func authTestHandler(w http.ResponseWriter, r *http.Request) {
 			"message":     "Test session validation successful (demo mode)",
 		})
 
-	case "health":
-		// Demo health check
+	case "user-details":
+		// Parse user details request
+		var userDetailsReq struct {
+			UserID string `json:"user_id"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&userDetailsReq); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Demo user details
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"status":    "healthy",
-			"service":   "test-auth",
-			"message":   "Test auth service is running (demo mode)",
-			"timestamp": time.Now().Format(time.RFC3339),
-			"mode":      "local-test",
+			"user_id": userDetailsReq.UserID,
+			"email":   "demo@example.com",
+			"status":  "success",
+			"message": "Test user details retrieved (demo mode)",
 		})
 
 	default:
