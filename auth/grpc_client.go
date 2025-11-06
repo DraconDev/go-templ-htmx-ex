@@ -40,12 +40,19 @@ type GRPCAuthResponse struct {
 func NewGRPCAuthClient(baseURL string) (*GRPCAuthClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-	// Set up gRPC connection with insecure credentials for now
-	// In production, you would use proper TLS certificates
+	// Set up gRPC connection with proper TLS configuration for Cloud Run
+	// Allow insecure skip verify for Cloud Run services
 	conn, err := grpc.NewClient(
 		baseURL,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: true,
+		})),
 		grpc.WithBlock(),
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:                20 * time.Second,
+			Timeout:             10 * time.Second,
+			PermitWithoutStream: true,
+		}),
 	)
 	if err != nil {
 		cancel()
