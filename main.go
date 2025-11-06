@@ -25,9 +25,9 @@ type Config struct {
 
 var (
 	config = &Config{
-		ServerPort: getEnvOrDefault("PORT", "8080"),
+		ServerPort: getEnvOrDefault("PORT", "8081"),
 	}
-	authClient = auth.NewAuthClient("cerberus-auth-ms-548010171143.europe-west1.run.app:443")
+	authClient = auth.NewAuthClient(getEnvOrDefault("AUTH_SERVICE_URL", "localhost:8080"))
 )
 
 // getEnvOrDefault returns environment variable or default value
