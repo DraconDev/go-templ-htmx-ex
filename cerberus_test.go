@@ -85,3 +85,7 @@ func TestCerberus() {
 	fmt.Println("\n🎉 Cerberus Auth Service Test Completed!")
 	fmt.Println("=====================================")
 }
+
+func main() {
+	TestCerberus()
+}
