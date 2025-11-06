@@ -334,3 +334,77 @@ func authGetUserDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		"status":  "success",
 	})
 }
+
+// Test Login Handlers
+
+func testLoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	component := templates.Layout("Test Login", templates.AuthTestContent())
+	component.Render(r.Context(), w)
+}
+
+func authTestHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Handle test authentication without requiring backend service
+	var testAuthReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Action   string `json:"action"` // "login", "register", "validate"
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&testAuthReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Simulate different test scenarios
+	switch testAuthReq.Action {
+	case "login":
+		// Demo login - accepts any credentials
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"user_id":       "demo-user-123",
+			"session_token": "demo-session-token-456",
+			"email":         testAuthReq.Email,
+			"status":        "success",
+			"message":       "Test login successful (demo mode)",
+		})
+
+	case "register":
+		// Demo registration - accepts any credentials
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"user_id":       "demo-user-" + fmt.Sprintf("%d", time.Now().Unix()),
+			"session_token": "demo-session-token-" + fmt.Sprintf("%d", time.Now().Unix()),
+			"email":         testAuthReq.Email,
+			"status":        "success",
+			"message":       "Test registration successful (demo mode)",
+		})
+
+	case "validate":
+		// Demo session validation
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"user_id":     "demo-user-123",
+			"valid":       true,
+			"project_ids": []string{"demo-project-1", "demo-project-2"},
+			"status":      "validated",
+			"message":     "Test session validation successful (demo mode)",
+		})
+
+	case "health":
+		// Demo health check
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":    "healthy",
+			"service":   "test-auth",
+			"message":   "Test auth service is running (demo mode)",
+			"timestamp": time.Now().Format(time.RFC3339),
+			"mode":      "local-test",
+		})
+
+	default:
+		http.Error(w, "Invalid action", http.StatusBadRequest)
+	}
+}
