@@ -352,45 +352,6 @@ func callAuthService(endpoint string, params map[string]string) (*AuthResponse, 
 	return &authResp, nil
 }
 
-// Google OAuth Handlers
-func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	// Redirect to the auth microservice's Google OAuth endpoint
-	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback", 
-		config.AuthServiceURL, config.RedirectURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
-}
-
-func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	// Handle the callback from the auth microservice
-	code := r.URL.Query().Get("code")
-	if code == "" {
-		http.Error(w, "Missing authorization code", http.StatusBadRequest)
-		return
-	}
-
-	// Call the auth microservice to exchange code for token
-	tokenResp, err := callAuthService(fmt.Sprintf("%s/auth/google/callback", config.AuthServiceURL), map[string]string{
-		"code": code,
-	})
-	if err != nil {
-		http.Error(w, "Failed to get token", http.StatusInternalServerError)
-		return
-	}
-
-	// Set session cookie with the JWT token
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    tokenResp.Token,
-		Path:     "/",
-		MaxAge:   3600, // 1 hour
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	})
-
-	// Redirect to home page
-	http.Redirect(w, r, "/", http.StatusFound)
-}
-
 // AuthResponse represents the response from the auth service
 type AuthResponse struct {
 	Success bool   `json:"success"`
