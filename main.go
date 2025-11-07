@@ -174,25 +174,27 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle the callback from the auth microservice
-	code := r.URL.Query().Get("code")
-	if code == "" {
-		http.Error(w, "Missing authorization code", http.StatusBadRequest)
+	// The auth service returns tokens in URL fragments
+	accessToken := r.URL.Query().Get("access_token")
+	
+	if accessToken == "" {
+		http.Error(w, "Missing access token", http.StatusBadRequest)
 		return
 	}
 
-	// Call the auth microservice to exchange code for token
-	tokenResp, err := callAuthService(fmt.Sprintf("%s/auth/google/callback", config.AuthServiceURL), map[string]string{
-		"code": code,
-	})
-	if err != nil {
-		http.Error(w, "Failed to get token", http.StatusInternalServerError)
-		return
+	// Extract the actual token from the URL fragment
+	// Remove the #access_token= part to get just the JWT
+	token := strings.TrimPrefix(accessToken, "access_token=")
+	
+	// If there's still an ampersand, get only the first part (before &)
+	if idx := strings.Index(token, "&"); idx != -1 {
+		token = token[:idx]
 	}
 
 	// Set session cookie with the JWT token
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    tokenResp.Token,
+		Value:    token,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
