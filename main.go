@@ -28,12 +28,16 @@ type UserSession struct {
 
 // Config holds application configuration
 type Config struct {
-	ServerPort string
+	ServerPort    string
+	AuthServiceURL string
+	RedirectURL    string
 }
 
 var (
 	config = &Config{
-		ServerPort: getEnvOrDefault("PORT", "8081"),
+		ServerPort:     getEnvOrDefault("PORT", "8081"),
+		AuthServiceURL: getEnvOrDefault("AUTH_SERVICE_URL", "http://localhost:8080"),
+		RedirectURL:    getEnvOrDefault("REDIRECT_URL", "http://localhost:8081"),
 	}
 )
 
