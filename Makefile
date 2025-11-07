@@ -1,6 +1,6 @@
-# Makefile for Microservice Test Harness
+# Makefile for Startup Platform
 
-BINARY_NAME=microservice-test
+BINARY_NAME=startup-platform
 BUILD_DIR=bin
 
 GOCMD=go
