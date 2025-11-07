@@ -58,25 +58,15 @@ func main() {
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/health", healthHandler).Methods("GET")
 
-	// Test login routes
-	router.HandleFunc("/test-login", testLoginHandler).Methods("GET")
-	router.HandleFunc("/auth/test", authTestHandler).Methods("POST")
+	// Google OAuth login routes
+	router.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/callback", authCallbackHandler).Methods("GET")
 
-	// Microservice testing routes
-	router.HandleFunc("/test", microserviceTestHandler).Methods("GET", "POST")
-	router.HandleFunc("/test/{service}", serviceTestHandler).Methods("GET", "POST")
-
-	// API endpoints for HTMX interactions
-	router.HandleFunc("/api/services", servicesAPIHandler).Methods("GET")
-	router.HandleFunc("/api/test", runTestAPIHandler).Methods("POST")
-
-	// Auth service API endpoints
-	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
-	// Real auth endpoints (connected to Cerberus server)
-	router.HandleFunc("/api/auth/login", authLoginHandler).Methods("POST")
-	router.HandleFunc("/api/auth/register", authRegisterHandler).Methods("POST")
+	// Session management
 	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
-	router.HandleFunc("/api/auth/user-details", authGetUserDetailsHandler).Methods("POST")
+	router.HandleFunc("/api/auth/logout", authLogoutHandler).Methods("POST")
+	router.HandleFunc("/api/auth/user", authGetUserHandler).Methods("GET")
+	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
