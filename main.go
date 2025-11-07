@@ -67,7 +67,10 @@ func main() {
 	// Google OAuth login routes
 	router.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authCallbackHandler).Methods("GET")
-
+	
+	// User profile page
+	router.HandleFunc("/profile", profileHandler).Methods("GET")
+	
 	// Session management
 	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", authLogoutHandler).Methods("POST")
