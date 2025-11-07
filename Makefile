@@ -33,17 +33,8 @@ generate:
 	@echo "Templ components generated!"
 
 dev: generate
-	@echo "Starting development server with hot reload..."
-	@pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
-	echo "Killed any existing server processes"; \
-	while true; do \
-		inotifywait -e modify -r . --include '\.(go|templ)$$' 2>/dev/null || break; \
-		echo "Changes detected, rebuilding..."; \
-		pkill -f "$(BUILD_DIR)/$(BINARY_NAME)" 2>/dev/null || true; \
-		$(MAKE) generate; \
-		$(MAKE) build; \
-		./$(BUILD_DIR)/$(BINARY_NAME); \
-	done
+	@echo "Starting development server..."
+	go run main.go
 
 watch: generate
 	@echo "Starting comprehensive watch mode (Go + Templ files)..."
