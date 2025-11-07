@@ -170,146 +170,166 @@ func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
 	component.Render(r.Context(), w)
 }
 
-// Google OAuth Handlers
+// Auth Service Handlers
 
-func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	// Redirect to the auth microservice's Google OAuth endpoint
-	authURL := "http://localhost:8080/auth/google?redirect_uri=http://localhost:8081/auth/callback"
-	http.Redirect(w, r, authURL, http.StatusFound)
-}
-
-func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	// Handle the callback from the auth microservice
-	code := r.URL.Query().Get("code")
-	if code == "" {
-		http.Error(w, "Missing authorization code", http.StatusBadRequest)
-		return
-	}
-
-	// Call the auth microservice to exchange code for token
-	tokenResp, err := callAuthService("http://localhost:8080/auth/google/callback", map[string]string{
-		"code": code,
-	})
-	if err != nil {
-		http.Error(w, "Failed to get token", http.StatusInternalServerError)
-		return
-	}
-
-	// Set session cookie with the JWT token
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    tokenResp.Token,
-		Path:     "/",
-		MaxAge:   3600, // 1 hour
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	})
-
-	// Redirect to home page
-	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
+func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
+	// Use the real auth client to check health
+	resp, err := authClient.HealthCheck()
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusServiceUnavailable)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"valid": false,
-			"error": "No session token",
+			"status":     "unavailable",
+			"error":      err.Error(),
+			"url":        "cerberus-auth-ms-548010171143.europe-west1.run.app:443",
+			"service":    "auth",
+			"full_error": fmt.Sprintf("%+v", err),
 		})
 		return
 	}
 
-	// Validate token with auth microservice
-	resp, err := callAuthService("http://localhost:8080/auth/validate", map[string]string{
-		"token": cookie.Value,
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":    resp.Status,
+		"url":       "https://cerberus-auth-ms-548010171143.europe-west1.run.app",
+		"timestamp": time.Now().Format(time.RFC3339),
+		"message":   resp.Message,
+		"service":   "auth",
 	})
+}
+
+func authLoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Parse JSON request body instead of form
+	var loginReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Use the real auth client to login
+	authResp, err := authClient.Login(loginReq.Email, loginReq.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"valid": false,
 			"error": err.Error(),
 		})
 		return
 	}
 
+	// Return successful response
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"valid":    resp.Success,
-		"user_id":  resp.UserID,
-		"email":    resp.Email,
-		"name":     resp.Name,
-		"picture":  resp.Picture,
-		"status":   "validated",
+		"user_id":       authResp.UserID,
+		"session_token": authResp.SessionToken,
+		"email":         authResp.Email,
+		"status":        "success",
 	})
 }
 
-func authLogoutHandler(w http.ResponseWriter, r *http.Request) {
+func authRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Clear session cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-	})
+	// Parse JSON request body
+	var registerReq struct {
+		Email     string `json:"email"`
+		Password  string `json:"password"`
+		ProjectID string `json:"project_id"`
+	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true,
-		"message": "Logged out successfully",
-	})
-}
+	if err := json.NewDecoder(r.Body).Decode(&registerReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
 
-func authGetUserHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
+	// Use the real auth client to register
+	authResp, err := authClient.Register(registerReq.Email, registerReq.Password, registerReq.ProjectID)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"logged_in": false,
+			"error": err.Error(),
 		})
 		return
 	}
 
-	// Get user info from auth microservice
-	resp, err := callAuthService("http://localhost:8080/auth/userinfo", map[string]string{
-		"token": cookie.Value,
+	// Return successful response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id":       authResp.UserID,
+		"session_token": authResp.SessionToken,
+		"status":        "success",
 	})
+}
+
+func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Parse JSON request body
+	var validateReq struct {
+		SessionToken string `json:"session_token"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&validateReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Use the real auth client to validate session
+	authResp, err := authClient.ValidateSession(validateReq.SessionToken)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"logged_in": false,
+			"error": err.Error(),
+			"valid": false,
 		})
 		return
 	}
 
+	// Return validation result
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"logged_in": resp.Success,
-		"user_id":   resp.UserID,
-		"email":     resp.Email,
-		"name":      resp.Name,
-		"picture":   resp.Picture,
+		"user_id":     authResp.UserID,
+		"valid":       authResp.Valid,
+		"project_ids": authResp.ProjectIDs,
+		"status":      "validated",
 	})
 }
 
-func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+func authGetUserDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Simple health check
+	// Parse JSON request body
+	var userDetailsReq struct {
+		UserID string `json:"user_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&userDetailsReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Use the auth client to get user details
+	authResp, err := authClient.GetUserDetails(userDetailsReq.UserID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Return user details
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":    "healthy",
-		"timestamp": time.Now().Format(time.RFC3339),
-		"service":   "main-app",
+		"user_id": authResp.UserID,
+		"email":   authResp.Email,
+		"status":  "success",
 	})
 }
 
