@@ -54,11 +54,11 @@ A modern Go-based startup application demonstrating Google OAuth authentication 
 
 5. **Run the application:**
    ```bash
-   ./bin/microservice-test
+   ./main
    ```
 
 6. **Open your browser:**
-   Navigate to `http://localhost:8080`
+   Navigate to `http://localhost:8081`
 
 ## Development
 
