@@ -63,6 +63,9 @@ func main() {
 	router.HandleFunc("/api/services", servicesAPIHandler).Methods("GET")
 	router.HandleFunc("/api/test", runTestAPIHandler).Methods("POST")
 
+	// Google OAuth callback endpoint
+	router.HandleFunc("/auth/google/callback", googleCallbackHandler).Methods("GET")
+	
 	// Auth service API endpoints
 	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
 	// Real auth endpoints (connected to Cerberus server)
