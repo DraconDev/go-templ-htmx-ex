@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -17,6 +18,15 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
+
+// UserSession represents a logged-in user session
+type UserSession struct {
+	ID       string `json:"id"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Picture  string `json:"picture"`
+	LoggedIn bool   `json:"logged_in"`
+}
 
 // Config holds application configuration
 type Config struct {
@@ -65,10 +75,10 @@ func main() {
 
 	// Auth service API endpoints
 	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
-	// Test endpoints (override real endpoints for local testing)
-	router.HandleFunc("/api/auth/login", authTestHandler).Methods("POST")
-	router.HandleFunc("/api/auth/register", authTestHandler).Methods("POST")
-	router.HandleFunc("/api/auth/validate", authTestHandler).Methods("POST")
+	// Real auth endpoints (connected to Cerberus server)
+	router.HandleFunc("/api/auth/login", authLoginHandler).Methods("POST")
+	router.HandleFunc("/api/auth/register", authRegisterHandler).Methods("POST")
+	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/user-details", authGetUserDetailsHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
