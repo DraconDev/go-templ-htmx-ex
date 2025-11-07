@@ -1,0 +1,72 @@
+package templates
+
+templ ProfileContent(name, email, picture string) {
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-4 bg-blue-600 text-white">
+                    <h1 class="text-2xl font-bold">User Profile</h1>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-200 mr-6">
+                            if picture != "" {
+                                <img src={ picture } alt="Profile" class="w-full h-full object-cover"/>
+                            } else {
+                                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            }
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800">{ name }</h2>
+                            <p class="text-gray-600">{ email }</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Information</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Name:</span>
+                                <span class="font-medium">{ name }</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Email:</span>
+                                <span class="font-medium">{ email }</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Profile Picture:</span>
+                                if picture != "" {
+                                    <span class="text-green-600 font-medium">Available</span>
+                                } else {
+                                    <span class="text-gray-500 font-medium">Not set</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex space-x-4">
+                        <button 
+                            hx-post="/api/auth/logout" 
+                            hx-swap="none"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
+                        >
+                            Logout
+                        </button>
+                        <button 
+                            hx-get="/" 
+                            hx-swap="none"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium"
+                        >
+                            Back to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
