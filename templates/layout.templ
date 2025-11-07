@@ -12,6 +12,44 @@ templ Layout(title string, content templ.Component) {
 			<script src="https://cdn.tailwindcss.com"></script>
 		</head>
 		<body class="bg-blue-300 min-h-screen">
+			<script>
+				// Handle OAuth callback - read URL fragment and send to server
+				if (window.location.pathname === '/auth/callback' && window.location.hash) {
+					const fragment = window.location.hash.substring(1); // Remove the #
+					const params = new URLSearchParams(fragment);
+					
+					const accessToken = params.get('access_token');
+					const refreshToken = params.get('refresh_token');
+					const tokenType = params.get('token_type');
+					const expiresIn = params.get('expires_in');
+					
+					if (accessToken) {
+						// Send token data to server
+						fetch('/auth/callback', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/x-www-form-urlencoded',
+							},
+							body: new URLSearchParams({
+								access_token: accessToken,
+								refresh_token: refreshToken || '',
+								token_type: tokenType || 'Bearer',
+								expires_in: expiresIn || '86400'
+							})
+						}).then(() => {
+							// Redirect to home page after successful token setting
+							window.location.href = '/';
+						}).catch((error) => {
+							console.error('Error setting session:', error);
+							// Still redirect to home even if there's an error
+							window.location.href = '/';
+						});
+					} else {
+						// No access token, redirect to home
+						window.location.href = '/';
+					}
+				}
+			</script>
 			<nav class="bg-gray-200 shadow-lg">
 				<div class="max-w-7xl mx-auto px-4">
 					<div class="flex justify-between h-16">
