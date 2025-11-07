@@ -124,6 +124,39 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	component.Render(r.Context(), w)
 }
 
+func profileHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	
+	// Get current user session
+	resp, err := callAuthService(fmt.Sprintf("%s/auth/userinfo", config.AuthServiceURL), map[string]string{
+		"token": getSessionToken(r),
+	})
+	if err != nil {
+		// Redirect to home if not logged in
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	
+	if !resp.Success {
+		// Redirect to home if not logged in
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	
+	// Create profile content with user data
+	component := templates.Layout("Profile", templates.ProfileContent(resp.Name, resp.Email, resp.Picture))
+	component.Render(r.Context(), w)
+}
+
+// Helper function to get session token from cookie
+func getSessionToken(r *http.Request) string {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return ""
+	}
+	return cookie.Value
+}
+
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
