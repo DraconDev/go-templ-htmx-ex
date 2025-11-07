@@ -35,7 +35,6 @@ var (
 	config = &Config{
 		ServerPort: getEnvOrDefault("PORT", "8081"),
 	}
-	authClient = auth.NewAuthClient(getEnvOrDefault("AUTH_SERVICE_URL", "localhost:8080"))
 )
 
 // getEnvOrDefault returns environment variable or default value
