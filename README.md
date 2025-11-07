@@ -1,16 +1,17 @@
-# Microservice Test Harness
+# Startup Platform
 
-A Go-based microservice testing application built with **Templ** and **HTMX** for dynamic frontend interactions without complex JavaScript frameworks.
+A modern Go-based startup application demonstrating Google OAuth authentication integration with a dedicated auth microservice. Built with **Templ** and **HTMX** for dynamic frontend interactions.
 
 ## Features
 
-- 🌐 **Dynamic UI** with HTMX for seamless interactions
+- 🔐 **Google OAuth 2.0 Authentication** via dedicated auth microservice
+- 🏗️ **JWT Token Management** with secure session handling
+- 📱 **Dynamic UI** with HTMX for seamless interactions
 - 🏗️ **Server-side rendering** with Templ templates
-- 🔍 **Service Discovery** to automatically find microservices
-- 🧪 **Comprehensive Testing** (health checks, API tests, stress tests)
-- 📊 **Real-time Results** with visual feedback
-- 🚀 **Fast Development** with hot reload and hot reload capabilities
-- 🔧 **Production Ready** with graceful shutdown and proper error handling
+- 🚀 **Modern Architecture** with microservice patterns
+- 👤 **User Profile Management** with Google account information
+- 🔒 **Secure Sessions** with HttpOnly cookies
+- 🚀 **Fast Development** with hot reload capabilities
 
 ## Technology Stack
 
