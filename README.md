@@ -98,24 +98,38 @@ cp .env.example .env
 
 Key configuration options:
 
-- `PORT` - Server port (default: 8080)
-- `SERVICE_TIMEOUT` - Timeout for service calls
+- `PORT` - Server port (default: 8081)
+- `AUTH_SERVICE_URL` - Auth microservice URL (default: http://localhost:8080)
+- `REDIRECT_URL` - Application redirect URL (default: http://localhost:8081)
 - `LOG_LEVEL` - Logging level (debug, info, warn, error)
-- Service URLs - Configure your microservice endpoints
+
+## Authentication Flow
+
+This application demonstrates a complete Google OAuth authentication flow:
+
+1. **Initiate Login**: User visits `/auth/google`
+2. **Google OAuth**: Redirected to Google for authentication
+3. **Token Exchange**: Auth microservice exchanges code for JWT
+4. **Session Creation**: JWT stored in secure HttpOnly cookie
+5. **User Access**: User can access protected pages like `/profile`
+6. **Logout**: Clear session via `/api/auth/logout`
 
 ## API Endpoints
 
 ### Main Pages
 
-- `/` - Home page with overview
-- `/test` - Main testing dashboard
-- `/test/{service}` - Service-specific testing page
+- `/` - Home page with authentication features
+- `/auth/google` - Initiate Google OAuth login
+- `/auth/callback` - Handle OAuth callback
+- `/profile` - User profile page (requires authentication)
 - `/health` - Application health check
 
-### API Endpoints
+### Authentication API
 
-- `GET /api/services` - Discover available services
-- `POST /api/test` - Run a test on a service
+- `GET /api/auth/user` - Get current user info and login status
+- `POST /api/auth/validate` - Validate JWT token
+- `POST /api/auth/logout` - Clear session and logout
+- `GET /api/auth/health` - Auth service health check
 
 ## Usage Examples
 
