@@ -37,13 +37,13 @@ func Layout(title string, content templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 10, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 10, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script></head><body class=\"bg-blue-300 min-h-screen\"><nav class=\"bg-gray-200 shadow-lg\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><h1 class=\"text-xl font-bold text-gray-900\">Microservice Test Harness</h1></div><div class=\"flex items-center space-x-4\"><a href=\"/\" class=\"text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium\">Home</a> <a href=\"/test\" class=\"text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm   font-medium\">Test Services</a> <a href=\"/health\" class=\"text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium\">Health</a></div></div></div></nav><main class=\"container mx-auto py-8 px-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script></head><body class=\"bg-blue-300 min-h-screen\"><nav class=\"bg-gray-200 shadow-lg\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><h1 class=\"text-xl font-bold text-gray-900\">🚀 Startup Platform</h1></div><div class=\"flex items-center space-x-4\"><a href=\"/\" class=\"text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium\">Home</a> <a href=\"/profile\" class=\"text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium\">Profile</a> <a href=\"/auth/google\" class=\"text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium\">Login</a> <a href=\"/health\" class=\"text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium\">Health</a></div></div></div></nav><main class=\"container mx-auto py-8 px-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
