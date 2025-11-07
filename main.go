@@ -163,57 +163,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"status": "healthy", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`))
 }
 
-func microserviceTestHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Microservice Testing", templates.MicroserviceTestContent())
-	component.Render(r.Context(), w)
-}
-
-func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	serviceName := vars["service"]
-
-	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout(fmt.Sprintf("Testing %s", serviceName), templates.ServiceTestContent(serviceName))
-	component.Render(r.Context(), w)
-}
-
-// API Handlers for HTMX
-
-func servicesAPIHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Simple response for now - we'll implement real service discovery later
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{
-		"services": [
-			{"name": "User Service", "url": "http://localhost:8001", "status": "unknown"},
-			{"name": "Order Service", "url": "http://localhost:8002", "status": "unknown"},
-			{"name": "Payment Service", "url": "http://localhost:8003", "status": "unknown"},
-			{"name": "Notification Service", "url": "http://localhost:8004", "status": "unknown"}
-		]
-	}`))
-}
-
-func runTestAPIHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-
-	// Parse form data
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-
-	serviceURL := r.FormValue("service_url")
-	testType := r.FormValue("test_type")
-
-	// Create test result component
-	component := templates.TestResult(serviceURL, testType, "success", "Test completed successfully!")
-	component.Render(r.Context(), w)
-}
-
-// Auth Service Handlers
-
 // Google OAuth Handlers
 
 func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
