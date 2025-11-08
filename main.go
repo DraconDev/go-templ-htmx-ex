@@ -167,8 +167,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect to the auth microservice's Google OAuth endpoint
-	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback", 
-		config.AuthServiceURL, config.RedirectURL)
+	// The auth service should be configured with the correct redirect URI
+	// that points back to this application's /auth/callback endpoint
+	authURL := fmt.Sprintf("%s/auth/google", config.AuthServiceURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
