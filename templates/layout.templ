@@ -62,9 +62,7 @@ templ NavigationLoggedIn(user UserInfo) {
 					<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
 					<a href="/profile" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
 					<div class="flex items-center space-x-2">
-						{ if user.Picture != "" }
-							<img src={ user.Picture } alt="Profile" class="w-8 h-8 rounded-full"/>
-						{ endif }
+						@UserAvatar(user)
 						<span class="text-sm text-gray-700">{ user.Name }</span>
 						<button
 							hx-post="/api/auth/logout"
@@ -80,6 +78,12 @@ templ NavigationLoggedIn(user UserInfo) {
 			</div>
 		</div>
 	</nav>
+}
+
+templ UserAvatar(user UserInfo) {
+	<div class="w-8 h-8 rounded-full overflow-hidden">
+		<img src={ user.Picture } alt="Profile" class="w-full h-full object-cover"/>
+	</div>
 }
 
 templ NavigationLoggedOut() {
