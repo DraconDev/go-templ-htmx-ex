@@ -173,40 +173,65 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	// Handle the callback from the auth microservice
-	// The auth service returns tokens in URL fragments (after #)
-	fragment := r.URL.Fragment
+	// Serve a page with JavaScript to handle the URL fragment
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Authenticating...</title>
+    <script>
+        // Function to parse URL fragment
+        function parseFragment() {
+            var fragment = window.location.hash.substring(1); // Remove #
+            var params = {};
+            var pairs = fragment.split('&');
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i].split('=');
+                params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+            }
+            return params;
+        }
 
-	if fragment == "" {
-		http.Error(w, "Missing access token", http.StatusBadRequest)
-		return
-	}
+        // Function to set session and redirect
+        function setSessionAndRedirect() {
+            var params = parseFragment();
+            var accessToken = params['access_token'];
+            
+            if (!accessToken) {
+                document.body.innerHTML = '<h1>Error: No access token found</h1>';
+                return;
+            }
 
-	// Parse the fragment which looks like: access_token=eyJ...&refresh_token=eyJ...&token_type=Bearer&expires_in=86400
-	values, err := url.ParseQuery(fragment)
-	if err != nil {
-		http.Error(w, "Invalid token format", http.StatusBadRequest)
-		return
-	}
+            // Set session cookie via server endpoint
+            fetch('/api/auth/set-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: accessToken })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to home page
+                    window.location.href = '/';
+                } else {
+                    document.body.innerHTML = '<h1>Error: Failed to set session</h1>';
+                }
+            })
+            .catch(error => {
+                document.body.innerHTML = '<h1>Error: ' + error.message + '</h1>';
+            });
+        }
 
-	accessToken := values.Get("access_token")
-	if accessToken == "" {
-		http.Error(w, "Missing access token in fragment", http.StatusBadRequest)
-		return
-	}
-
-	// Set session cookie with the JWT token
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    accessToken,
-		Path:     "/",
-		MaxAge:   3600, // 1 hour
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	})
-
-	// Redirect to home page
-	http.Redirect(w, r, "/", http.StatusFound)
+        // Run when page loads
+        setSessionAndRedirect();
+    </script>
+</head>
+<body>
+    <h1>Setting up your session...</h1>
+</body>
+</html>`))
 }
 
 func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
