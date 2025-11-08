@@ -145,7 +145,17 @@ func main() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Home", templates.HomeContent())
+
+	// Check authentication status
+	userInfo := getUserInfo(r)
+
+	var component templ.Component
+	if userInfo.LoggedIn {
+		component = templates.HomeLayout(userInfo, templates.HomeContent())
+	} else {
+		component = templates.HomeLayout(templates.UserInfo{}, templates.HomeContent())
+	}
+
 	component.Render(r.Context(), w)
 }
 
