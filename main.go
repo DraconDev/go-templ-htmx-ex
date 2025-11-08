@@ -30,7 +30,7 @@ type UserSession struct {
 
 // Config holds application configuration
 type Config struct {
-	ServerPort    string
+	ServerPort     string
 	AuthServiceURL string
 	RedirectURL    string
 }
@@ -67,10 +67,10 @@ func main() {
 	// Google OAuth login routes
 	router.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authCallbackHandler).Methods("GET")
-	
+
 	// User profile page
 	router.HandleFunc("/profile", profileHandler).Methods("GET")
-	
+
 	// Session management
 	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", authLogoutHandler).Methods("POST")
@@ -126,7 +126,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Get current user session
 	resp, err := callAuthService(fmt.Sprintf("%s/auth/userinfo", config.AuthServiceURL), map[string]string{
 		"token": getSessionToken(r),
@@ -136,13 +136,13 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-	
+
 	if !resp.Success {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-	
+
 	// Create profile content with user data
 	component := templates.Layout("Profile", templates.ProfileContent(resp.Name, resp.Email, resp.Picture))
 	component.Render(r.Context(), w)
@@ -167,9 +167,8 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect to the auth microservice's Google OAuth endpoint
-	// The auth service should be configured with the correct redirect URI
-	// that points back to this application's /auth/callback endpoint
-	authURL := fmt.Sprintf("%s/auth/google", config.AuthServiceURL)
+	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
+		config.AuthServiceURL, config.RedirectURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
@@ -177,7 +176,7 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle the callback from the auth microservice
 	// The auth service returns tokens in URL fragments (after #)
 	fragment := r.URL.Fragment
-	
+
 	if fragment == "" {
 		http.Error(w, "Missing access token", http.StatusBadRequest)
 		return
@@ -189,7 +188,7 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid token format", http.StatusBadRequest)
 		return
 	}
-	
+
 	accessToken := values.Get("access_token")
 	if accessToken == "" {
 		http.Error(w, "Missing access token in fragment", http.StatusBadRequest)
@@ -239,12 +238,12 @@ func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"valid":    resp.Success,
-		"user_id":  resp.UserID,
-		"email":    resp.Email,
-		"name":     resp.Name,
-		"picture":  resp.Picture,
-		"status":   "validated",
+		"valid":   resp.Success,
+		"user_id": resp.UserID,
+		"email":   resp.Email,
+		"name":    resp.Name,
+		"picture": resp.Picture,
+		"status":  "validated",
 	})
 }
 
@@ -317,30 +316,30 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Helper function to call auth service
 func callAuthService(endpoint string, params map[string]string) (*AuthResponse, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Create form data
 	formData := url.Values{}
 	for key, value := range params {
 		formData.Set(key, value)
 	}
-	
+
 	req, err := http.NewRequest("POST", endpoint, strings.NewReader(formData.Encode()))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	var authResp AuthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
 		return nil, err
 	}
-	
+
 	return &authResp, nil
 }
 
