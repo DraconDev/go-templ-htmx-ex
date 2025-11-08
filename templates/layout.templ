@@ -1,6 +1,15 @@
 package templates
 
 //go:generate templ generate
+
+// UserInfo represents user authentication status
+type UserInfo struct {
+	LoggedIn bool   `json:"logged_in"`
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Picture  string `json:"picture,omitempty"`
+}
+
 templ Layout(title string, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -12,24 +21,82 @@ templ Layout(title string, content templ.Component) {
 			<script src="https://cdn.tailwindcss.com"></script>
 		</head>
 		<body class="bg-blue-300 min-h-screen">
-			<nav class="bg-gray-200 shadow-lg">
-				<div class="max-w-7xl mx-auto px-4">
-					<div class="flex justify-between h-16">
-						<div class="flex items-center">
-							<h1 class="text-xl font-bold text-gray-900">🚀 Startup Platform</h1>
-						</div>
-						<div class="flex items-center space-x-4">
-							<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-							<a href="/profile" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
-							<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login</a>
-							<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
-						</div>
-					</div>
-				</div>
-			</nav>
+			@Navigation()
 			<main class="container mx-auto py-8 px-4">
 				@content
 			</main>
 		</body>
 	</html>
+}
+
+templ Navigation() {
+	<nav class="bg-gray-200 shadow-lg" hx-get="/api/auth/user" hx-target="this" hx-swap="outerHTML">
+		<div class="max-w-7xl mx-auto px-4">
+			<div class="flex justify-between h-16">
+				<div class="flex items-center">
+					<h1 class="text-xl font-bold text-gray-900">🚀 Startup Platform</h1>
+				</div>
+				<div class="flex items-center space-x-4">
+					<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+					<div id="auth-buttons">
+						<!-- This will be populated by HTMX request -->
+						<div class="flex items-center space-x-2">
+							<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login with Google</a>
+						</div>
+					</div>
+					<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+templ NavigationLoggedIn(user UserInfo) {
+	<nav class="bg-gray-200 shadow-lg">
+		<div class="max-w-7xl mx-auto px-4">
+			<div class="flex justify-between h-16">
+				<div class="flex items-center">
+					<h1 class="text-xl font-bold text-gray-900">🚀 Startup Platform</h1>
+				</div>
+				<div class="flex items-center space-x-4">
+					<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+					<a href="/profile" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
+					<div class="flex items-center space-x-2">
+						{ if user.Picture != "" }
+							<img src={ user.Picture } alt="Profile" class="w-8 h-8 rounded-full"/>
+						{ endif }
+						<span class="text-sm text-gray-700">{ user.Name }</span>
+						<button
+							hx-post="/api/auth/logout"
+							hx-target="this"
+							hx-swap="outerHTML"
+							class="text-white bg-gray-500 hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+						>
+							Logout
+						</button>
+					</div>
+					<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+templ NavigationLoggedOut() {
+	<nav class="bg-gray-200 shadow-lg">
+		<div class="max-w-7xl mx-auto px-4">
+			<div class="flex justify-between h-16">
+				<div class="flex items-center">
+					<h1 class="text-xl font-bold text-gray-900">🚀 Startup Platform</h1>
+				</div>
+				<div class="flex items-center space-x-4">
+					<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+					<div class="flex items-center space-x-2">
+						<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login with Google</a>
+					</div>
+					<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 }
