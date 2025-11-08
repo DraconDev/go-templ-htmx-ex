@@ -51,29 +51,6 @@ func getEnvOrDefault(key, defaultValue string) string {
 	return defaultValue
 }
 
-// getUserInfo retrieves current user information from auth service
-func getUserInfo(r *http.Request) templates.UserInfo {
-	cookie, err := r.Cookie("session_token")
-	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
-	}
-
-	// Get user info from auth microservice
-	resp, err := callAuthService(fmt.Sprintf("%s/auth/userinfo", config.AuthServiceURL), map[string]string{
-		"token": cookie.Value,
-	})
-	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
-	}
-
-	return templates.UserInfo{
-		LoggedIn: resp.Success,
-		Name:     resp.Name,
-		Email:    resp.Email,
-		Picture:  resp.Picture,
-	}
-}
-
 func main() {
 	// Load environment variables from .env file if it exists
 	if err := godotenv.Load(); err != nil {
