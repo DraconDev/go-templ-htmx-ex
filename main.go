@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/a-h/templ"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
