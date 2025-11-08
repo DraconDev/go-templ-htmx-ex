@@ -151,9 +151,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	
 	var component templ.Component
 	if userInfo.LoggedIn {
-		component = templates.Layout("", templates.NavigationLoggedIn(userInfo), templates.HomeContent())
+		component = templates.HomeLayout(userInfo, templates.HomeContent())
 	} else {
-		component = templates.Layout("", templates.NavigationLoggedOut(), templates.HomeContent())
+		component = templates.HomeLayout(templates.UserInfo{}, templates.HomeContent())
 	}
 	
 	component.Render(r.Context(), w)
@@ -202,8 +202,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect to the auth microservice's Google OAuth endpoint
-	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
-		config.AuthServiceURL, config.RedirectURL)
+	// The redirect_uri should point to the auth server's callback endpoint
+	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/google/callback",
+		config.AuthServiceURL, config.AuthServiceURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
