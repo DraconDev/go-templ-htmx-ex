@@ -64,10 +64,11 @@ func main() {
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/health", healthHandler).Methods("GET")
 
-	// Google OAuth login routes
+	// OAuth login routes
 	router.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/github", githubLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authCallbackHandler).Methods("GET")
-
+	
 	// User profile page
 	router.HandleFunc("/profile", profileHandler).Methods("GET")
 
