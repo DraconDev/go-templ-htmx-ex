@@ -382,6 +382,16 @@ func callAuthService(endpoint string, params map[string]string) (*AuthResponse, 
 	}, nil
 }
 
+// Helper function to safely get string from map
+func getStringFromMap(m map[string]interface{}, key string) string {
+	if val, ok := m[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
+}
+
 // AuthResponse represents the response from the auth service
 type AuthResponse struct {
 	Success bool   `json:"success"`
