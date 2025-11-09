@@ -44,11 +44,20 @@ func main() {
 	fmt.Printf("🔗 REGISTERING: /auth/google (GET)\n")
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
 	fmt.Printf("🔗 REGISTERED: /auth/google\n")
-
+	
 	fmt.Printf("🔗 REGISTERING: /auth/github (GET)\n")
 	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
 	fmt.Printf("🔗 REGISTERED: /auth/github\n")
-
+	
+	// Auth service callback endpoints
+	fmt.Printf("🔗 REGISTERING: /auth/google/callback (GET)\n")
+	router.HandleFunc("/auth/google/callback", authHandler.AuthCallbackHandler).Methods("GET")
+	fmt.Printf("🔗 REGISTERED: /auth/google/callback\n")
+	
+	fmt.Printf("🔗 REGISTERING: /auth/github/callback (GET)\n")
+	router.HandleFunc("/auth/github/callback", authHandler.AuthCallbackHandler).Methods("GET")
+	fmt.Printf("🔗 REGISTERED: /auth/github/callback\n")
+	
 	fmt.Printf("🔗 REGISTERING: /auth/callback (GET)\n")
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
 	fmt.Printf("🔗 REGISTERED: /auth/callback\n")
