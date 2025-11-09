@@ -110,22 +110,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// Check authentication status on server side
-	var navigation templ.Component
-	if authHandler.GetUserInfo(r).LoggedIn {
-		navigation = templates.NavigationLoggedIn(authHandler.GetUserInfo(r))
-	} else {
-		// Redirect to home if not logged in
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-	
-	// Create profile content with user data
-	component := templates.Layout("Profile", navigation, templates.ProfileContent(
-		authHandler.GetUserInfo(r).Name,
-		authHandler.GetUserInfo(r).Email,
-		authHandler.GetUserInfo(r).Picture))
+	component := templates.Layout("Profile", templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
 
