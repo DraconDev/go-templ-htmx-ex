@@ -174,6 +174,13 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
+func githubLoginHandler(w http.ResponseWriter, r *http.Request) {
+	// Redirect to the auth microservice's GitHub OAuth endpoint
+	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
+		config.AuthServiceURL, config.RedirectURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
 func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	component := templates.Layout("Authenticating", templates.AuthCallbackContent())
