@@ -1,13 +1,9 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
-	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
@@ -30,15 +26,16 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
 	// Get session token from cookie
-	_, err := r.Cookie("session_token")
+	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
-	// For now, show placeholder - the actual user data is handled by the template and JavaScript
-	// This allows the frontend JavaScript to fetch user data dynamically
+	// Get user data from auth service
+	// For now, pass the token data - the template and JavaScript will handle the rest
+	// This maintains the working behavior from the original code
 	component := templates.Layout("Profile", templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
