@@ -26,8 +26,14 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 
 // GoogleLoginHandler handles Google OAuth login
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
+	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+	
 	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
+	
+	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
