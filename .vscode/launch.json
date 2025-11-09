@@ -6,8 +6,7 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}",
-            "buildFlags": ["-tags=debug"],
+            "program": "${workspaceFolder}/main.go",
             "args": [],
             "env": {
                 "DEBUG": "debug",
@@ -17,9 +16,12 @@
             },
             "console": "integratedTerminal",
             "showLog": true,
-            "logOutput": "runtime,debugger,dap",
-            "cgo": false,
-            "buildMode": "debug"
+            "logOutput": "debugger",
+            "subProcess": true,
+            "integratedAdapter": {
+                "dll": "",
+                "dwp": ""
+            }
         }
     ]
 }
