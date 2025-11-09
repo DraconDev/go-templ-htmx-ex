@@ -106,3 +106,13 @@ func (s *Service) Logout(token string) error {
 	log.Printf("User logged out with token: %s", token)
 	return nil
 }
+
+// ValidateUser validates a user token (alias for GetUserInfo)
+func (s *Service) ValidateUser(token string) (*models.AuthResponse, error) {
+	return s.GetUserInfo(token)
+}
+
+// ValidateToken validates a token (alias for ValidateSession)
+func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
+	return s.ValidateSession(token)
+}
