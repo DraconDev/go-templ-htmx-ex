@@ -76,7 +76,6 @@ func main() {
 	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", authLogoutHandler).Methods("POST")
 	router.HandleFunc("/api/auth/user", authGetUserHandler).Methods("GET")
-	router.HandleFunc("/api/auth/set-session", authSetSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
 
 	// Static files (for CSS, JS, etc.)
@@ -182,50 +181,40 @@ func githubLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Authenticating", templates.AuthCallbackContent())
-	component.Render(r.Context(), w)
-}
-
-// New endpoint to set session from client-side JavaScript
-func authSetSessionHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	var req struct {
-		Token string `json:"token"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Invalid request body",
-		})
+	// Handle the callback from the auth microservice
+	// The auth service returns tokens in URL fragments (after #)
+	fragment := r.URL.Fragment
+	
+	if fragment == "" {
+		http.Error(w, "Missing access token", http.StatusBadRequest)
 		return
 	}
 
-	if req.Token == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Missing token",
-		})
+	// Parse the fragment which looks like: access_token=eyJ...&refresh_token=eyJ...&token_type=Bearer&expires_in=86400
+	values, err := url.ParseQuery(fragment)
+	if err != nil {
+		http.Error(w, "Invalid token format", http.StatusBadRequest)
+		return
+	}
+	
+	accessToken := values.Get("access_token")
+	if accessToken == "" {
+		http.Error(w, "Missing access token in fragment", http.StatusBadRequest)
 		return
 	}
 
 	// Set session cookie with the JWT token
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    req.Token,
+		Value:    accessToken,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	})
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true,
-		"message": "Session set successfully",
-	})
+	// Redirect to home page
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
