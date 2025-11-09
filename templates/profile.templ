@@ -3,22 +3,22 @@ package templates
 templ ProfileContent(name, email, picture string) {
     <div class="max-w-3xl mx-auto">
         <!-- Profile Header Card -->
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
-            <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 px-8 py-12 text-white text-center">
-                <div class="inline-block p-1 bg-white/20 rounded-full mb-6">
-                    <div class="bg-white rounded-full px-4 py-2">
-                        <span class="text-sm font-semibold text-gray-700">👤 User Profile</span>
+        <div class="glass-card rounded-2xl shadow-2xl overflow-hidden mb-8 float-effect">
+            <div class="bg-gradient-to-r from-cyan-600 via-purple-600 to-cyan-800 px-8 py-12 text-white text-center">
+                <div class="inline-block p-1 bg-white/20 rounded-full mb-6 glow-effect">
+                    <div class="glass-card rounded-full px-4 py-2">
+                        <span class="text-sm font-semibold text-white">👤 User Profile</span>
                     </div>
                 </div>
-                <h1 class="text-4xl font-bold mb-2">Profile Dashboard</h1>
-                <p class="text-blue-100 text-lg">Authenticated via Google OAuth & Auth Microservice</p>
+                <h1 class="text-4xl font-bold mb-2 float-effect">Profile Dashboard</h1>
+                <p class="text-cyan-100 text-lg">Authenticated via Google OAuth & Auth Microservice</p>
             </div>
             
             <div class="p-8">
                 <!-- User Info Section -->
                 <div class="flex items-center mb-8">
                     <div class="relative">
-                        <div class="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg">
+                        <div class="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-400 to-purple-500 shadow-lg glow-effect">
                             if picture != "" {
                                 <img src={ picture } alt="Profile" class="w-full h-full object-cover"/>
                             } else {
@@ -29,64 +29,64 @@ templ ProfileContent(name, email, picture string) {
                                 </div>
                             }
                         </div>
-                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-gray-800 flex items-center justify-center">
                             <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                             </svg>
                         </div>
                     </div>
                     <div class="ml-6">
-                        <h2 class="text-3xl font-bold text-gray-800">{ name }</h2>
-                        <p class="text-lg text-gray-600">{ email }</p>
+                        <h2 class="text-3xl font-bold text-white">{ name }</h2>
+                        <p class="text-lg text-gray-300">{ email }</p>
                         <div class="flex items-center mt-2">
                             <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                            <span class="text-sm text-green-600 font-medium">Active Session</span>
+                            <span class="text-sm text-green-400 font-medium">Active Session</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Account Information Card -->
-                <div class="bg-gray-50 rounded-2xl p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <div class="glass-card rounded-2xl p-6 border border-gray-400/30">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                        <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center mr-3 glow-effect">
                             <span class="text-white text-sm">📋</span>
                         </div>
                         Account Information
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
-                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <div class="glass-card rounded-xl p-4 shadow-lg border border-gray-500/30">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-gray-600 font-medium">Full Name</span>
-                                    <span class="font-semibold text-gray-800">{ name }</span>
+                                    <span class="text-gray-300 font-medium">Full Name</span>
+                                    <span class="font-semibold text-white">{ name }</span>
                                 </div>
                             </div>
-                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <div class="glass-card rounded-xl p-4 shadow-lg border border-gray-500/30">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-gray-600 font-medium">Email Address</span>
-                                    <span class="font-semibold text-gray-800">{ email }</span>
+                                    <span class="text-gray-300 font-medium">Email Address</span>
+                                    <span class="font-semibold text-white">{ email }</span>
                                 </div>
                             </div>
                         </div>
                         <div class="space-y-4">
-                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <div class="glass-card rounded-xl p-4 shadow-lg border border-gray-500/30">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-gray-600 font-medium">Profile Picture</span>
+                                    <span class="text-gray-300 font-medium">Profile Picture</span>
                                     if picture != "" {
-                                        <span class="text-green-600 font-semibold flex items-center">
+                                        <span class="text-green-400 font-semibold flex items-center">
                                             <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                                             Available
                                         </span>
                                     } else {
-                                        <span class="text-gray-500 font-semibold">Not set</span>
+                                        <span class="text-gray-400 font-semibold">Not set</span>
                                     }
                                 </div>
                             </div>
-                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <div class="glass-card rounded-xl p-4 shadow-lg border border-gray-500/30">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-gray-600 font-medium">Authentication</span>
-                                    <span class="text-blue-600 font-semibold flex items-center">
-                                        <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                    <span class="text-gray-300 font-medium">Authentication</span>
+                                    <span class="text-cyan-400 font-semibold flex items-center">
+                                        <div class="w-2 h-2 bg-cyan-500 rounded-full mr-2"></div>
                                         OAuth 2.0
                                     </span>
                                 </div>
@@ -100,14 +100,14 @@ templ ProfileContent(name, email, picture string) {
                     <button
                         hx-post="/api/auth/logout"
                         hx-swap="none"
-                        class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                        class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect"
                     >
                         Logout
                     </button>
                     <button
                         hx-get="/"
                         hx-swap="none"
-                        class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                        class="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect"
                     >
                         Back to Home
                     </button>
