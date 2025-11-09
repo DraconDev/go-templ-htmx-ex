@@ -68,7 +68,7 @@ func main() {
 	router.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/github", githubLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authCallbackHandler).Methods("GET")
-	
+
 	// User profile page
 	router.HandleFunc("/profile", profileHandler).Methods("GET")
 
@@ -328,43 +328,43 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Helper function to call auth service
 func callAuthService(endpoint string, params map[string]string) (*AuthResponse, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Create JSON data
 	jsonData, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	// Read the response body first
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Try to decode as AuthResponse first
 	var authResp AuthResponse
 	if err := json.Unmarshal(bodyBytes, &authResp); err == nil && authResp.Success {
 		return &authResp, nil
 	}
-	
+
 	// If that fails, try to decode as JWT payload and convert
 	var jwtPayload map[string]interface{}
 	if err := json.Unmarshal(bodyBytes, &jwtPayload); err != nil {
 		return nil, err
 	}
-	
+
 	// Convert JWT payload to AuthResponse format
 	return &AuthResponse{
 		Success: true,
