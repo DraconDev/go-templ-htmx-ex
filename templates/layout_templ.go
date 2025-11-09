@@ -18,8 +18,8 @@ type UserInfo struct {
 	Picture  string `json:"picture,omitempty"`
 }
 
-// Layout with client-side JWT-based navigation
-func Layout(title string, content templ.Component) templ.Component {
+// Layout with hybrid authentication approach
+func Layout(title string, navigation templ.Component, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -53,7 +53,15 @@ func Layout(title string, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Custom animations and styles */\n\t\t\t\t@keyframes gradientShift {\n\t\t\t\t\t0% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t\t100% { background-position: 0% 50%; }\n\t\t\t\t}\n\t\t\t\t.gradient-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: gradientShift 8s ease infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\t// JWT-based authentication UI - instant, no flash\n\t\t\t\tfunction updateNav() {\n\t\t\t\t\t// Check if JWT token exists in cookies (optimistic approach)\n\t\t\t\t\tconst hasToken = document.cookie.includes('session_token=');\n\t\t\t\t\tconst nav = document.getElementById('auth-nav');\n\t\t\t\t\t\n\t\t\t\t\tif (hasToken) {\n\t\t\t\t\t\t// Optimistically show logged-in state\n\t\t\t\t\t\tnav.innerHTML = `\n\t\t\t\t\t\t\t<div class=\"flex justify-between h-16\">\n\t\t\t\t\t\t\t\t<div class=\"flex items-center\">\n\t\t\t\t\t\t\t\t\t<a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t<div class=\"flex items-center space-x-4\">\n\t\t\t\t\t\t\t\t\t<a href=\"/profile\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Profile</a>\n\t\t\t\t\t\t\t\t\t<div class=\"flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"w-8 h-8 rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center\">\n\t\t\t\t\t\t\t\t\t\t\t<span class=\"text-white text-sm font-bold\">U</span>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<span class=\"text-sm font-medium text-gray-700\">User</span>\n\t\t\t\t\t\t\t\t\t\t<button onclick=\"logout()\" class=\"text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200\">Logout</button>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t`;\n\t\t\t\t\t} else {\n\t\t\t\t\t\t// Show logged-out state\n\t\t\t\t\t\tnav.innerHTML = `\n\t\t\t\t\t\t\t<div class=\"flex justify-between h-16\">\n\t\t\t\t\t\t\t\t<div class=\"flex items-center\">\n\t\t\t\t\t\t\t\t\t<a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t<div class=\"flex items-center space-x-4\">\n\t\t\t\t\t\t\t\t\t<div class=\"flex items-center space-x-3\">\n\t\t\t\t\t\t\t\t\t\t<a href=\"/auth/google\" class=\"bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with Google</a>\n\t\t\t\t\t\t\t\t\t\t<a href=\"/auth/github\" class=\"bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with GitHub</a>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t`;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\tupdateNav();\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch(error => {\n\t\t\t\t\t\t\tconsole.error('Logout failed:', error);\n\t\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\t// Update nav when page loads\n\t\t\t\tdocument.addEventListener('DOMContentLoaded', updateNav);\n\t\t\t</script></head><body class=\"gradient-bg min-h-screen\"><nav class=\"bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20\"><div class=\"max-w-7xl mx-auto px-4\"><div id=\"auth-nav\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><div class=\"flex items-center space-x-3\"><a href=\"/auth/google\" class=\"bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with Google</a> <a href=\"/auth/github\" class=\"bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with GitHub</a></div><a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a></div></div></div></div></nav><main class=\"container mx-auto py-12 px-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Custom animations and styles */\n\t\t\t\t@keyframes gradientShift {\n\t\t\t\t\t0% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t\t100% { background-position: 0% 50%; }\n\t\t\t\t}\n\t\t\t\t.gradient-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: gradientShift 8s ease infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"gradient-bg min-h-screen\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = navigation.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main class=\"container mx-auto py-12 px-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -61,7 +69,130 @@ func Layout(title string, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</main></body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+// NavigationLoggedIn renders the logged-in navigation
+func NavigationLoggedIn(user UserInfo) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><a href=\"/profile\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Profile</a><div class=\"flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = UserAvatar(user).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"text-sm font-medium text-gray-700\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 66, Col: 65}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> <button onclick=\"logout()\" class=\"text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200\">Logout</button></div><a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a></div></div></div></nav>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func UserAvatar(user UserInfo) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-8 h-8 rounded-full overflow-hidden\"><img src=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 78, Col: 25}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" alt=\"Profile\" class=\"w-full h-full object-cover\"></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+// NavigationLoggedOut renders the logged-out navigation
+func NavigationLoggedOut() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<nav class=\"bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><div class=\"flex items-center space-x-3\"><a href=\"/auth/google\" class=\"bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with Google</a> <a href=\"/auth/github\" class=\"bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with GitHub</a></div><a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
