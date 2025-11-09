@@ -68,10 +68,10 @@ func main() {
 	router.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/github", githubLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authCallbackHandler).Methods("GET")
-
+	
 	// User profile page
 	router.HandleFunc("/profile", profileHandler).Methods("GET")
-
+	
 	// Session management
 	router.HandleFunc("/api/auth/validate", authValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", authLogoutHandler).Methods("POST")
@@ -128,7 +128,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-
+	
 	// Get current user session
 	resp, err := callAuthService(fmt.Sprintf("%s/auth/userinfo", config.AuthServiceURL), map[string]string{
 		"token": getSessionToken(r),
@@ -138,13 +138,13 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-
+	
 	if !resp.Success {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-
+	
 	// Create profile content with user data
 	component := templates.Layout("Profile", templates.ProfileContent(resp.Name, resp.Email, resp.Picture))
 	component.Render(r.Context(), w)
