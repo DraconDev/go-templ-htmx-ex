@@ -17,7 +17,7 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 // HomeHandler handles the home page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Home", templates.NavigationLoggedOut(), templates.HomeContent())
+	component := templates.Layout("Home", templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
