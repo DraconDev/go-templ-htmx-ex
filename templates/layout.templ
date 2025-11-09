@@ -10,6 +10,19 @@ templ Layout(title string, content templ.Component) {
 			<title>{ title }</title>
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
+			<style>
+				/* Custom animations and styles */
+				@keyframes gradientShift {
+					0% { background-position: 0% 50%; }
+					50% { background-position: 100% 50%; }
+					100% { background-position: 0% 50%; }
+				}
+				.gradient-bg {
+					background: linear-gradient(-45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+					background-size: 400% 400%;
+					animation: gradientShift 8s ease infinite;
+				}
+			</style>
 			<script>
 				// Check authentication status and update nav
 				function updateNav() {
@@ -22,16 +35,16 @@ templ Layout(title string, content templ.Component) {
 									<div class="max-w-7xl mx-auto px-4">
 										<div class="flex justify-between h-16">
 											<div class="flex items-center">
-												<a href="/" class="text-xl font-bold text-gray-900 hover:text-gray-700">🚀 Startup Platform</a>
+												<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
 											</div>
 											<div class="flex items-center space-x-4">
-												<a href="/profile" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
-												<div class="flex items-center space-x-2">
-													<img src="${data.picture}" alt="Profile" class="w-8 h-8 rounded-full"/>
-													<span class="text-sm text-gray-700">${data.name}</span>
-													<button onclick="logout()" class="text-white bg-gray-500 hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Logout</button>
+												<a href="/profile" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Profile</a>
+												<div class="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md">
+													<img src="${data.picture}" alt="Profile" class="w-8 h-8 rounded-full border-2 border-blue-200"/>
+													<span class="text-sm font-medium text-gray-700">${data.name}</span>
+													<button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200">Logout</button>
 												</div>
-												<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
+												<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
 											</div>
 										</div>
 									</div>
@@ -41,14 +54,14 @@ templ Layout(title string, content templ.Component) {
 									<div class="max-w-7xl mx-auto px-4">
 										<div class="flex justify-between h-16">
 											<div class="flex items-center">
-												<a href="/" class="text-xl font-bold text-gray-900 hover:text-gray-700">🚀 Startup Platform</a>
+												<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
 											</div>
 											<div class="flex items-center space-x-4">
-												<div class="flex items-center space-x-2">
-													<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login with Google</a>
-													<a href="/auth/github" class="text-white bg-gray-900 hover:bg-black px-3 py-2 rounded-md text-sm font-medium">Login with GitHub</a>
+												<div class="flex items-center space-x-3">
+													<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Google</a>
+													<a href="/auth/github" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">GitHub</a>
 												</div>
-												<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
+												<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
 											</div>
 										</div>
 									</div>
@@ -71,21 +84,21 @@ templ Layout(title string, content templ.Component) {
 				document.addEventListener('DOMContentLoaded', updateNav);
 			</script>
 		</head>
-		<body class="bg-blue-300 min-h-screen">
-			<nav class="bg-gray-200 shadow-lg">
+		<body class="gradient-bg min-h-screen">
+			<nav class="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20">
 				<div class="max-w-7xl mx-auto px-4">
 					<div class="flex justify-between h-16">
 						<div class="flex items-center">
-							<a href="/" class="text-xl font-bold text-gray-900 hover:text-gray-700">🚀 Startup Platform</a>
+							<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
 						</div>
 						<div class="flex items-center space-x-4">
-							<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login with Google</a>
-							<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
+							<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Google</a>
+							<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
 						</div>
 					</div>
 				</div>
 			</nav>
-			<main class="container mx-auto py-8 px-4">
+			<main class="container mx-auto py-12 px-4">
 				@content
 			</main>
 		</body>
