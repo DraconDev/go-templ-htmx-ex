@@ -70,6 +70,9 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 
 // SetSessionHandler sets the user session from client-side JavaScript
 func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 SESSION: === Set session STARTED ===\n")
+	fmt.Printf("🔐 SESSION: Content-Type: %s\n", r.Header.Get("Content-Type"))
+	
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
@@ -77,6 +80,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Printf("🔐 SESSION: Failed to decode request: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Invalid request body",
@@ -85,6 +89,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if req.Token == "" {
+		fmt.Printf("🔐 SESSION: Missing token in request\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Missing token",
@@ -92,21 +97,28 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	fmt.Printf("🔐 SESSION: Token received, length: %d\n", len(req.Token))
+	
 	// Set session cookie with the JWT token
-	http.SetCookie(w, &http.Cookie{
+	cookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    req.Token,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
-	})
+	}
+	
+	http.SetCookie(w, cookie)
+	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", cookie.Name, len(cookie.Value))
 
+	fmt.Printf("🔐 SESSION: Sending success response\n")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Session set successfully",
 	})
+	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 }
 
 // GetUserHandler returns current user information
