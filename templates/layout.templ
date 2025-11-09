@@ -77,20 +77,20 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 
 // NavigationLoggedIn renders the logged-in navigation
 templ NavigationLoggedIn(user UserInfo) {
-	<nav class="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20">
+	<nav class="glass-nav shadow-2xl">
 		<div class="max-w-7xl mx-auto px-4">
 			<div class="flex justify-between h-16">
 				<div class="flex items-center">
-					<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
+					<a href="/" class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent hover:from-cyan-300 hover:to-purple-400 transition-all duration-300 transform hover:scale-105">🚀 Startup Platform</a>
 				</div>
 				<div class="flex items-center space-x-4">
-					<a href="/profile" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Profile</a>
-					<div class="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md">
+					<a href="/profile" class="text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10">Profile</a>
+					<div class="flex items-center space-x-3 glass-card rounded-full px-4 py-2 shadow-lg">
 						@UserAvatar(user)
-						<span class="text-sm font-medium text-gray-700">{ user.Name }</span>
-						<button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200">Logout</button>
+						<span class="text-sm font-medium text-white">{ user.Name }</span>
+						<button onclick="logout()" class="text-red-400 hover:text-red-300 font-medium text-sm transition-colors duration-200">Logout</button>
 					</div>
-					<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
+					<a href="/health" class="text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10">Health</a>
 				</div>
 			</div>
 		</div>
