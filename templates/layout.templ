@@ -84,8 +84,8 @@ templ Layout(title string, content templ.Component) {
 						});
 				}
 
-				// Run immediately when script loads (no DOMContentLoaded needed)
-				updateNavInstant();
+				// Run with small delay to ensure cookies are set
+				setTimeout(updateNavInstant, 100);
 			</script>
 		</head>
 		<body class="gradient-bg min-h-screen">
