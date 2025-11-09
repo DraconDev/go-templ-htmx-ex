@@ -39,8 +39,14 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 
 // GitHubLoginHandler handles GitHub OAuth login
 func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 GITHUB LOGIN: Starting GitHub OAuth flow\n")
+	fmt.Printf("🔐 GITHUB LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 GITHUB LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+	
 	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
+	
+	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
