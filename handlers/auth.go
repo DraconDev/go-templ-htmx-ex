@@ -58,7 +58,8 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("🔐 CALLBACK: Fragment = %s\n", r.URL.Fragment)
 	
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Authenticating", templates.AuthCallbackContent())
+	// Render only the callback content, not wrapped in layout
+	component := templates.AuthCallbackContent()
 	component.Render(r.Context(), w)
 	
 	fmt.Printf("🔐 CALLBACK: Template rendered successfully\n")
