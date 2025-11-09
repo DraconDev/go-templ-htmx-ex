@@ -54,6 +54,8 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 CALLBACK: OAuth callback received\n")
 	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
+	fmt.Printf("🔐 CALLBACK: Query params = %v\n", r.URL.Query())
+	fmt.Printf("🔐 CALLBACK: Fragment = %s\n", r.URL.Fragment)
 	
 	w.Header().Set("Content-Type", "text/html")
 	component := templates.Layout("Authenticating", templates.AuthCallbackContent())
