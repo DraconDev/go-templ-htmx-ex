@@ -257,12 +257,12 @@ func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"valid":   resp.Success,
-		"user_id": resp.UserID,
-		"email":   resp.Email,
-		"name":    resp.Name,
-		"picture": resp.Picture,
-		"status":  "validated",
+		"valid":    resp.Success,
+		"user_id":  resp.UserID,
+		"email":    resp.Email,
+		"name":     resp.Name,
+		"picture":  resp.Picture,
+		"status":   "validated",
 	})
 }
 
@@ -335,30 +335,30 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Helper function to call auth service
 func callAuthService(endpoint string, params map[string]string) (*AuthResponse, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-
+	
 	// Create form data
 	formData := url.Values{}
 	for key, value := range params {
 		formData.Set(key, value)
 	}
-
+	
 	req, err := http.NewRequest("POST", endpoint, strings.NewReader(formData.Encode()))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
+	
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
+	
 	var authResp AuthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
 		return nil, err
 	}
-
+	
 	return &authResp, nil
 }
 
