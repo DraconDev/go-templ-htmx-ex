@@ -39,17 +39,17 @@ func getStringFromMap(m map[string]interface{}, key string) string {
 func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	// Create JSON data
-	jsonData, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
+	// Create form data
+	formData := url.Values{}
+	for key, value := range params {
+		formData.Set(key, value)
 	}
 
-	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", endpoint, strings.NewReader(formData.Encode()))
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
 	if err != nil {
