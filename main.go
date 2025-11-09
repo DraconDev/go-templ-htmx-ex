@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -40,9 +41,17 @@ func main() {
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
 	// OAuth login routes
+	fmt.Printf("🔗 REGISTERING: /auth/google (GET)\n")
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
+	fmt.Printf("🔗 REGISTERED: /auth/google\n")
+
+	fmt.Printf("🔗 REGISTERING: /auth/github (GET)\n")
 	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
+	fmt.Printf("🔗 REGISTERED: /auth/github\n")
+
+	fmt.Printf("🔗 REGISTERING: /auth/callback (GET)\n")
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
+	fmt.Printf("🔗 REGISTERED: /auth/callback\n")
 
 	// Session management API
 	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
