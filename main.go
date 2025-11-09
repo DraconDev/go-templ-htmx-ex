@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
 	"github.com/gorilla/mux"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
@@ -102,16 +103,7 @@ func getSessionToken(r *http.Request) string {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// Fast JWT check without calling auth service
-	var navigation templ.Component
-	if hasSessionToken(r) {
-		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User", Picture: ""})
-	} else {
-		navigation = templates.NavigationLoggedOut()
-	}
-	
-	component := templates.Layout("Home", navigation, templates.HomeContent())
+	component := templates.Layout("Home", templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
