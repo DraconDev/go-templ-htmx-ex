@@ -44,20 +44,21 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 	
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	// Create form data
-	formData := url.Values{}
-	for key, value := range params {
-		formData.Set(key, value)
+	// Create JSON data
+	jsonData, err := json.Marshal(params)
+	if err != nil {
+		fmt.Printf("🔐 AUTHSVC: JSON marshaling failed: %v\n", err)
+		return nil, err
 	}
 	
-	fmt.Printf("🔐 AUTHSVC: Form data: %s\n", formData.Encode())
+	fmt.Printf("🔐 AUTHSVC: JSON data: %s\n", string(jsonData))
 
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(formData.Encode()))
+	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Printf("🔐 AUTHSVC: Request creation failed: %v\n", err)
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Content-Type", "application/json")
 
 	fmt.Printf("🔐 AUTHSVC: Sending request to auth service...\n")
 	resp, err := client.Do(req)
