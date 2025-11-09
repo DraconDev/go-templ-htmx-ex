@@ -24,64 +24,68 @@ templ Layout(title string, content templ.Component) {
 				}
 			</style>
 			<script>
-				// Check authentication status and update nav
-				function updateNav() {
-					fetch('/api/auth/user')
-						.then(response => response.json())
-						.then(data => {
-							const nav = document.querySelector('nav');
-							if (data.logged_in) {
-								nav.innerHTML = `
-									<div class="max-w-7xl mx-auto px-4">
-										<div class="flex justify-between h-16">
-											<div class="flex items-center">
-												<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
-											</div>
-											<div class="flex items-center space-x-4">
-												<a href="/profile" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Profile</a>
-												<div class="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md">
-													<img src="${data.picture}" alt="Profile" class="w-8 h-8 rounded-full border-2 border-blue-200"/>
-													<span class="text-sm font-medium text-gray-700">${data.name}</span>
-													<button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200">Logout</button>
-												</div>
-												<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
-											</div>
-										</div>
+				// JWT-based authentication UI - instant, no flash
+				function updateNavInstant() {
+					// Check if JWT token exists in cookies (optimistic approach)
+					const hasToken = document.cookie.includes('session_token=');
+					const nav = document.querySelector('nav');
+					
+					if (hasToken) {
+						// Optimistically show logged-in state
+						nav.innerHTML = `
+							<div class="max-w-7xl mx-auto px-4">
+								<div class="flex justify-between h-16">
+									<div class="flex items-center">
+										<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
 									</div>
-								`;
-							} else {
-								nav.innerHTML = `
-									<div class="max-w-7xl mx-auto px-4">
-										<div class="flex justify-between h-16">
-											<div class="flex items-center">
-												<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
+									<div class="flex items-center space-x-4">
+										<a href="/profile" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Profile</a>
+										<div class="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md">
+											<div class="w-8 h-8 rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
+												<span class="text-white text-sm font-bold">U</span>
 											</div>
-											<div class="flex items-center space-x-4">
-												<div class="flex items-center space-x-3">
-													<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Google</a>
-													<a href="/auth/github" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">GitHub</a>
-												</div>
-												<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
-											</div>
+											<span class="text-sm font-medium text-gray-700">User</span>
+											<button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200">Logout</button>
 										</div>
+										<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
 									</div>
-								`;
-							}
-						})
-						.catch(error => {
-							console.error('Error checking auth status:', error);
-						});
+								</div>
+							</div>
+						`;
+					} else {
+						// Show logged-out state
+						nav.innerHTML = `
+							<div class="max-w-7xl mx-auto px-4">
+								<div class="flex justify-between h-16">
+									<div class="flex items-center">
+										<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
+									</div>
+									<div class="flex items-center space-x-4">
+										<div class="flex items-center space-x-3">
+											<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Login with Google</a>
+											<a href="/auth/github" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Login with GitHub</a>
+										</div>
+										<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
+									</div>
+								</div>
+							</div>
+						`;
+					}
 				}
 
 				function logout() {
 					fetch('/api/auth/logout', { method: 'POST' })
 						.then(() => {
-							updateNav();
+							// Update UI to logged-out state
+							updateNavInstant();
+						})
+						.catch(error => {
+							console.error('Logout failed:', error);
 						});
 				}
 
-				// Update nav on page load
-				document.addEventListener('DOMContentLoaded', updateNav);
+				// Run immediately when script loads (no DOMContentLoaded needed)
+				updateNavInstant();
 			</script>
 		</head>
 		<body class="gradient-bg min-h-screen">
