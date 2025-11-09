@@ -187,6 +187,15 @@ func validateJWTWithRealData(token string) templates.UserInfo {
 	// Check if token is still valid (not expired)
 	if claims.Exp < time.Now().Unix() {
 		log.Printf("🔍 JWT: Token expired - Exp: %d, Now: %d", claims.Exp, time.Now().Unix())
+		
+		// Try to get a fresh token from auth service before giving up
+		freshToken, err := refreshToken(token)
+		if err == nil && freshToken != "" {
+			log.Printf("🔍 JWT: Successfully refreshed expired token")
+			return validateJWTWithRealData(freshToken) // Recursive call with new token
+		}
+		
+		log.Printf("🔍 JWT: Token refresh failed or not available, user logged out")
 		return templates.UserInfo{LoggedIn: false}
 	}
 	
