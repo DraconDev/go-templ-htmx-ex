@@ -25,8 +25,16 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
-	// Get current user session - for now just show placeholder
-	// The actual user data is handled by the template and JavaScript
+	// Get session token from cookie
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		// Redirect to home if not logged in
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
+	// For now, show placeholder - the actual user data is handled by the template and JavaScript
+	// This allows the frontend JavaScript to fetch user data dynamically
 	component := templates.Layout("Profile", templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
