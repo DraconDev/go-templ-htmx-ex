@@ -135,10 +135,10 @@ vim templates/settings.templ
 ├── models/
 │   └── user.go           # User data models
 └── templates/
-    ├── layout.templ      # Dynamic navigation system
-    ├── home.templ        # Public landing page
-    ├── profile.templ     # Protected user page
-    └── auth_callback.templ # OAuth processing
+    ├── layout.templ      # Dark theme navigation with glass effects
+    ├── home.templ        # Modern dark landing page
+    ├── profile.templ     # Sleek dark user profile
+    └── auth_callback.templ # Dark themed OAuth processing
 ```
 
 ### Authentication Flow
