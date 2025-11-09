@@ -335,31 +335,51 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Helper function to call auth service
 func callAuthService(endpoint string, params map[string]string) (*AuthResponse, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	
-	// Create form data
-	formData := url.Values{}
-	for key, value := range params {
-		formData.Set(key, value)
-	}
-	
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(formData.Encode()))
+
+	// Create JSON data
+	jsonData, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	
+
+	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
-	var authResp AuthResponse
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
+
+	// Read the response body first
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
 		return nil, err
 	}
-	
-	return &authResp, nil
+
+	// Try to decode as AuthResponse first
+	var authResp AuthResponse
+	if err := json.Unmarshal(bodyBytes, &authResp); err == nil && authResp.Success {
+		return &authResp, nil
+	}
+
+	// If that fails, try to decode as JWT payload and convert
+	var jwtPayload map[string]interface{}
+	if err := json.Unmarshal(bodyBytes, &jwtPayload); err != nil {
+		return nil, err
+	}
+
+	// Convert JWT payload to AuthResponse format
+	return &AuthResponse{
+		Success: true,
+		Name:    getStringFromMap(jwtPayload, "name"),
+		Email:   getStringFromMap(jwtPayload, "email"),
+		Picture: getStringFromMap(jwtPayload, "picture"),
+		UserID:  getStringFromMap(jwtPayload, "sub"),
+	}, nil
 }
 
 // AuthResponse represents the response from the auth service
