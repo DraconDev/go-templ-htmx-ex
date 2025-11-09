@@ -1,16 +1,17 @@
 # Startup Platform
 
-A modern Go-based startup application demonstrating Google OAuth authentication integration with a dedicated auth microservice. Built with **Templ** and **HTMX** for dynamic frontend interactions.
+A modern Go-based startup application demonstrating **GitHub OAuth** and **Google OAuth** authentication integration with a dedicated auth microservice. Built with **Templ** and **HTMX** for dynamic frontend interactions.
 
 ## Features
 
-- 🔐 **Google OAuth 2.0 Authentication** via dedicated auth microservice
+- 🔐 **GitHub & Google OAuth 2.0 Authentication** via dedicated auth microservice
 - 🏗️ **JWT Token Management** with secure session handling
 - 📱 **Dynamic UI** with HTMX for seamless interactions
 - 🏗️ **Server-side rendering** with Templ templates
-- 🚀 **Modern Architecture** with microservice patterns
-- 👤 **User Profile Management** with Google account information
+- 🚀 **Modern Modular Architecture** with microservice patterns
+- 👤 **User Profile Management** with OAuth provider account information
 - 🔒 **Secure Sessions** with HttpOnly cookies
+- 🎯 **Real-time Authentication Status** - UI dynamically updates to show login/logout
 - 🚀 **Fast Development** with hot reload capabilities
 
 ## Technology Stack
@@ -54,7 +55,7 @@ A modern Go-based startup application demonstrating Google OAuth authentication 
 
 5. **Run the application:**
    ```bash
-   ./main
+   ./bin/startup-platform
    ```
 
 6. **Open your browser:**
@@ -105,14 +106,15 @@ Key configuration options:
 
 ## Authentication Flow
 
-This application demonstrates a complete Google OAuth authentication flow:
+This application demonstrates a complete OAuth authentication flow:
 
-1. **Initiate Login**: User visits `/auth/google`
-2. **Google OAuth**: Redirected to Google for authentication
+1. **Initiate Login**: User clicks "Login with Google/GitHub"
+2. **OAuth Provider**: Redirected to Google/GitHub for authentication
 3. **Token Exchange**: Auth microservice exchanges code for JWT
 4. **Session Creation**: JWT stored in secure HttpOnly cookie
-5. **User Access**: User can access protected pages like `/profile`
-6. **Logout**: Clear session via `/api/auth/logout`
+5. **Dynamic UI Update**: Navigation shows user info, avatar, logout button
+6. **User Access**: User can access protected pages like `/profile`
+7. **Logout**: Clear session via logout button
 
 ## API Endpoints
 
@@ -120,6 +122,7 @@ This application demonstrates a complete Google OAuth authentication flow:
 
 - `/` - Home page with authentication features
 - `/auth/google` - Initiate Google OAuth login
+- `/auth/github` - Initiate GitHub OAuth login
 - `/auth/callback` - Handle OAuth callback
 - `/profile` - User profile page (requires authentication)
 - `/health` - Application health check
@@ -129,47 +132,28 @@ This application demonstrates a complete Google OAuth authentication flow:
 - `GET /api/auth/user` - Get current user info and login status
 - `POST /api/auth/validate` - Validate JWT token
 - `POST /api/auth/logout` - Clear session and logout
+- `POST /api/auth/set-session` - Set session from OAuth callback
 - `GET /api/auth/health` - Auth service health check
-
-## Usage Examples
-
-### Basic Service Testing
-
-1. Navigate to `/test`
-2. Click "Discover Services" to auto-detect services
-3. Use "Manual Service Test" to test specific endpoints
-4. View results in real-time
-
-### HTMX Features
-
-The application uses HTMX for dynamic interactions:
-
-- **Service Discovery**: Click to load services dynamically
-- **Form Submissions**: Tests run without page reloads
-- **Real-time Updates**: Results appear instantly
-
-### Service URL Examples
-
-For testing your microservices, use URLs like:
-
-- Health Check: `http://your-service:8001/health`
-- API Endpoint: `http://your-service:8001/api/users`
-- Custom Endpoint: `http://your-service:8001/api/orders`
 
 ## Architecture
 
 ### Project Structure
 
 ```
-├── main.go                    # Main application
-├── components/                # Templ templates
-│   ├── layout.templ          # Base layout
-│   ├── home.templ            # Home page component
-│   ├── microservice_test.templ # Testing dashboard
-│   └── service_test.templ    # Service-specific testing
-├── Makefile                  # Build automation
-├── .env.example              # Environment configuration
-└── README.md                 # This file
+├── main.go                    # Main application entry point
+├── config/
+│   └── config.go             # Configuration management
+├── models/
+│   └── user.go               # User and authentication models
+├── auth/
+│   └── service.go            # Auth service module
+├── handlers/
+│   └── auth.go               # Authentication HTTP handlers
+└── templates/
+    ├── layout.templ          # Base layout with dynamic navigation
+    ├── home.templ            # Home page component
+    ├── profile.templ         # User profile page
+    └── auth_callback.templ   # OAuth callback processing page
 ```
 
 ### Key Components
@@ -177,30 +161,64 @@ For testing your microservices, use URLs like:
 - **HTTP Server**: Gorilla Mux for routing
 - **Templ Components**: Type-safe HTML templates
 - **HTMX Integration**: Dynamic frontend without JavaScript frameworks
-- **Service Testing**: HTTP client for testing microservice endpoints
+- **Modular Architecture**: Separated concerns for maintainability
+- **OAuth Integration**: GitHub and Google authentication providers
 
-## Testing Microservices
+### Modular Design
 
-### Health Checks
+The application follows clean architecture principles:
 
-Test service health endpoints:
+- **Configuration Management** (`config/`): Centralized environment configuration
+- **Domain Models** (`models/`): User and authentication data structures
+- **Business Logic** (`auth/`): Auth service communication and JWT handling
+- **HTTP Layer** (`handlers/`): Request/response handling and routing
+- **Presentation** (`templates/`): Type-safe HTML templating
 
-```
-GET /health
-```
+## Authentication Features
+
+### Dynamic Navigation
+
+The application features a smart navigation system that automatically updates based on authentication status:
+
+- **Unauthenticated Users**: See "Login with Google" and "Login with GitHub" buttons
+- **Authenticated Users**: See profile picture, name, and "Logout" button
+- **Real-time Updates**: Navigation changes without page reload using HTMX
+
+### User Profile Management
+
+After successful OAuth authentication:
+
+- **Profile Picture**: Displays user's avatar from OAuth provider
+- **User Information**: Shows name and email when available
+- **Secure Session**: JWT token stored in HttpOnly cookie for security
+- **Protected Routes**: Profile page requires authentication
+
+## Testing
+
+### Authentication Testing
+
+1. **Start the server**: `make run`
+2. **Visit**: `http://localhost:8081`
+3. **Click**: "Login with Google" or "Login with GitHub"
+4. **Authenticate**: Complete OAuth flow with your provider
+5. **Verify**: Navigation updates to show logged-in state
+6. **Test Profile**: Navigate to `/profile` to see user information
+7. **Test Logout**: Click logout button to clear session
 
 ### API Testing
 
-Test various HTTP methods:
+Test authentication endpoints:
 
-- **GET** - Retrieve data
-- **POST** - Create resources
-- **PUT** - Update resources
-- **DELETE** - Remove resources
+```bash
+# Check authentication status
+curl http://localhost:8081/api/auth/user
 
-### Stress Testing
+# Validate session
+curl -X POST http://localhost:8081/api/auth/validate
 
-Run multiple concurrent tests to check service performance and resilience.
+# Health check
+curl http://localhost:8081/api/auth/health
+```
 
 ## Production Deployment
 
@@ -208,6 +226,19 @@ Run multiple concurrent tests to check service performance and resilience.
 
 ```bash
 make build
+```
+
+This creates a binary in `bin/startup-platform` that can be deployed to any system with Go runtime.
+
+### Environment Configuration
+
+Ensure production `.env` file has:
+
+```bash
+PORT=8081
+AUTH_SERVICE_URL=https://your-auth-service.com
+REDIRECT_URL=https://your-app-domain.com
+LOG_LEVEL=info
 ```
 
 ### Docker Support
@@ -220,12 +251,6 @@ make docker-build
 make docker-run
 ```
 
-### System Installation
-
-```bash
-make install  # Installs to /usr/local/bin
-```
-
 ## Troubleshooting
 
 ### Common Issues
@@ -233,17 +258,29 @@ make install  # Installs to /usr/local/bin
 1. **Port already in use**: Change `PORT` in `.env`
 2. **Dependencies missing**: Run `make deps`
 3. **Templ components not found**: Run `make generate`
-4. **Services not responding**: Check service URLs and network connectivity
+4. **Authentication fails**: Check `AUTH_SERVICE_URL` includes protocol (`http://` or `https://`)
+5. **OAuth callback issues**: Verify `REDIRECT_URL` matches your domain
 
 ### Debug Mode
 
-Set `LOG_LEVEL=debug` in your `.env` file for detailed logging.
+Set `LOG_LEVEL=debug` in your `.env` file for detailed logging that shows:
+
+- OAuth flow progression
+- JWT token validation
+- Auth service communication
+- Session management details
+
+### Common Authentication Issues
+
+- **"unsupported protocol scheme"**: Ensure `AUTH_SERVICE_URL` starts with `http://` or `https://`
+- **"415 Unsupported Media Type"**: Verify auth service expects JSON (not form data)
+- **Session not persisting**: Check HttpOnly cookie settings and SameSite policy
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
+3. Make your changes following the modular architecture
 4. Add tests if applicable
 5. Run `make fmt` to format code
 6. Submit a pull request
@@ -257,3 +294,4 @@ MIT License - see LICENSE file for details.
 - [Templ](https://templ.guide/) for type-safe templating
 - [HTMX](https://htmx.org/) for dynamic frontend interactions
 - [Gorilla Mux](https://github.com/gorilla/mux) for HTTP routing
+- OAuth providers (Google, GitHub) for authentication services
