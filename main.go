@@ -110,7 +110,7 @@ func getUserFromJWT(r *http.Request) templates.UserInfo {
 	if err != nil {
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	return validateJWTWithRealData(cookie.Value)
 }
 
@@ -124,10 +124,10 @@ func hasSessionToken(r *http.Request) bool {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Use local JWT validation for EVERY page (fast + consistent)
 	userInfo := getUserFromJWT(r)
-	
+
 	var navigation templ.Component
 	if userInfo.LoggedIn {
 		// Fast local validation: 5-10ms for real user data
@@ -135,7 +135,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		navigation = templates.NavigationLoggedOut()
 	}
-	
+
 	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
 }
@@ -143,30 +143,30 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // validateJWTWithRealData validates JWT and returns real user data
 func validateJWTWithRealData(token string) templates.UserInfo {
 	log.Printf("🔍 JWT: Validating token, length: %d", len(token))
-	
+
 	if token == "" {
 		log.Printf("🔍 JWT: Empty token")
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	// Parse JWT to get real user data
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		log.Printf("🔍 JWT: Invalid token format, parts: %d", len(parts))
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	log.Printf("🔍 JWT: Token split successful")
-	
+
 	// Decode payload (the middle part)
 	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
 		log.Printf("🔍 JWT: Base64 decode failed: %v", err)
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	log.Printf("🔍 JWT: Base64 decode successful, payload length: %d", len(payload))
-	
+
 	// Parse user data from JWT payload
 	var claims struct {
 		Sub     string `json:"sub"`
@@ -176,39 +176,30 @@ func validateJWTWithRealData(token string) templates.UserInfo {
 		Exp     int64  `json:"exp"`
 		Iss     string `json:"iss"`
 	}
-	
+
 	if err := json.Unmarshal(payload, &claims); err != nil {
 		log.Printf("🔍 JWT: JSON unmarshal failed: %v", err)
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	log.Printf("🔍 JWT: Claims parsed - Name: %s, Email: %s, Iss: %s", claims.Name, claims.Email, claims.Iss)
-	
+
 	// Check if token is still valid (not expired)
 	if claims.Exp < time.Now().Unix() {
 		log.Printf("🔍 JWT: Token expired - Exp: %d, Now: %d", claims.Exp, time.Now().Unix())
-		
-		// Try to get a fresh token from auth service before giving up
-		freshToken, err := refreshToken(token)
-		if err == nil && freshToken != "" {
-			log.Printf("🔍 JWT: Successfully refreshed expired token")
-			return validateJWTWithRealData(freshToken) // Recursive call with new token
-		}
-		
-		log.Printf("🔍 JWT: Token refresh failed or not available, user logged out")
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	log.Printf("🔍 JWT: Token not expired")
-	
+
 	// Check issuer to make sure it's from our auth service
 	if claims.Iss != "auth-ms" {
 		log.Printf("🔍 JWT: Invalid issuer: %s (expected: auth-ms)", claims.Iss)
 		return templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	log.Printf("🔍 JWT: Validation successful - User: %s", claims.Name)
-	
+
 	// Return real user data!
 	return templates.UserInfo{
 		LoggedIn: true,
@@ -229,7 +220,7 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 	case 1:
 		return nil, fmt.Errorf("invalid base64url length")
 	}
-	
+
 	return base64.URLEncoding.DecodeString(data)
 }
 
