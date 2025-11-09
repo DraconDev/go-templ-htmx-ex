@@ -52,17 +52,20 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 
 // AuthCallbackHandler handles the OAuth callback
 func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 CALLBACK: OAuth callback received\n")
+	fmt.Printf("🔐 CALLBACK: === OAuth callback STARTED ===\n")
 	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
 	fmt.Printf("🔐 CALLBACK: Query params = %v\n", r.URL.Query())
 	fmt.Printf("🔐 CALLBACK: Fragment = %s\n", r.URL.Fragment)
 	
+	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
 	w.Header().Set("Content-Type", "text/html")
 	// Use the original working approach with Layout wrapper
 	component := templates.Layout("Authenticating", templates.AuthCallbackContent())
-	component.Render(r.Context(), w)
 	
-	fmt.Printf("🔐 CALLBACK: Template rendered successfully\n")
+	fmt.Printf("🔐 CALLBACK: About to render component...\n")
+	component.Render(r.Context(), w)
+	fmt.Printf("🔐 CALLBACK: Component rendered successfully\n")
+	fmt.Printf("🔐 CALLBACK: === OAuth callback COMPLETED ===\n")
 }
 
 // SetSessionHandler sets the user session from client-side JavaScript
