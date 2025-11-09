@@ -38,6 +38,10 @@ func getStringFromMap(m map[string]interface{}, key string) string {
 
 // CallAuthService makes a request to the auth microservice
 func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
+	fmt.Printf("🔐 AUTHSVC: === CallAuthService STARTED ===\n")
+	fmt.Printf("🔐 AUTHSVC: Endpoint: %s\n", endpoint)
+	fmt.Printf("🔐 AUTHSVC: Params: %v\n", params)
+	
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Create form data
@@ -45,45 +49,63 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 	for key, value := range params {
 		formData.Set(key, value)
 	}
+	
+	fmt.Printf("🔐 AUTHSVC: Form data: %s\n", formData.Encode())
 
 	req, err := http.NewRequest("POST", endpoint, strings.NewReader(formData.Encode()))
 	if err != nil {
+		fmt.Printf("🔐 AUTHSVC: Request creation failed: %v\n", err)
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
+	fmt.Printf("🔐 AUTHSVC: Sending request to auth service...\n")
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Printf("🔐 AUTHSVC: Request failed: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
+	
+	fmt.Printf("🔐 AUTHSVC: Response status: %s\n", resp.Status)
 
 	// Read the response body first
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("🔐 AUTHSVC: Failed to read response body: %v\n", err)
 		return nil, err
 	}
+	
+	fmt.Printf("🔐 AUTHSVC: Response body: %s\n", string(bodyBytes))
 
 	// Try to decode as AuthResponse first
 	var authResp models.AuthResponse
 	if err := json.Unmarshal(bodyBytes, &authResp); err == nil && authResp.Success {
+		fmt.Printf("🔐 AUTHSVC: Parsed as AuthResponse - Success: %v\n", authResp.Success)
 		return &authResp, nil
 	}
 
+	fmt.Printf("🔐 AUTHSVC: Failed to parse as AuthResponse, trying JWT payload...\n")
 	// If that fails, try to decode as JWT payload and convert
 	var jwtPayload map[string]interface{}
 	if err := json.Unmarshal(bodyBytes, &jwtPayload); err != nil {
+		fmt.Printf("🔐 AUTHSVC: Failed to parse JWT payload: %v\n", err)
 		return nil, err
 	}
 
 	// Convert JWT payload to AuthResponse format
-	return &models.AuthResponse{
+	result := &models.AuthResponse{
 		Success: true,
 		Name:    getStringFromMap(jwtPayload, "name"),
 		Email:   getStringFromMap(jwtPayload, "email"),
 		Picture: getStringFromMap(jwtPayload, "picture"),
 		UserID:  getStringFromMap(jwtPayload, "sub"),
-	}, nil
+	}
+	
+	fmt.Printf("🔐 AUTHSVC: Converted JWT to AuthResponse - Name: %s, Email: %s\n", result.Name, result.Email)
+	fmt.Printf("🔐 AUTHSVC: === CallAuthService COMPLETED ===\n")
+	
+	return result, nil
 }
 
 // ValidateSession validates a session token
