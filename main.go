@@ -15,6 +15,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
@@ -33,6 +34,7 @@ type Config struct {
 	ServerPort     string
 	AuthServiceURL string
 	RedirectURL    string
+	JWTSecret      string // For local JWT parsing
 }
 
 var (
@@ -40,8 +42,18 @@ var (
 		ServerPort:     getEnvOrDefault("PORT", "8081"),
 		AuthServiceURL: getEnvOrDefault("AUTH_SERVICE_URL", "http://localhost:8080"),
 		RedirectURL:    getEnvOrDefault("REDIRECT_URL", "http://localhost:8081"),
+		JWTSecret:      getEnvOrDefault("JWT_SECRET", "default-secret"),
 	}
 )
+
+// JWTClaims represents the user data in the JWT token
+type JWTClaims struct {
+	UserID  string `json:"user_id"`
+	Email   string `json:"email"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
+	jwt.RegisteredClaims
+}
 
 // getEnvOrDefault returns environment variable or default value
 func getEnvOrDefault(key, defaultValue string) string {
@@ -78,6 +90,7 @@ func main() {
 	router.HandleFunc("/api/auth/user", authGetUserHandler).Methods("GET")
 	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
 	router.HandleFunc("/api/auth/set-session", authSetSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/parse-jwt", authParseJWTHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
@@ -129,10 +142,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
-	// Get current user session
-	resp, err := callAuthService(fmt.Sprintf("%s/auth/userinfo", config.AuthServiceURL), map[string]string{
-		"token": getSessionToken(r),
-	})
+	// Get current user session using JWT parsing
+	resp, err := parseJWTFromToken(getSessionToken(r))
 	if err != nil {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -228,6 +239,42 @@ func authSetSessionHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// New endpoint to test local JWT parsing
+func authParseJWTHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		Token string `json:"token"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Invalid request body",
+		})
+		return
+	}
+
+	claims, err := parseJWTFromToken(req.Token)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Invalid JWT token",
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":  true,
+		"user_id":  claims.UserID,
+		"email":    claims.Email,
+		"name":     claims.Name,
+		"picture":  claims.Picture,
+		"valid":    claims.Success,
+	})
+}
+
 func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -242,7 +289,22 @@ func authValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate token with auth microservice
+	// Try to parse JWT locally first
+	claims, err := parseJWTFromToken(cookie.Value)
+	if err == nil && claims.Success {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"valid":    true,
+			"user_id":  claims.UserID,
+			"email":    claims.Email,
+			"name":     claims.Name,
+			"picture":  claims.Picture,
+			"status":   "validated",
+		})
+		return
+	}
+
+	// Fallback to auth service if local parsing fails
 	resp, err := callAuthService(fmt.Sprintf("%s/auth/validate", config.AuthServiceURL), map[string]string{
 		"token": cookie.Value,
 	})
@@ -298,7 +360,21 @@ func authGetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get user info from auth microservice
+	// Try to parse JWT locally first
+	claims, err := parseJWTFromToken(cookie.Value)
+	if err == nil && claims.Success {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"logged_in": true,
+			"user_id":   claims.UserID,
+			"email":     claims.Email,
+			"name":      claims.Name,
+			"picture":   claims.Picture,
+		})
+		return
+	}
+
+	// Fallback to auth service if local parsing fails
 	resp, err := callAuthService(fmt.Sprintf("%s/auth/userinfo", config.AuthServiceURL), map[string]string{
 		"token": cookie.Value,
 	})
@@ -330,6 +406,29 @@ func authHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 		"timestamp": time.Now().Format(time.RFC3339),
 		"service":   "main-app",
 	})
+}
+
+// Helper function to parse JWT token locally
+func parseJWTFromToken(token string) (*AuthResponse, error) {
+	claims := &JWTClaims{}
+	
+	// Parse the JWT token
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.JWTSecret), nil
+	})
+	
+	if err != nil {
+		return nil, err
+	}
+	
+	// Return parsed user data
+	return &AuthResponse{
+		Success: true,
+		UserID:  claims.UserID,
+		Email:   claims.Email,
+		Name:    claims.Name,
+		Picture: claims.Picture,
+	}, nil
 }
 
 // Helper function to call auth service
