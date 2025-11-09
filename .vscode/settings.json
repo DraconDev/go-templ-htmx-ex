@@ -4,5 +4,13 @@
     "go.testTimeout": "30s",
     "go.coverOnSave": false,
     "go.coverOnSingleTest": true,
-    "go.toolsManagement.checkForUpdates": "local"
+    "go.toolsManagement.checkForUpdates": "local",
+    "go.delveConfig": {
+        "backend": "native",
+        "debugAdapter": "legacy"
+    },
+    "go.debugging": {
+        "useDelve": true,
+        "testExplorer": false
+    }
 }
