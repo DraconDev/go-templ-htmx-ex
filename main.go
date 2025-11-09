@@ -99,11 +99,26 @@ func getSessionToken(r *http.Request) string {
 	return cookie.Value
 }
 
+// hasSessionToken checks if user has a session token cookie (fast, no API call)
+func hasSessionToken(r *http.Request) bool {
+	_, err := r.Cookie("session_token")
+	return err == nil
+}
+
 // HTTP Handlers
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Home", templates.HomeContent())
+	
+	// Fast cookie check for navigation (Hybrid approach - no API call)
+	var navigation templ.Component
+	if hasSessionToken(r) {
+		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User"})
+	} else {
+		navigation = templates.NavigationLoggedOut()
+	}
+	
+	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
