@@ -115,18 +115,13 @@ func hasSessionToken(r *http.Request) bool {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
-	// Get real user data from JWT validation
+	// Use local JWT validation for EVERY page (fast + consistent)
+	userInfo := getUserFromJWT(r)
+	
 	var navigation templ.Component
-	if hasSessionToken(r) {
-		// Get token and validate it locally to get real user data
-		token := getSessionToken(r)
-		if userInfo := validateJWTWithRealData(token); userInfo.LoggedIn {
-			// Real user data from JWT - no broken images!
-			navigation = templates.NavigationLoggedIn(userInfo)
-		} else {
-			// Token exists but invalid
-			navigation = templates.NavigationLoggedOut()
-		}
+	if userInfo.LoggedIn {
+		// Fast local validation: 5-10ms for real user data
+		navigation = templates.NavigationLoggedIn(userInfo)
 	} else {
 		navigation = templates.NavigationLoggedOut()
 	}
