@@ -2,15 +2,13 @@ package auth
 
 import (
 	"bytes"
-	"crypto"
 	"crypto/rsa"
-	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"math/big"
+
 	"net/http"
 	"strings"
 	"time"
@@ -46,7 +44,7 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 	fmt.Printf("🔐 AUTHSVC: === CallAuthService STARTED ===\n")
 	fmt.Printf("🔐 AUTHSVC: Endpoint: %s\n", endpoint)
 	fmt.Printf("🔐 AUTHSVC: Params: %v\n", params)
-	
+
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Create JSON data
@@ -55,7 +53,7 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		fmt.Printf("🔐 AUTHSVC: JSON marshaling failed: %v\n", err)
 		return nil, err
 	}
-	
+
 	fmt.Printf("🔐 AUTHSVC: JSON data: %s\n", string(jsonData))
 
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
@@ -72,7 +70,7 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	fmt.Printf("🔐 AUTHSVC: Response status: %s\n", resp.Status)
 
 	// Read the response body first
@@ -81,7 +79,7 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		fmt.Printf("🔐 AUTHSVC: Failed to read response body: %v\n", err)
 		return nil, err
 	}
-	
+
 	fmt.Printf("🔐 AUTHSVC: Response body: %s\n", string(bodyBytes))
 
 	// Try to decode as AuthResponse first
@@ -107,10 +105,10 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		Picture: getStringFromMap(jwtPayload, "picture"),
 		UserID:  getStringFromMap(jwtPayload, "sub"),
 	}
-	
+
 	fmt.Printf("🔐 AUTHSVC: Converted JWT to AuthResponse - Name: %s, Email: %s\n", result.Name, result.Email)
 	fmt.Printf("🔐 AUTHSVC: === CallAuthService COMPLETED ===\n")
-	
+
 	return result, nil
 }
 
@@ -168,29 +166,29 @@ func (c *PublicKeyCache) ValidateJWTLocal(token string) (*models.AuthResponse, e
 	if len(parts) != 3 {
 		return &models.AuthResponse{Success: false}, fmt.Errorf("invalid JWT format")
 	}
-	
+
 	// Decode header
 	headerBytes, err := base64URLDecode(parts[0])
 	if err != nil {
 		return &models.AuthResponse{Success: false}, fmt.Errorf("failed to decode header: %v", err)
 	}
-	
+
 	var header struct {
 		Kid string `json:"kid"`
 		Alg string `json:"alg"`
 		Typ string `json:"typ"`
 	}
-	
+
 	if err := json.Unmarshal(headerBytes, &header); err != nil {
 		return &models.AuthResponse{Success: false}, fmt.Errorf("failed to parse header: %v", err)
 	}
-	
+
 	// For now, return a basic response since we don't have the public keys yet
 	// In a real implementation, you would:
 	// 1. Fetch keys from /auth/jwks endpoint
 	// 2. Verify signature with the correct public key
 	// 3. Check expiration and claims
-	
+
 	return &models.AuthResponse{
 		Success: true,
 		Name:    "Loading...",
@@ -211,6 +209,6 @@ func base64URLDecode(data string) ([]byte, error) {
 	case 1:
 		return nil, fmt.Errorf("invalid base64url length")
 	}
-	
+
 	return base64.URLEncoding.DecodeString(data)
 }
