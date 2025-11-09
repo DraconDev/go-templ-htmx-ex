@@ -345,12 +345,26 @@ func callAuthService(endpoint string, params map[string]string) (*AuthResponse, 
 	}
 	defer resp.Body.Close()
 	
+	// Try to decode as AuthResponse first
 	var authResp AuthResponse
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&authResp); err == nil && authResp.Success {
+		return &authResp, nil
+	}
+	
+	// If that fails, try to decode as JWT payload and convert
+	var jwtPayload map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&jwtPayload); err != nil {
 		return nil, err
 	}
 	
-	return &authResp, nil
+	// Convert JWT payload to AuthResponse format
+	return &AuthResponse{
+		Success: true,
+		Name:    jwtPayload["name"].(string),
+		Email:   jwtPayload["email"].(string),
+		Picture: jwtPayload["picture"].(string),
+		UserID:  jwtPayload["sub"].(string),
+	}, nil
 }
 
 // AuthResponse represents the response from the auth service
