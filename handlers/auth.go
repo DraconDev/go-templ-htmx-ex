@@ -221,3 +221,25 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Logged out successfully",
 	})
 }
+
+// GetUserInfo returns current user information for server-side rendering
+func (h *AuthHandler) GetUserInfo(r *http.Request) templates.UserInfo {
+	// Get session token from cookie
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return templates.UserInfo{LoggedIn: false}
+	}
+
+	// Get user info from auth microservice
+	userResp, err := h.AuthService.ValidateUser(cookie.Value)
+	if err != nil {
+		return templates.UserInfo{LoggedIn: false}
+	}
+
+	return templates.UserInfo{
+		LoggedIn: userResp.Success,
+		Name:     userResp.Name,
+		Email:    userResp.Email,
+		Picture:  userResp.Picture,
+	}
+}
