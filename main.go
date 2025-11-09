@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/gorilla/mux"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
@@ -124,7 +125,17 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Profile", templates.ProfileContent("", "", ""))
+	
+	// Server-side validation for protected pages (SSR approach)
+	var navigation templ.Component
+	if hasSessionToken(r) {
+		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User"})
+	} else {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	
+	component := templates.Layout("Profile", navigation, templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
 
