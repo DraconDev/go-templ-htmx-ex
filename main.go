@@ -128,14 +128,29 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	
 	// Server-side validation for protected pages (SSR approach)
 	var navigation templ.Component
+	var userInfo templates.UserInfo
+	
 	if hasSessionToken(r) {
-		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User"})
+		// Get real user data from auth service
+		if resp, err := authService.GetUserInfo(getSessionToken(r)); err == nil && resp.Success {
+			userInfo = templates.UserInfo{
+				LoggedIn: true,
+				Name:     resp.Name,
+				Email:    resp.Email,
+				Picture:  resp.Picture,
+			}
+			navigation = templates.NavigationLoggedIn(userInfo)
+		} else {
+			// Token invalid, redirect to home
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 	} else {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 	
-	component := templates.Layout("Profile", navigation, templates.ProfileContent("", "", ""))
+	component := templates.Layout("Profile", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
 	component.Render(r.Context(), w)
 }
 
