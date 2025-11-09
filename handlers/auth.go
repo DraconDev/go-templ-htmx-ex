@@ -60,7 +60,7 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
 	w.Header().Set("Content-Type", "text/html")
 	// Use the original working approach with Layout wrapper
-	component := templates.Layout("Authenticating", templates.AuthCallbackContent())
+	component := templates.Layout("Authenticating", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
 	
 	fmt.Printf("🔐 CALLBACK: About to render component...\n")
 	component.Render(r.Context(), w)
