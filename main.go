@@ -30,17 +30,14 @@ func main() {
 
 	// Create handlers
 	authHandler := handlers.NewAuthHandler(authService, cfg)
-	webHandler := &handlers.WebHandler{
-		AuthHandler: authHandler,
-	}
 
 	// Create router
 	router := mux.NewRouter()
 
 	// Define routes
-	router.HandleFunc("/", webHandler.HomeHandler).Methods("GET")
-	router.HandleFunc("/health", webHandler.HealthHandler).Methods("GET")
-	router.HandleFunc("/profile", webHandler.ProfileHandler).Methods("GET")
+	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
+	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
+	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
 	// OAuth login routes
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
@@ -52,7 +49,6 @@ func main() {
 	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
 	router.HandleFunc("/api/auth/user", authHandler.GetUserHandler).Methods("GET")
 	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
-	router.HandleFunc("/api/auth/health", authHandler.HealthHandler).Methods("GET")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
