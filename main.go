@@ -77,6 +77,7 @@ func main() {
 	router.HandleFunc("/api/auth/logout", authLogoutHandler).Methods("POST")
 	router.HandleFunc("/api/auth/user", authGetUserHandler).Methods("GET")
 	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
+	router.HandleFunc("/api/auth/set-session", authSetSessionHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
