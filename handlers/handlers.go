@@ -26,7 +26,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
 	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
+	_, err := r.Cookie("session_token")
 	if err != nil {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
