@@ -131,14 +131,9 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	var userInfo templates.UserInfo
 	
 	if hasSessionToken(r) {
-		// Get real user data from auth service
-		if resp, err := authService.GetUserInfo(getSessionToken(r)); err == nil && resp.Success {
-			userInfo = templates.UserInfo{
-				LoggedIn: true,
-				Name:     resp.Name,
-				Email:    resp.Email,
-				Picture:  resp.Picture,
-			}
+		// Get real user data from auth service via authHandler
+		userInfo = authHandler.GetUserInfo(r)
+		if userInfo.LoggedIn {
 			navigation = templates.NavigationLoggedIn(userInfo)
 		} else {
 			// Token invalid, redirect to home
