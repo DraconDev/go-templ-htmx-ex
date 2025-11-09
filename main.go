@@ -104,6 +104,16 @@ func getSessionToken(r *http.Request) string {
 	return cookie.Value
 }
 
+// getUserFromJWT gets user info using local JWT validation (5-10ms, no API call)
+func getUserFromJWT(r *http.Request) templates.UserInfo {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	return validateJWTWithRealData(cookie.Value)
+}
+
 // hasSessionToken checks if user has a session token cookie (fast, no API call)
 func hasSessionToken(r *http.Request) bool {
 	_, err := r.Cookie("session_token")
