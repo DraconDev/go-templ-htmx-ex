@@ -148,7 +148,7 @@ func validateJWTWithRealData(token string) templates.UserInfo {
 	}
 	
 	// Decode payload (the middle part)
-	payload, err := base64URLDecode(parts[1])
+	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
 		return templates.UserInfo{LoggedIn: false}
 	}
