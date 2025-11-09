@@ -18,6 +18,43 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
+var authHandler *handlers.AuthHandler
+
+func main() {
+	// Load configuration
+	cfg := config.LoadConfig()
+
+	// Create auth service
+	authService := auth.NewService(cfg)
+
+	// Create auth handler
+	authHandler = handlers.NewAuthHandler(authService, cfg)
+
+	// Create router
+	router := mux.NewRouter()
+
+	// Define routes
+	router.HandleFunc("/", homeHandler).Methods("GET")
+	router.HandleFunc("/health", healthHandler).Methods("GET")
+
+	// OAuth login routes
+	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
+	
+	// User profile page
+	router.HandleFunc("/profile", profileHandler).Methods("GET")
+	
+	// Session management
+	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
+	router.HandleFunc("/api/auth/user", authHandler.GetUserHandler).Methods("GET")
+	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/health", authHealthCheckHandler).Methods("GET")
+
+	// Static files (for CSS, JS, etc.)
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
