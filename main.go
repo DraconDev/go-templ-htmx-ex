@@ -110,36 +110,26 @@ func hasSessionToken(r *http.Request) bool {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// True Hybrid: Optimistic UI + Background Validation
+
+	// Fast cookie check for navigation (Hybrid approach - no API call)
 	var navigation templ.Component
 	if hasSessionToken(r) {
-		// Fast path: Show logged-in state immediately (no FOUC)
-		navigation = templates.NavigationPending(templates.UserInfo{Name: "Loading..."})
+		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User"})
 	} else {
-		// Show logged-out state
 		navigation = templates.NavigationLoggedOut()
 	}
-	
+
 	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
-	
-	// Background: Start validation (doesn't block UI)
-	go func() {
-		if userInfo := authHandler.GetUserInfo(r); userInfo.LoggedIn {
-			// Send real user data to client for navigation update
-			updateNavigationClientSide(r, userInfo)
-		}
-	}()
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Server-side validation for protected pages (SSR approach)
 	var navigation templ.Component
 	var userInfo templates.UserInfo
-	
+
 	if hasSessionToken(r) {
 		// Get real user data from auth service via authHandler
 		userInfo = authHandler.GetUserInfo(r)
@@ -154,7 +144,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-	
+
 	component := templates.Layout("Profile", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
 	component.Render(r.Context(), w)
 }
