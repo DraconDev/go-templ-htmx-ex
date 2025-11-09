@@ -2,11 +2,17 @@ package auth
 
 import (
 	"bytes"
+	"crypto"
+	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
+	"math/big"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
