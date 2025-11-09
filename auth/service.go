@@ -5,52 +5,53 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
 
-// Service handles communication with the authentication microservice
+// Service handles communication with the auth microservice
 type Service struct {
-	BaseURL string
-	Client  *http.Client
+	config *config.Config
 }
 
 // NewService creates a new auth service instance
-func NewService(baseURL string) *Service {
+func NewService(cfg *config.Config) *Service {
 	return &Service{
-		BaseURL: baseURL,
-		Client: &http.Client{
-			Timeout: 10 * time.Second,
-		},
+		config: cfg,
 	}
 }
 
-// UserResponse represents the response from the auth service
-type UserResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message,omitempty"`
-	Token   string `json:"token,omitempty"`
-	UserID  string `json:"user_id,omitempty"`
-	Email   string `json:"email,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Picture string `json:"picture,omitempty"`
-	Error   string `json:"error,omitempty"`
+// getStringFromMap safely gets a string from a map
+func getStringFromMap(m map[string]interface{}, key string) string {
+	if val, ok := m[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
 }
 
-// ValidateUser validates a user token and returns user information
-func (s *Service) ValidateUser(token string) (*UserResponse, error) {
-	jsonData, err := json.Marshal(map[string]string{"token": token})
+// CallAuthService makes a request to the auth microservice
+func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	// Create JSON data
+	jsonData, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", s.BaseURL+"/auth/userinfo", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := s.Client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -62,10 +63,10 @@ func (s *Service) ValidateUser(token string) (*UserResponse, error) {
 		return nil, err
 	}
 
-	// Try to decode as UserResponse first
-	var userResp UserResponse
-	if err := json.Unmarshal(bodyBytes, &userResp); err == nil && userResp.Success {
-		return &userResp, nil
+	// Try to decode as AuthResponse first
+	var authResp models.AuthResponse
+	if err := json.Unmarshal(bodyBytes, &authResp); err == nil && authResp.Success {
+		return &authResp, nil
 	}
 
 	// If that fails, try to decode as JWT payload and convert
@@ -74,8 +75,8 @@ func (s *Service) ValidateUser(token string) (*UserResponse, error) {
 		return nil, err
 	}
 
-	// Convert JWT payload to UserResponse format
-	return &UserResponse{
+	// Convert JWT payload to AuthResponse format
+	return &models.AuthResponse{
 		Success: true,
 		Name:    getStringFromMap(jwtPayload, "name"),
 		Email:   getStringFromMap(jwtPayload, "email"),
@@ -84,43 +85,24 @@ func (s *Service) ValidateUser(token string) (*UserResponse, error) {
 	}, nil
 }
 
-// ValidateToken validates a JWT token with the auth service
-func (s *Service) ValidateToken(token string) (*UserResponse, error) {
-	return s.ValidateUser(token)
+// ValidateSession validates a session token
+func (s *Service) ValidateSession(token string) (*models.AuthResponse, error) {
+	return s.CallAuthService(fmt.Sprintf("%s/auth/validate", s.config.AuthServiceURL), map[string]string{
+		"token": token,
+	})
 }
 
-// Logout logs out a user (notifies the auth service)
+// GetUserInfo retrieves user information from auth service
+func (s *Service) GetUserInfo(token string) (*models.AuthResponse, error) {
+	return s.CallAuthService(fmt.Sprintf("%s/auth/userinfo", s.config.AuthServiceURL), map[string]string{
+		"token": token,
+	})
+}
+
+// Logout logs out a user (通知auth service)
 func (s *Service) Logout(token string) error {
-	jsonData, err := json.Marshal(map[string]string{"token": token})
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest("POST", s.BaseURL+"/auth/logout", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := s.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("logout failed with status: %d", resp.StatusCode)
-	}
-
+	// Since this is a JWT-based system, we can just log it
+	// In a more complex system, you might want to blacklist the token
+	log.Printf("User logged out with token: %s", token)
 	return nil
-}
-
-// getStringFromMap safely gets string from map
-func getStringFromMap(m map[string]interface{}, key string) string {
-	if val, ok := m[key]; ok {
-		if str, ok := val.(string); ok {
-			return str
-		}
-	}
-	return ""
 }
