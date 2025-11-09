@@ -1,15 +1,6 @@
 package templates
 
 //go:generate templ generate
-
-// UserInfo represents user authentication status
-type UserInfo struct {
-	LoggedIn bool   `json:"logged_in"`
-	Name     string `json:"name,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Picture  string `json:"picture,omitempty"`
-}
-
 templ Layout(title string, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -33,12 +24,64 @@ templ Layout(title string, content templ.Component) {
 				}
 			</style>
 			<script>
+				// Check authentication status and update nav
+				function updateNav() {
+					fetch('/api/auth/user')
+						.then(response => response.json())
+						.then(data => {
+							const nav = document.querySelector('nav');
+							if (data.logged_in) {
+								nav.innerHTML = `
+									<div class="max-w-7xl mx-auto px-4">
+										<div class="flex justify-between h-16">
+											<div class="flex items-center">
+												<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
+											</div>
+											<div class="flex items-center space-x-4">
+												<a href="/profile" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Profile</a>
+												<div class="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md">
+													<img src="${data.picture}" alt="Profile" class="w-8 h-8 rounded-full border-2 border-blue-200"/>
+													<span class="text-sm font-medium text-gray-700">${data.name}</span>
+													<button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200">Logout</button>
+												</div>
+												<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
+											</div>
+										</div>
+									</div>
+								`;
+							} else {
+								nav.innerHTML = `
+									<div class="max-w-7xl mx-auto px-4">
+										<div class="flex justify-between h-16">
+											<div class="flex items-center">
+												<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
+											</div>
+											<div class="flex items-center space-x-4">
+												<div class="flex items-center space-x-3">
+													<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Google</a>
+													<a href="/auth/github" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">GitHub</a>
+												</div>
+												<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
+											</div>
+										</div>
+									</div>
+								`;
+							}
+						})
+						.catch(error => {
+							console.error('Error checking auth status:', error);
+						});
+				}
+
 				function logout() {
 					fetch('/api/auth/logout', { method: 'POST' })
 						.then(() => {
-							window.location.reload();
+							updateNav();
 						});
 				}
+
+				// Update nav on page load
+				document.addEventListener('DOMContentLoaded', updateNav);
 			</script>
 		</head>
 		<body class="gradient-bg min-h-screen">
@@ -49,6 +92,10 @@ templ Layout(title string, content templ.Component) {
 							<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
 						</div>
 						<div class="flex items-center space-x-4">
+							<div class="flex items-center space-x-3">
+								<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Login with Google</a>
+								<a href="/auth/github" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Login with GitHub</a>
+							</div>
 							<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
 						</div>
 					</div>
@@ -59,46 +106,4 @@ templ Layout(title string, content templ.Component) {
 			</main>
 		</body>
 	</html>
-}
-
-// NavigationLoggedIn renders the logged-in navigation
-templ NavigationLoggedIn(user UserInfo) {
-	<nav class="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20">
-		<div class="max-w-7xl mx-auto px-4">
-			<div class="flex justify-between h-16">
-				<div class="flex items-center">
-					<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
-				</div>
-				<div class="flex items-center space-x-4">
-					<a href="/profile" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Profile</a>
-					<div class="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md">
-						<img src={ user.Picture } alt="Profile" class="w-8 h-8 rounded-full border-2 border-blue-200"/>
-						<span class="text-sm font-medium text-gray-700">{ user.Name }</span>
-						<button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200">Logout</button>
-					</div>
-					<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
-				</div>
-			</div>
-		</div>
-	</nav>
-}
-
-// NavigationLoggedOut renders the logged-out navigation
-templ NavigationLoggedOut() {
-	<nav class="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20">
-		<div class="max-w-7xl mx-auto px-4">
-			<div class="flex justify-between h-16">
-				<div class="flex items-center">
-					<a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200">🚀 Startup Platform</a>
-				</div>
-				<div class="flex items-center space-x-4">
-					<div class="flex items-center space-x-3">
-						<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Login with Google</a>
-						<a href="/auth/github" class="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">Login with GitHub</a>
-					</div>
-					<a href="/health" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50">Health</a>
-				</div>
-			</div>
-		</div>
-	</nav>
 }
