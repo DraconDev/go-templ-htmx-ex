@@ -110,30 +110,17 @@ func hasSessionToken(r *http.Request) bool {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// Honest hybrid: Show safe default, update in background
-	// Public page: Accept brief FOUC for speed
+
+	// Fast cookie check for navigation (Hybrid approach - no API call)
 	var navigation templ.Component
 	if hasSessionToken(r) {
-		// Check auth service in background, don't block UI
-		navigation = templates.NavigationLoggedOut() // Safe default
+		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User"})
 	} else {
-		navigation = templates.NavigationLoggedOut() // Actually logged out
+		navigation = templates.NavigationLoggedOut()
 	}
-	
+
 	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
-	
-	// Background update if user is actually logged in
-	if hasSessionToken(r) {
-		go func() {
-			userInfo := authHandler.GetUserInfo(r)
-			if userInfo.LoggedIn {
-				// Update navigation with real user data
-				updateNavigationClientSide(userInfo)
-			}
-		}()
-	}
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
