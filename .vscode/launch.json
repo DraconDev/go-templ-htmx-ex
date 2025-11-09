@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Main",
+            "name": "Debug Main",
             "type": "go",
             "request": "launch",
             "mode": "debug",
@@ -14,7 +14,9 @@
                 "PORT": "8081",
                 "REDIRECT_URL": "http://localhost:8081"
             },
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "showLog": true,
+            "logOutput": "debugger"
         }
     ]
 }
