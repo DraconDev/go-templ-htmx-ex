@@ -2,11 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Main",
+            "name": "Launch Program",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}/main.go",
+            "program": "${workspaceFolder}",
+            "buildFlags": ["-tags=debug"],
             "args": [],
             "env": {
                 "DEBUG": "debug",
@@ -16,7 +17,9 @@
             },
             "console": "integratedTerminal",
             "showLog": true,
-            "logOutput": "debugger"
+            "logOutput": "runtime,debugger,dap",
+            "cgo": false,
+            "buildMode": "debug"
         }
     ]
 }
