@@ -10,68 +10,6 @@ templ Layout(title string, content templ.Component) {
 			<title>{ title }</title>
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
-			<script>
-				// Check authentication status and update nav
-				function updateNav() {
-					fetch('/api/auth/user')
-						.then(response => response.json())
-						.then(data => {
-							const nav = document.querySelector('nav');
-							if (data.logged_in) {
-								nav.innerHTML = `
-									<div class="max-w-7xl mx-auto px-4">
-										<div class="flex justify-between h-16">
-											<div class="flex items-center">
-												<h1 class="text-xl font-bold text-gray-900">🚀 Startup Platform</h1>
-											</div>
-											<div class="flex items-center space-x-4">
-												<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-												<a href="/profile" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
-												<div class="flex items-center space-x-2">
-													<img src="${data.picture}" alt="Profile" class="w-8 h-8 rounded-full"/>
-													<span class="text-sm text-gray-700">${data.name}</span>
-													<button onclick="logout()" class="text-white bg-gray-500 hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Logout</button>
-												</div>
-												<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
-											</div>
-										</div>
-									</div>
-								`;
-							} else {
-								nav.innerHTML = `
-									<div class="max-w-7xl mx-auto px-4">
-										<div class="flex justify-between h-16">
-											<div class="flex items-center">
-												<h1 class="text-xl font-bold text-gray-900">🚀 Startup Platform</h1>
-											</div>
-											<div class="flex items-center space-x-4">
-												<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-												<div class="flex items-center space-x-2">
-													<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login with Google</a>
-													<a href="/auth/github" class="text-white bg-gray-900 hover:bg-black px-3 py-2 rounded-md text-sm font-medium">Login with GitHub</a>
-												</div>
-												<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
-											</div>
-										</div>
-									</div>
-								`;
-							}
-						})
-						.catch(error => {
-							console.error('Error checking auth status:', error);
-						});
-				}
-
-				function logout() {
-					fetch('/api/auth/logout', { method: 'POST' })
-						.then(() => {
-							updateNav();
-						});
-				}
-
-				// Update nav on page load
-				document.addEventListener('DOMContentLoaded', updateNav);
-			</script>
 		</head>
 		<body class="bg-blue-300 min-h-screen">
 			<nav class="bg-gray-200 shadow-lg">
@@ -82,7 +20,9 @@ templ Layout(title string, content templ.Component) {
 						</div>
 						<div class="flex items-center space-x-4">
 							<a href="/" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+							<a href="/profile" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
 							<a href="/auth/google" class="text-white bg-red-500 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium">Login with Google</a>
+							<a href="/auth/github" class="text-white bg-gray-900 hover:bg-black px-3 py-2 rounded-md text-sm font-medium">Login with GitHub</a>
 							<a href="/health" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Health</a>
 						</div>
 					</div>
