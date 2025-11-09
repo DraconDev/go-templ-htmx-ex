@@ -110,17 +110,91 @@ func hasSessionToken(r *http.Request) bool {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-
-	// Fast cookie check for navigation (Hybrid approach - no API call)
+	
+	// Get real user data from JWT validation
 	var navigation templ.Component
 	if hasSessionToken(r) {
-		navigation = templates.NavigationLoggedIn(templates.UserInfo{Name: "User"})
+		// Get token and validate it locally to get real user data
+		token := getSessionToken(r)
+		if userInfo := validateJWTWithRealData(token); userInfo.LoggedIn {
+			// Real user data from JWT - no broken images!
+			navigation = templates.NavigationLoggedIn(userInfo)
+		} else {
+			// Token exists but invalid
+			navigation = templates.NavigationLoggedOut()
+		}
 	} else {
 		navigation = templates.NavigationLoggedOut()
 	}
-
+	
 	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
+}
+
+// validateJWTWithRealData validates JWT and returns real user data
+func validateJWTWithRealData(token string) templates.UserInfo {
+	if token == "" {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	// Parse JWT to get real user data
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	// Decode payload (the middle part)
+	payload, err := base64URLDecode(parts[1])
+	if err != nil {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	// Parse user data from JWT payload
+	var claims struct {
+		Sub     string `json:"sub"`
+		Name    string `json:"name"`
+		Email   string `json:"email"`
+		Picture string `json:"picture"`
+		Exp     int64  `json:"exp"`
+		Iss     string `json:"iss"`
+	}
+	
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	// Check if token is still valid (not expired)
+	if claims.Exp < time.Now().Unix() {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	// Check issuer to make sure it's from our auth service
+	if claims.Iss != "auth-ms" {
+		return templates.UserInfo{LoggedIn: false}
+	}
+	
+	// Return real user data!
+	return templates.UserInfo{
+		LoggedIn: true,
+		Name:     claims.Name,
+		Email:    claims.Email,
+		Picture:  claims.Picture,
+	}
+}
+
+// base64URLDecode decodes base64url encoding (needed for JWT)
+func base64URLDecode(data string) ([]byte, error) {
+	// Add padding if needed
+	switch len(data) % 4 {
+	case 2:
+		data += "=="
+	case 3:
+		data += "="
+	case 1:
+		return nil, fmt.Errorf("invalid base64url length")
+	}
+	
+	return base64.URLEncoding.DecodeString(data)
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
