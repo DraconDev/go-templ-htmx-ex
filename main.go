@@ -18,6 +18,8 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
+var authHandler *handlers.AuthHandler
+
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
@@ -26,7 +28,7 @@ func main() {
 	authService := auth.NewService(cfg)
 
 	// Create auth handler
-	authHandler := handlers.NewAuthHandler(authService, cfg)
+	authHandler = handlers.NewAuthHandler(authService, cfg)
 
 	// Create router
 	router := mux.NewRouter()
