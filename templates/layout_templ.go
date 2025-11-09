@@ -53,7 +53,7 @@ func Layout(title string, navigation templ.Component, content templ.Component) t
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Custom animations and styles */\n\t\t\t\t@keyframes gradientShift {\n\t\t\t\t\t0% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t\t100% { background-position: 0% 50%; }\n\t\t\t\t}\n\t\t\t\t.gradient-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: gradientShift 8s ease infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"gradient-bg min-h-screen\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Modern dark theme animations */\n\t\t\t\t@keyframes darkGradient {\n\t\t\t\t\t0% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t\t100% { background-position: 0% 50%; }\n\t\t\t\t}\n\t\t\t\t@keyframes glow {\n\t\t\t\t\t0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }\n\t\t\t\t\t50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }\n\t\t\t\t}\n\t\t\t\t@keyframes float {\n\t\t\t\t\t0%, 100% { transform: translateY(0px); }\n\t\t\t\t\t50% { transform: translateY(-10px); }\n\t\t\t\t}\n\t\t\t\t.dark-gradient-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: darkGradient 15s ease infinite;\n\t\t\t\t}\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(15, 23, 42, 0.8);\n\t\t\t\t\tbackdrop-filter: blur(16px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.1);\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(15, 23, 42, 0.7);\n\t\t\t\t\tbackdrop-filter: blur(20px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.1);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tanimation: glow 3s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t\t.float-effect {\n\t\t\t\t\tanimation: float 6s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"dark-gradient-bg min-h-screen text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -99,7 +99,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><a href=\"/profile\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Profile</a><div class=\"flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-md\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"glass-nav shadow-2xl\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent hover:from-cyan-300 hover:to-purple-400 transition-all duration-300 transform hover:scale-105\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><a href=\"/profile\" class=\"text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10\">Profile</a><div class=\"flex items-center space-x-3 glass-card rounded-full px-4 py-2 shadow-lg\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,20 +107,20 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"text-sm font-medium text-gray-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"text-sm font-medium text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 66, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 90, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> <button onclick=\"logout()\" class=\"text-red-500 hover:text-red-700 font-medium text-sm transition-colors duration-200\">Logout</button></div><a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> <button onclick=\"logout()\" class=\"text-red-400 hover:text-red-300 font-medium text-sm transition-colors duration-200\">Logout</button></div><a href=\"/health\" class=\"text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10\">Health</a></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -149,14 +149,14 @@ func UserAvatar(user UserInfo) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-8 h-8 rounded-full overflow-hidden\"><img src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-8 h-8 rounded-full overflow-hidden ring-2 ring-cyan-400/50 shadow-lg\"><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 78, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 102, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -192,7 +192,7 @@ func NavigationLoggedOut() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<nav class=\"bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><div class=\"flex items-center space-x-3\"><a href=\"/auth/google\" class=\"bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with Google</a> <a href=\"/auth/github\" class=\"bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg\">Login with GitHub</a></div><a href=\"/health\" class=\"text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-50\">Health</a></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<nav class=\"glass-nav shadow-2xl\"><div class=\"max-w-7xl mx-auto px-4\"><div class=\"flex justify-between h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent hover:from-cyan-300 hover:to-purple-400 transition-all duration-300 transform hover:scale-105\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><div class=\"flex items-center space-x-3\"><a href=\"/auth/google\" class=\"bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect\">Login with Google</a> <a href=\"/auth/github\" class=\"bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect\">Login with GitHub</a></div><a href=\"/health\" class=\"text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10\">Health</a></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
