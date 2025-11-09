@@ -209,25 +209,16 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	// Server-side validation for protected pages (SSR approach)
-	var navigation templ.Component
-	var userInfo templates.UserInfo
-
-	if hasSessionToken(r) {
-		// Get real user data from auth service via authHandler
-		userInfo = authHandler.GetUserInfo(r)
-		if userInfo.LoggedIn {
-			navigation = templates.NavigationLoggedIn(userInfo)
-		} else {
-			// Token invalid, redirect to home
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	} else {
+	// Use local JWT validation for consistency (5-10ms everywhere)
+	userInfo := getUserFromJWT(r)
+	if !userInfo.LoggedIn {
+		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
+	// Create profile content with real user data
+	navigation := templates.NavigationLoggedIn(userInfo)
 	component := templates.Layout("Profile", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
 	component.Render(r.Context(), w)
 }
