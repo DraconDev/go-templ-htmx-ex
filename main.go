@@ -186,8 +186,8 @@ func validateJWTWithRealData(token string) templates.UserInfo {
 	}
 }
 
-// base64URLDecode decodes base64url encoding (needed for JWT)
-func base64URLDecode(data string) ([]byte, error) {
+// jwtBase64URLDecode decodes base64url encoding (needed for JWT)
+func jwtBase64URLDecode(data string) ([]byte, error) {
 	// Add padding if needed
 	switch len(data) % 4 {
 	case 2:
