@@ -100,60 +100,6 @@ func getSessionToken(r *http.Request) string {
 	return cookie.Value
 }
 
-// decodeJWT extracts user info from JWT without calling auth service
-func decodeJWT(token string) (templates.UserInfo, error) {
-	parts := strings.Split(token, ".")
-	if len(parts) != 3 {
-		return templates.UserInfo{}, fmt.Errorf("invalid JWT format")
-	}
-	
-	// Decode payload (base64url)
-	payload, err := base64URLDecode(parts[1])
-	if err != nil {
-		return templates.UserInfo{}, err
-	}
-	
-	// Parse JSON
-	var claims struct {
-		Sub     string `json:"sub"`
-		Name    string `json:"name"`
-		Email   string `json:"email"`
-		Picture string `json:"picture"`
-		Exp     int64  `json:"exp"`
-	}
-	
-	if err := json.Unmarshal(payload, &claims); err != nil {
-		return templates.UserInfo{}, err
-	}
-	
-	// Check expiration
-	if claims.Exp < time.Now().Unix() {
-		return templates.UserInfo{LoggedIn: false}, fmt.Errorf("token expired")
-	}
-	
-	return templates.UserInfo{
-		LoggedIn: true,
-		Name:     claims.Name,
-		Email:    claims.Email,
-		Picture:  claims.Picture,
-	}, nil
-}
-
-// base64URLDecode decodes base64url encoding
-func base64URLDecode(data string) ([]byte, error) {
-	// Add padding if needed
-	switch len(data) % 4 {
-	case 2:
-		data += "=="
-	case 3:
-		data += "="
-	case 1:
-		return nil, fmt.Errorf("invalid base64url length")
-	}
-	
-	return base64.URLEncoding.DecodeString(data)
-}
-
 // hasSessionToken checks if user has a session token cookie (fast, no API call)
 func hasSessionToken(r *http.Request) bool {
 	_, err := r.Cookie("session_token")
