@@ -101,7 +101,16 @@ func getSessionToken(r *http.Request) string {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Home", templates.HomeContent())
+	
+	// Check authentication status on server side
+	var navigation templ.Component
+	if getUserInfo(r).LoggedIn {
+		navigation = templates.NavigationLoggedIn(getUserInfo(r))
+	} else {
+		navigation = templates.NavigationLoggedOut()
+	}
+	
+	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
