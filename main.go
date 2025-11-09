@@ -345,26 +345,42 @@ func callAuthService(endpoint string, params map[string]string) (*AuthResponse, 
 	}
 	defer resp.Body.Close()
 	
+	// Read the response body first
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	
 	// Try to decode as AuthResponse first
 	var authResp AuthResponse
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err == nil && authResp.Success {
+	if err := json.Unmarshal(bodyBytes, &authResp); err == nil && authResp.Success {
 		return &authResp, nil
 	}
 	
 	// If that fails, try to decode as JWT payload and convert
 	var jwtPayload map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&jwtPayload); err != nil {
+	if err := json.Unmarshal(bodyBytes, &jwtPayload); err != nil {
 		return nil, err
 	}
 	
 	// Convert JWT payload to AuthResponse format
 	return &AuthResponse{
 		Success: true,
-		Name:    jwtPayload["name"].(string),
-		Email:   jwtPayload["email"].(string),
-		Picture: jwtPayload["picture"].(string),
-		UserID:  jwtPayload["sub"].(string),
+		Name:    getStringFromMap(jwtPayload, "name"),
+		Email:   getStringFromMap(jwtPayload, "email"),
+		Picture: getStringFromMap(jwtPayload, "picture"),
+		UserID:  getStringFromMap(jwtPayload, "sub"),
 	}, nil
+}
+
+// Helper function to safely get string from map
+func getStringFromMap(m map[string]interface{}, key string) string {
+	if val, ok := m[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
 }
 
 // AuthResponse represents the response from the auth service
