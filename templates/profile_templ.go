@@ -29,7 +29,7 @@ func ProfileContent(name, email, picture string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"container mx-auto px-4 py-8\"><div class=\"max-w-2xl mx-auto\"><div class=\"bg-white rounded-lg shadow-lg overflow-hidden\"><div class=\"px-6 py-4 bg-blue-600 text-white\"><h1 class=\"text-2xl font-bold\">🚀 Startup Platform Profile</h1><p class=\"text-blue-100 text-sm\">Authenticated via Google OAuth & Auth Microservice</p></div><div class=\"p-6\"><div class=\"flex items-center mb-6\"><div class=\"w-20 h-20 rounded-full overflow-hidden bg-gray-200 mr-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto\"><!-- Profile Header Card --><div class=\"bg-white rounded-2xl shadow-2xl overflow-hidden mb-8\"><div class=\"bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 px-8 py-12 text-white text-center\"><div class=\"inline-block p-1 bg-white/20 rounded-full mb-6\"><div class=\"bg-white rounded-full px-4 py-2\"><span class=\"text-sm font-semibold text-gray-700\">👤 User Profile</span></div></div><h1 class=\"text-4xl font-bold mb-2\">Profile Dashboard</h1><p class=\"text-blue-100 text-lg\">Authenticated via Google OAuth & Auth Microservice</p></div><div class=\"p-8\"><!-- User Info Section --><div class=\"flex items-center mb-8\"><div class=\"relative\"><div class=\"w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,7 +41,7 @@ func ProfileContent(name, email, picture string) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(picture)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 16, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 23, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -52,79 +52,79 @@ func ProfileContent(name, email, picture string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"w-full h-full flex items-center justify-center text-gray-400\"><svg class=\"w-10 h-10\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z\" clip-rule=\"evenodd\"></path></svg></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"w-full h-full flex items-center justify-center text-white\"><svg class=\"w-12 h-12\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z\" clip-rule=\"evenodd\"></path></svg></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div><h2 class=\"text-xl font-semibold text-gray-800\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center\"><svg class=\"w-4 h-4 text-white\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z\" clip-rule=\"evenodd\"></path></svg></div></div><div class=\"ml-6\"><h2 class=\"text-3xl font-bold text-gray-800\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 26, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 39, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h2><p class=\"text-gray-600\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h2><p class=\"text-lg text-gray-600\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 27, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 40, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p></div></div><div class=\"border-t pt-6\"><h3 class=\"text-lg font-semibold text-gray-800 mb-4\">Account Information</h3><div class=\"space-y-3\"><div class=\"flex justify-between\"><span class=\"text-gray-600\">Name:</span> <span class=\"font-medium\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><div class=\"flex items-center mt-2\"><div class=\"w-2 h-2 bg-green-400 rounded-full mr-2\"></div><span class=\"text-sm text-green-600 font-medium\">Active Session</span></div></div></div><!-- Account Information Card --><div class=\"bg-gray-50 rounded-2xl p-6\"><h3 class=\"text-xl font-bold text-gray-800 mb-6 flex items-center\"><div class=\"w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3\"><span class=\"text-white text-sm\">📋</span></div>Account Information</h3><div class=\"grid grid-cols-1 md:grid-cols-2 gap-6\"><div class=\"space-y-4\"><div class=\"bg-white rounded-xl p-4 shadow-sm\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-600 font-medium\">Full Name</span> <span class=\"font-semibold text-gray-800\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 36, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 61, Col: 84}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></div><div class=\"flex justify-between\"><span class=\"text-gray-600\">Email:</span> <span class=\"font-medium\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></div></div><div class=\"bg-white rounded-xl p-4 shadow-sm\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-600 font-medium\">Email Address</span> <span class=\"font-semibold text-gray-800\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 40, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `profile.templ`, Line: 67, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><div class=\"flex justify-between\"><span class=\"text-gray-600\">Profile Picture:</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div></div></div><div class=\"space-y-4\"><div class=\"bg-white rounded-xl p-4 shadow-sm\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-600 font-medium\">Profile Picture</span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if picture != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span class=\"text-green-600 font-medium\">Available</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span class=\"text-green-600 font-semibold flex items-center\"><div class=\"w-2 h-2 bg-green-500 rounded-full mr-2\"></div>Available</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"text-gray-500 font-medium\">Not set</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"text-gray-500 font-semibold\">Not set</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></div><div class=\"mt-8 flex space-x-4\"><button hx-post=\"/api/auth/logout\" hx-swap=\"none\" class=\"bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium\">Logout</button> <button hx-get=\"/\" hx-swap=\"none\" class=\"bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium\">Back to Home</button></div></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div><div class=\"bg-white rounded-xl p-4 shadow-sm\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-600 font-medium\">Authentication</span> <span class=\"text-blue-600 font-semibold flex items-center\"><div class=\"w-2 h-2 bg-blue-500 rounded-full mr-2\"></div>OAuth 2.0</span></div></div></div></div></div><!-- Action Buttons --><div class=\"mt-8 flex flex-col sm:flex-row gap-4\"><button hx-post=\"/api/auth/logout\" hx-swap=\"none\" class=\"flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg\">Logout</button> <button hx-get=\"/\" hx-swap=\"none\" class=\"flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg\">Back to Home</button></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
