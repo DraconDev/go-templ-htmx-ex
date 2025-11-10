@@ -1,2 +1,1 @@
-- we seem to be getting logged out after like 15 mins but least and hour
-    
+- we seem to be getting logged out after like 15 mins b
