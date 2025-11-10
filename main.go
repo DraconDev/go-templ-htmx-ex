@@ -96,30 +96,7 @@ func main() {
 	log.Println("Server stopped")
 }
 
-// Helper function to get session token from cookie
-func getSessionToken(r *http.Request) string {
-	cookie, err := r.Cookie("session_token")
-	if err != nil {
-		return ""
-	}
-	return cookie.Value
-}
-
-// getUserFromJWT gets user info using local JWT validation (5-10ms, no API call)
-func getUserFromJWT(r *http.Request) templates.UserInfo {
-	cookie, err := r.Cookie("session_token")
-	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
-	}
-
-	return validateJWTWithRealData(cookie.Value)
-}
-
-// hasSessionToken checks if user has a session token cookie (fast, no API call)
-func hasSessionToken(r *http.Request) bool {
-	_, err := r.Cookie("session_token")
-	return err == nil
-}
+// JWT validation functions have been moved to handlers/handlers.go for consistency
 
 // HTTP Handlers
 
