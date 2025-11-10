@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
-	"github.com/a-h/templ"
 )
 
 // Handlers contains all the handlers
