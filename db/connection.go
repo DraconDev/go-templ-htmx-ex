@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -23,10 +22,7 @@ type Config struct {
 // DefaultConfig returns default database configuration
 func DefaultConfig() *Config {
 	return &Config{
-		URL:     getEnvOrDefault("DB_URL", ""),
-		MaxOpen: 25,
-		MaxIdle: 10,
-		MaxLife: 5 * time.Minute,
+		URL: getEnvOrDefault("DB_URL", ""),
 	}
 }
 
