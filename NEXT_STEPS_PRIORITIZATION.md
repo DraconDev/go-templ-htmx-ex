@@ -13,10 +13,10 @@ We've successfully built a solid foundation:
 **Why this first?** Most critical for user engagement and retention.
 
 **What it includes:**
-- Complete profile page (name, email, avatar, bio)
+- Complete profile page (name, email, avatar, bio) > i dont think we care about bio in most cases 
 - Edit profile functionality  > we are using info from social logins
 - Avatar/image upload system > we are using social logins only so this is out 
-- Account settings (notifications, preferences)
+- Account settings (notifications, preferences) > 
 - Integration with existing auth flow
 
 **Benefits:**
