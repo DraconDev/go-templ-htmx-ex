@@ -38,9 +38,10 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For now, pass empty user data - the template and JavaScript will handle the rest
+	// Get user data from auth service
+	// For now, pass the token data - the template and JavaScript will handle the rest
 	// This maintains the working behavior from the original code
-	component := templates.Layout("Profile", templates.ProfileContent("", "", ""))
+	component := templates.Layout("Profile", templates.NavigationLoggedOut(), templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
 
