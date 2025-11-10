@@ -3,9 +3,16 @@
 ## 🎯 **Current State**
 We've successfully built a solid foundation:
 - ✅ **PostgreSQL Database** - Users and preferences tables
-- ✅ **Authentication System** - OAuth with JWT tokens  
+- ✅ **Authentication System** - OAuth with JWT tokens
 - ✅ **Modern UI** - Clean, startup-focused design
 - ✅ **Microservice Architecture** - Ready to scale
+
+## 🏗️ **Architecture Note: Payment Microservice**
+**Important:** This application is a **client** of your reusable Stripe microservice
+- Payment processing lives in the microservice
+- This app calls the payment API
+- No Stripe code in this application
+- Reusable across all your projects
 
 ## 🚀 **Critical Next Features for Market**
 
