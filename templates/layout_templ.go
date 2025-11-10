@@ -55,7 +55,7 @@ func Layout(title string, navigation templ.Component, content templ.Component) t
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Ultra-dark theme - solid uniform background */\n\t\t\t\t.ultra-dark-bg {\n\t\t\t\t\tbackground: #0a0a0a;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.95);\n\t\t\t\t\tbackdrop-filter: blur(25px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.05);\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.8);\n\t\t\t\t\tbackdrop-filter: blur(30px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.08);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tbox-shadow: 0 0 20px rgba(59, 130, 246, 0.3);\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t\tfunction toggleProfileDropdown() {\n\t\t\t\t\tconst dropdown = document.getElementById('profile-dropdown');\n\t\t\t\t\tdropdown.classList.toggle('hidden');\n\t\t\t\t}\n\t\t\t\t// Close dropdown when clicking outside\n\t\t\t\tdocument.addEventListener('click', function(event) {\n\t\t\t\t\tconst dropdown = document.getElementById('profile-dropdown');\n\t\t\t\t\tconst button = event.target.closest('button');\n\t\t\t\t\tif (!button && !dropdown.contains(event.target)) {\n\t\t\t\t\t\tdropdown.classList.add('hidden');\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t</script></head><body class=\"ultra-dark-bg min-h-screen text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Ultra-dark theme - solid uniform background */\n\t\t\t\t.ultra-dark-bg {\n\t\t\t\t\tbackground: #0a0a0a;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.95);\n\t\t\t\t\tbackdrop-filter: blur(25px);\n\t\t\t\t\t-webkit-backdrop-filter: blur(25px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.05);\n\t\t\t\t\tbox-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);\n\t\t\t\t\tposition: sticky;\n\t\t\t\t\ttop: 0;\n\t\t\t\t\tz-index: 40;\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.8);\n\t\t\t\t\tbackdrop-filter: blur(30px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.08);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tbox-shadow: 0 0 20px rgba(59, 130, 246, 0.3);\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t\tfunction toggleProfileDropdown() {\n\t\t\t\t\tconst dropdown = document.getElementById('profile-dropdown');\n\t\t\t\t\tdropdown.classList.toggle('hidden');\n\t\t\t\t}\n\t\t\t\t// Close dropdown when clicking outside\n\t\t\t\tdocument.addEventListener('click', function(event) {\n\t\t\t\t\tconst dropdown = document.getElementById('profile-dropdown');\n\t\t\t\t\tconst button = event.target.closest('button');\n\t\t\t\t\tif (!button && !dropdown.contains(event.target)) {\n\t\t\t\t\t\tdropdown.classList.add('hidden');\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t</script></head><body class=\"ultra-dark-bg min-h-screen text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -150,7 +150,7 @@ func UserAvatar(user UserInfo) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 112, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 117, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -209,7 +209,7 @@ func UserInitials(user UserInfo) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(string([]rune(user.Name)[0:1])))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 125, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 130, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

@@ -31,7 +31,12 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 				.glass-nav {
 					background: rgba(0, 0, 0, 0.95);
 					backdrop-filter: blur(25px);
+					-webkit-backdrop-filter: blur(25px);
 					border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+					box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+					position: sticky;
+					top: 0;
+					z-index: 40;
 				}
 				.glass-card {
 					background: rgba(0, 0, 0, 0.8);
