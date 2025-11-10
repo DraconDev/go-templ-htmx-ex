@@ -14,8 +14,8 @@ We've successfully built a solid foundation:
 
 **What it includes:**
 - Complete profile page (name, email, avatar, bio)
-- Edit profile functionality  
-- Avatar/image upload system
+- Edit profile functionality  > we are using info from social logins
+- Avatar/image upload system > we are using social logins only so this is out 
 - Account settings (notifications, preferences)
 - Integration with existing auth flow
 
