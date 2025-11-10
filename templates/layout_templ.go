@@ -53,7 +53,7 @@ func Layout(title string, navigation templ.Component, content templ.Component) t
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Modern dark theme animations */\n\t\t\t\t@keyframes darkGradient {\n\t\t\t\t\t0% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t\t100% { background-position: 0% 50%; }\n\t\t\t\t}\n\t\t\t\t@keyframes glow {\n\t\t\t\t\t0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }\n\t\t\t\t\t50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }\n\t\t\t\t}\n\t\t\t\t@keyframes float {\n\t\t\t\t\t0%, 100% { transform: translateY(0px); }\n\t\t\t\t\t50% { transform: translateY(-10px); }\n\t\t\t\t}\n\t\t\t\t.dark-gradient-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: darkGradient 15s ease infinite;\n\t\t\t\t}\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(15, 23, 42, 0.8);\n\t\t\t\t\tbackdrop-filter: blur(16px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.1);\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(15, 23, 42, 0.7);\n\t\t\t\t\tbackdrop-filter: blur(20px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.1);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tanimation: glow 3s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t\t.float-effect {\n\t\t\t\t\tanimation: float 6s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"dark-gradient-bg min-h-screen text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Ultra-dark theme animations */\n\t\t\t\t@keyframes darkGradient {\n\t\t\t\t\t0% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t\t100% { background-position: 0% 50%; }\n\t\t\t\t}\n\t\t\t\t@keyframes glow {\n\t\t\t\t\t0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }\n\t\t\t\t\t50% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.3); }\n\t\t\t\t}\n\t\t\t\t.ultra-dark-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #000000, #0a0a0a, #1a1a1a, #2a2a2a);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: darkGradient 15s ease infinite;\n\t\t\t\t}\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.9);\n\t\t\t\t\tbackdrop-filter: blur(20px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.08);\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.8);\n\t\t\t\t\tbackdrop-filter: blur(25px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.08);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tanimation: glow 4s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"ultra-dark-bg min-h-screen text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +114,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 90, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 83, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -156,7 +156,7 @@ func UserAvatar(user UserInfo) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 102, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 95, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
