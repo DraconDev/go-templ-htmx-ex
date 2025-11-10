@@ -17,12 +17,7 @@ type Database struct {
 
 // Config represents database configuration
 type Config struct {
-	Host     string
-	Port     string
-	Database string
-	Username string
-	Password string
-	SSLMode  string
+	URL      string
 	MaxOpen  int
 	MaxIdle  int
 	MaxLife  time.Duration
