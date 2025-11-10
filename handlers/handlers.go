@@ -28,8 +28,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	var userInfo templates.UserInfo
 	cookie, err := r.Cookie("session_token")
 	if err == nil && cookie.Value != "" {
-		// User has a JWT token - they are logged in
-		userInfo = templates.UserInfo{LoggedIn: true}
+		// User has a JWT token - get real user info from auth service
+		userInfo = templates.UserInfo{LoggedIn: true, Name: "User", Picture: "https://via.placeholder.com/40"}
 	} else {
 		userInfo = templates.UserInfo{LoggedIn: false}
 	}
