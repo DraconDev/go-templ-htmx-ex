@@ -17,10 +17,10 @@ type Database struct {
 
 // Config represents database configuration
 type Config struct {
-	URL      string
-	MaxOpen  int
-	MaxIdle  int
-	MaxLife  time.Duration
+	URL     string
+	MaxOpen int
+	MaxIdle int
+	MaxLife time.Duration
 }
 
 // DefaultConfig returns default database configuration
@@ -43,11 +43,11 @@ func getEnvOrDefault(key, defaultValue string) string {
 
 // NewDatabase creates a new database connection
 func NewDatabase(config *Config) (*Database, error) {
-	// Build connection string
-	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		config.Host, config.Port, config.Username, config.Password, config.Database, config.SSLMode,
-	)
+	// Use the connection string directly
+	connStr := config.URL
+	if connStr == "" {
+		return nil, fmt.Errorf("DB_URL environment variable is required")
+	}
 
 	// Open database connection
 	db, err := sql.Open("postgres", connStr)
