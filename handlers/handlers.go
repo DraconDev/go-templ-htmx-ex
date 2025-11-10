@@ -38,9 +38,9 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// User has valid JWT token - show logged-in navigation
-	userInfo := templates.UserInfo{LoggedIn: true}
-	component := templates.Layout("Profile", templates.NavigationLoggedIn(userInfo), templates.ProfileContent("", "", ""))
+	// For now, pass empty user data - the template and JavaScript will handle the rest
+	// This maintains the working behavior from the original code
+	component := templates.Layout("Profile", templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
 
