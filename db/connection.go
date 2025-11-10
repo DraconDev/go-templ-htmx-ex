@@ -26,15 +26,10 @@ type Config struct {
 // DefaultConfig returns default database configuration
 func DefaultConfig() *Config {
 	return &Config{
-		Host:     getEnvOrDefault("DB_HOST", "localhost"),
-		Port:     getEnvOrDefault("DB_PORT", "5432"),
-		Database: getEnvOrDefault("DB_NAME", "startup_platform"),
-		Username: getEnvOrDefault("DB_USER", "postgres"),
-		Password: getEnvOrDefault("DB_PASSWORD", ""),
-		SSLMode:  getEnvOrDefault("DB_SSL_MODE", "require"),
-		MaxOpen:  25,
-		MaxIdle:  10,
-		MaxLife:  5 * time.Minute,
+		URL:     getEnvOrDefault("DB_URL", ""),
+		MaxOpen: 25,
+		MaxIdle: 10,
+		MaxLife: 5 * time.Minute,
 	}
 }
 
