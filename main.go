@@ -48,7 +48,7 @@ func main() {
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
 
 	// User profile page
-	router.HandleFunc("/profile", profileHandler).Methods("GET")
+	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
 	// Session management
 	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
