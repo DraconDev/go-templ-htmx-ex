@@ -4,21 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
-	"strings"
-	"time"
-
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
-)
-
-package handlers
-
-import (
-	"encoding/base64"
-	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -112,26 +97,37 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 // HomeHandler handles the home page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Home", templates.NavigationLoggedOut(), templates.HomeContent())
+	
+	// Use local JWT validation for EVERY page (fast + consistent)
+	userInfo := getUserFromJWT(r)
+
+	var navigation templ.Component
+	if userInfo.LoggedIn {
+		// Fast local validation: 5-10ms for real user data
+		navigation = templates.NavigationLoggedIn(userInfo)
+	} else {
+		navigation = templates.NavigationLoggedOut()
+	}
+
+	component := templates.Layout("Home", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
 // ProfileHandler handles the user profile page
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-
-	// Get JWT token from cookie
-	cookie, err := r.Cookie("session_token")
-	if err != nil || cookie.Value == "" {
+	
+	// Use local JWT validation for consistency (5-10ms everywhere)
+	userInfo := getUserFromJWT(r)
+	if !userInfo.LoggedIn {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
-	// Get user data from auth service
-	// For now, pass the token data - the template and JavaScript will handle the rest
-	// This maintains the working behavior from the original code
-	component := templates.Layout("Profile", templates.NavigationLoggedOut(), templates.ProfileContent("", "", ""))
+	// Create profile content with real user data
+	navigation := templates.NavigationLoggedIn(userInfo)
+	component := templates.Layout("Profile", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
 	component.Render(r.Context(), w)
 }
 
