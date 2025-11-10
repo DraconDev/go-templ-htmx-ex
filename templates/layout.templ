@@ -119,10 +119,19 @@ templ UserAvatar(user UserInfo) {
 		}
 		if user.Picture == "" {
 			<div class="w-full h-full flex items-center justify-center text-white font-semibold text-sm">
-				{ if user.Name != "" } { strings.ToUpper(string([]rune(user.Name)[0:1])) } { else } U { endif }
+				@UserInitials(user)
 			</div>
 		}
 	</div>
+}
+
+// UserInitials returns initials with fallback
+templ UserInitials(user UserInfo) {
+	if user.Name != "" {
+		{ strings.ToUpper(string([]rune(user.Name)[0:1])) }
+	} else {
+		U
+	}
 }
 
 // NavigationLoggedOut renders the logged-out navigation
