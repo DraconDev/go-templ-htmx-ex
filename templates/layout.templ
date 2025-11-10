@@ -21,75 +21,9 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
 			<style>
-				/* Ultra-dark theme with running line animations */
-				@keyframes slowGradient {
-					0%, 100% { background-position: 0% 50%; }
-					50% { background-position: 100% 50%; }
-				}
-				@keyframes runningLines {
-					0% {
-						transform: translateX(-100%) translateY(-50%);
-						opacity: 0;
-					}
-					10%, 90% {
-						opacity: 0.3;
-					}
-					100% {
-						transform: translateX(100vw) translateY(-50%);
-						opacity: 0;
-					}
-				}
-				@keyframes subtleGlow {
-					0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }
-					50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.25); }
-				}
-				@keyframes fadeInOut {
-					0%, 100% { opacity: 0.2; }
-					50% { opacity: 0.6; }
-				}
-				
+				/* Ultra-dark theme - static, no animations that break scrolling */
 				.ultra-dark-bg {
 					background: linear-gradient(-45deg, #000000, #050505, #0a0a0a, #0f0f0f);
-					background-size: 400% 400%;
-					animation: slowGradient 30s ease infinite;
-					position: relative;
-					overflow: hidden;
-				}
-				
-				/* Running lines animation */
-				.ultra-dark-bg::before {
-					content: '';
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-					background: repeating-linear-gradient(
-						90deg,
-						transparent,
-						transparent 200px,
-						rgba(59, 130, 246, 0.02) 201px,
-						rgba(139, 92, 246, 0.02) 202px
-					);
-					animation: runningLines 20s linear infinite;
-				}
-				
-				/* Additional subtle lines */
-				.ultra-dark-bg::after {
-					content: '';
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-					background: repeating-linear-gradient(
-						45deg,
-						transparent,
-						transparent 150px,
-						rgba(139, 92, 246, 0.015) 151px,
-						rgba(59, 130, 246, 0.015) 152px
-					);
-					animation: runningLines 25s linear infinite reverse;
 				}
 				
 				.glass-nav {
@@ -103,7 +37,7 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 					border: 1px solid rgba(255, 255, 255, 0.05);
 				}
 				.glow-effect {
-					animation: subtleGlow 6s ease-in-out infinite;
+					box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 				}
 			</style>
 			<script>

@@ -47,13 +47,13 @@ func Layout(title string, navigation templ.Component, content templ.Component) t
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 20, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 20, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Ultra-dark theme with simple, lightweight animations */\n\t\t\t\t@keyframes slowGradient {\n\t\t\t\t\t0%, 100% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t}\n\t\t\t\t@keyframes subtleGlow {\n\t\t\t\t\t0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }\n\t\t\t\t\t50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.25); }\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t.ultra-dark-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #000000, #050505, #0a0a0a, #0f0f0f);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: slowGradient 30s ease infinite;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.95);\n\t\t\t\t\tbackdrop-filter: blur(25px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.05);\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.85);\n\t\t\t\t\tbackdrop-filter: blur(30px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.05);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tanimation: subtleGlow 6s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"ultra-dark-bg min-h-screen text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://cdn.tailwindcss.com\"></script><style>\n\t\t\t\t/* Ultra-dark theme with running line animations */\n\t\t\t\t@keyframes slowGradient {\n\t\t\t\t\t0%, 100% { background-position: 0% 50%; }\n\t\t\t\t\t50% { background-position: 100% 50%; }\n\t\t\t\t}\n\t\t\t\t@keyframes runningLines {\n\t\t\t\t\t0% {\n\t\t\t\t\t\ttransform: translateX(-100%) translateY(-50%);\n\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t}\n\t\t\t\t\t10%, 90% {\n\t\t\t\t\t\topacity: 0.3;\n\t\t\t\t\t}\n\t\t\t\t\t100% {\n\t\t\t\t\t\ttransform: translateX(100vw) translateY(-50%);\n\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t@keyframes subtleGlow {\n\t\t\t\t\t0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }\n\t\t\t\t\t50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.25); }\n\t\t\t\t}\n\t\t\t\t@keyframes fadeInOut {\n\t\t\t\t\t0%, 100% { opacity: 0.2; }\n\t\t\t\t\t50% { opacity: 0.6; }\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t.ultra-dark-bg {\n\t\t\t\t\tbackground: linear-gradient(-45deg, #000000, #050505, #0a0a0a, #0f0f0f);\n\t\t\t\t\tbackground-size: 400% 400%;\n\t\t\t\t\tanimation: slowGradient 30s ease infinite;\n\t\t\t\t\tposition: relative;\n\t\t\t\t\toverflow: hidden;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t/* Running lines animation */\n\t\t\t\t.ultra-dark-bg::before {\n\t\t\t\t\tcontent: '';\n\t\t\t\t\tposition: absolute;\n\t\t\t\t\ttop: 0;\n\t\t\t\t\tleft: 0;\n\t\t\t\t\twidth: 100%;\n\t\t\t\t\theight: 100%;\n\t\t\t\t\tbackground: repeating-linear-gradient(\n\t\t\t\t\t\t90deg,\n\t\t\t\t\t\ttransparent,\n\t\t\t\t\t\ttransparent 200px,\n\t\t\t\t\t\trgba(59, 130, 246, 0.02) 201px,\n\t\t\t\t\t\trgba(139, 92, 246, 0.02) 202px\n\t\t\t\t\t);\n\t\t\t\t\tanimation: runningLines 20s linear infinite;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t/* Additional subtle lines */\n\t\t\t\t.ultra-dark-bg::after {\n\t\t\t\t\tcontent: '';\n\t\t\t\t\tposition: absolute;\n\t\t\t\t\ttop: 0;\n\t\t\t\t\tleft: 0;\n\t\t\t\t\twidth: 100%;\n\t\t\t\t\theight: 100%;\n\t\t\t\t\tbackground: repeating-linear-gradient(\n\t\t\t\t\t\t45deg,\n\t\t\t\t\t\ttransparent,\n\t\t\t\t\t\ttransparent 150px,\n\t\t\t\t\t\trgba(139, 92, 246, 0.015) 151px,\n\t\t\t\t\t\trgba(59, 130, 246, 0.015) 152px\n\t\t\t\t\t);\n\t\t\t\t\tanimation: runningLines 25s linear infinite reverse;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t.glass-nav {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.95);\n\t\t\t\t\tbackdrop-filter: blur(25px);\n\t\t\t\t\tborder-bottom: 1px solid rgba(255, 255, 255, 0.05);\n\t\t\t\t}\n\t\t\t\t.glass-card {\n\t\t\t\t\tbackground: rgba(0, 0, 0, 0.85);\n\t\t\t\t\tbackdrop-filter: blur(30px);\n\t\t\t\t\tborder: 1px solid rgba(255, 255, 255, 0.05);\n\t\t\t\t}\n\t\t\t\t.glow-effect {\n\t\t\t\t\tanimation: subtleGlow 6s ease-in-out infinite;\n\t\t\t\t}\n\t\t\t</style><script>\n\t\t\t\tfunction logout() {\n\t\t\t\t\tfetch('/api/auth/logout', { method: 'POST' })\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script></head><body class=\"ultra-dark-bg min-h-screen text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +114,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 90, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 145, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -156,7 +156,7 @@ func UserAvatar(user UserInfo) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 102, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 157, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
