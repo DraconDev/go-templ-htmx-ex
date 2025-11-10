@@ -124,19 +124,10 @@ templ UserAvatar(user UserInfo) {
 		}
 		if user.Picture == "" {
 			<div class="w-full h-full flex items-center justify-center text-white font-semibold text-sm">
-				{ GetUserInitials(user.Name) }
+				{ strings.ToUpper(string([]rune(user.Name)[0:1])) }
 			</div>
 		}
 	</div>
-}
-
-// GetUserInitials extracts initials from a user's name
-templ GetUserInitials(name string) {
-	@renderUserInitials(name)
-}
-
-templ renderUserInitials(name string) {
-	{ strings.ToUpper(string([]rune(name)[0])) }
 }
 
 // NavigationLoggedOut renders the logged-out navigation
