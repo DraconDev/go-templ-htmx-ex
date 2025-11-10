@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/a-h/templ"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
+	"github.com/a-h/templ"
 )
 
 // Handlers contains all the handlers
@@ -23,17 +23,17 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 // HomeHandler handles the home page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Check for JWT token to determine authentication status
 	var userInfo templates.UserInfo
 	cookie, err := r.Cookie("session_token")
 	if err == nil && cookie.Value != "" {
-		// User has a JWT token - get real user info from auth service
-		userInfo = templates.UserInfo{LoggedIn: true, Name: "User", Picture: "https://via.placeholder.com/40"}
+		// User has a JWT token - they are logged in
+		userInfo = templates.UserInfo{LoggedIn: true}
 	} else {
 		userInfo = templates.UserInfo{LoggedIn: false}
 	}
-	
+
 	// Choose navigation based on auth status
 	var nav templ.Component
 	if userInfo.LoggedIn {
@@ -41,7 +41,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		nav = templates.NavigationLoggedOut()
 	}
-	
+
 	component := templates.Layout("Home", nav, templates.HomeContent())
 	component.Render(r.Context(), w)
 }
@@ -49,7 +49,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 // ProfileHandler handles the user profile page
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Get JWT token from cookie
 	cookie, err := r.Cookie("session_token")
 	if err != nil || cookie.Value == "" {
