@@ -71,6 +71,8 @@ my take on this that because we use social logins we dont much care about this, 
 
 **Implementation effort:** ~2-3 days
 
+we dont need this, again we use social login, we might have upload but not for avatars
+
 ---
 
 ### **4. Error Handling & Logging** 🛠️ **TECHNICAL PRIORITY**
