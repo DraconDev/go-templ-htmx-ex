@@ -51,13 +51,7 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 		</head>
 		<body class="ultra-dark-bg min-h-screen text-white">
 			@navigation
-			<main class="container mx-auto py-12 px-4 relative">
-				<!-- Subtle animated background overlay -->
-				<div class="fixed inset-0 pointer-events-none">
-					<div class="absolute top-20 left-20 w-32 h-32 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 rounded-full blur-xl animate-pulse"></div>
-					<div class="absolute bottom-40 right-32 w-24 h-24 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 rounded-full blur-lg animate-pulse delay-1000"></div>
-					<div class="absolute top-1/2 left-1/3 w-40 h-40 bg-gradient-to-r from-cyan-400/3 to-purple-400/3 rounded-full blur-2xl animate-pulse delay-2000"></div>
-				</div>
+			<main class="container mx-auto py-12 px-4">
 				@content
 			</main>
 		</body>
