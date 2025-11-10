@@ -179,7 +179,7 @@ func NavigationLoggedOut() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><a href=\"/login\" class=\"bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg text-lg font-bold transition-all duration-200\">Login</a></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><a href=\"/login\" class=\"bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-lg text-base font-semibold transition-all duration-200\">Login</a></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
