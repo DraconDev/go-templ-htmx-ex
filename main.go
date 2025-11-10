@@ -38,8 +38,8 @@ func main() {
 	router := mux.NewRouter()
 
 	// Define routes
-	router.HandleFunc("/", homeHandler).Methods("GET")
-	router.HandleFunc("/health", healthHandler).Methods("GET")
+	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
+	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 
 	// OAuth login routes
