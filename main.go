@@ -40,6 +40,7 @@ func main() {
 	// Define routes
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/health", healthHandler).Methods("GET")
+	router.HandleFunc("/login", loginHandler).Methods("GET")
 
 	// OAuth login routes
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
