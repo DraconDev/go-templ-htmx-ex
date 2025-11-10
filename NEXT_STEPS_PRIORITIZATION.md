@@ -27,6 +27,8 @@ We've successfully built a solid foundation:
 
 **Implementation effort:** ~2-3 days
 
+my take on this that because we use social logins we dont much care about this, we want to not distract the user with stuff that doens't matter 
+
 ---
 
 ### **2. Admin Panel & Dashboard** 🔧 **HIGH PRIORITY** 
@@ -46,6 +48,8 @@ We've successfully built a solid foundation:
 - Professional appearance for stakeholders
 
 **Implementation effort:** ~3-4 days
+
+? do we need this, we just have the db, 
 
 ---
 
