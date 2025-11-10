@@ -99,7 +99,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><a href=\"/profile\" class=\"flex items-center space-x-3 bg-white/5 rounded-lg px-4 py-2 border border-white/10 hover:bg-white/10 transition-all duration-200\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"relative\"><button onclick=\"toggleProfileDropdown()\" class=\"flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-gray-600 hover:border-cyan-400 transition-colors duration-200\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,20 +107,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"text-sm font-medium text-white\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 72, Col: 62}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span></a> <button onclick=\"logout()\" class=\"text-red-400 hover:text-red-300 text-sm font-medium transition-colors duration-200\">Logout</button></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</button><div id=\"profile-dropdown\" class=\"hidden absolute right-0 top-12 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50\"><a href=\"/profile\" class=\"block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-t-lg\">Profile</a> <button onclick=\"logout()\" class=\"block w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-700 rounded-b-lg\">Logout</button></div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -144,25 +131,25 @@ func UserAvatar(user UserInfo) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-7 h-7 rounded-full overflow-hidden border border-cyan-400/30\"><img src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"w-7 h-7 rounded-full overflow-hidden border border-cyan-400/30\"><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 83, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 85, Col: 25}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" alt=\"Profile\" class=\"w-full h-full object-cover\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" alt=\"Profile\" class=\"w-full h-full object-cover\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -187,12 +174,12 @@ func NavigationLoggedOut() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><div class=\"flex items-center space-x-3\"><a href=\"/auth/google\" class=\"bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200\">Login</a> <a href=\"/auth/github\" class=\"bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200\">GitHub</a></div></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"flex items-center space-x-4\"><div class=\"flex items-center space-x-3\"><a href=\"/auth/google\" class=\"bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200\">Login</a> <a href=\"/auth/github\" class=\"bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200\">GitHub</a></div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
