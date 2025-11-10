@@ -93,6 +93,8 @@ we dont need this, again we use social login, we might have upload but not for a
 
 **Implementation effort:** ~2-3 days
 
+yea this is good, 
+
 ---
 
 ### **5. Environment Management** ⚙️ **BEST PRACTICE**
