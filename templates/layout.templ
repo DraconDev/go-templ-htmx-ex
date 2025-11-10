@@ -47,6 +47,18 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 							window.location.reload();
 						});
 				}
+				function toggleProfileDropdown() {
+					const dropdown = document.getElementById('profile-dropdown');
+					dropdown.classList.toggle('hidden');
+				}
+				// Close dropdown when clicking outside
+				document.addEventListener('click', function(event) {
+					const dropdown = document.getElementById('profile-dropdown');
+					const button = event.target.closest('button');
+					if (!button && !dropdown.contains(event.target)) {
+						dropdown.classList.add('hidden');
+					}
+				});
 			</script>
 		</head>
 		<body class="ultra-dark-bg min-h-screen text-white">
