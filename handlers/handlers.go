@@ -7,6 +7,11 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
+// Handlers contains all the handlers
+type Handlers struct {
+	AuthHandler *AuthHandler
+}
+
 // HealthHandler handles health check requests
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
