@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
