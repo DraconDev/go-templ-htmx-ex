@@ -49,7 +49,7 @@ my take on this that because we use social logins we dont much care about this, 
 
 **Implementation effort:** ~3-4 days
 
-? do we need this, we just have the db, 
+? do we need this, we just have the db, we can just use ai to write some queries, this would need an admin role
 
 ---
 
