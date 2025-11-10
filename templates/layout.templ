@@ -116,9 +116,23 @@ templ NavigationLoggedIn(user UserInfo) {
 }
 
 templ UserAvatar(user UserInfo) {
-	<div class="w-11 h-11 rounded-full overflow-hidden">
-		<img src={ user.Picture } alt="Profile" class="w-full h-full object-cover"/>
+	<div class="w-11 h-11 rounded-full overflow-hidden bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+		if user.Picture != "" {
+			<img src={ user.Picture } alt="Profile" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+		}
+		<div class="w-full h-full flex items-center justify-center text-white font-semibold text-sm" style="display: { if user.Picture == "" } flex { else } none { endif }">
+			{ GetInitials(user.Name) }
+		</div>
 	</div>
+}
+
+// GetInitials extracts initials from a user's name
+templ GetInitials(name string) {
+	@renderInitials(name)
+}
+
+templ renderInitials(name string) {
+	{ strings.ToUpper(string([]rune(name)[0])) }
 }
 
 // NavigationLoggedOut renders the logged-out navigation
