@@ -21,9 +21,9 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
 			<style>
-				/* Ultra-dark theme - static, no animations that break scrolling */
+				/* Ultra-dark theme with better separation */
 				.ultra-dark-bg {
-					background: linear-gradient(-45deg, #000000, #050505, #0a0a0a, #0f0f0f);
+					background: linear-gradient(-45deg, #000000, #050505, #0a0a0a, #121212, #0f0f0f);
 				}
 				
 				.glass-nav {
@@ -32,9 +32,9 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 					border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 				}
 				.glass-card {
-					background: rgba(0, 0, 0, 0.85);
+					background: rgba(0, 0, 0, 0.8);
 					backdrop-filter: blur(30px);
-					border: 1px solid rgba(255, 255, 255, 0.05);
+					border: 1px solid rgba(255, 255, 255, 0.08);
 				}
 				.glow-effect {
 					box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
