@@ -1,7 +1,12 @@
 package handlers
 
 import (
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
