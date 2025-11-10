@@ -49,19 +49,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 // ProfileHandler handles the user profile page
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-
-	// Get session token from cookie
-	_, err := r.Cookie("session_token")
-	if err != nil {
+	
+	// Get JWT token from cookie
+	cookie, err := r.Cookie("session_token")
+	if err != nil || cookie.Value == "" {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
-	// Get user data from auth service
-	// For now, pass the token data - the template and JavaScript will handle the rest
-	// This maintains the working behavior from the original code
-	component := templates.Layout("Profile", templates.NavigationLoggedOut(), templates.ProfileContent("", "", ""))
+	// User has valid JWT token - show logged-in navigation
+	userInfo := templates.UserInfo{LoggedIn: true}
+	component := templates.Layout("Profile", templates.NavigationLoggedIn(userInfo), templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
 
