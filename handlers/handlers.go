@@ -22,35 +22,14 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 // HomeHandler handles the home page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// Get user info for dynamic navigation
-	var userInfo templates.UserInfo
-	cookie, err := r.Cookie("session_token")
-	if err == nil {
-		// This is a simple approach - in production, we might want to inject the auth handler
-		// For now, we can use the auth service to check if user is logged in
-		// This keeps the dynamic behavior working
-		userInfo = templates.UserInfo{LoggedIn: true}
-	} else {
-		userInfo = templates.UserInfo{LoggedIn: false}
-	}
-	
-	// Choose navigation based on auth status
-	var nav templ.Component
-	if userInfo.LoggedIn {
-		nav = templates.NavigationLoggedIn(userInfo)
-	} else {
-		nav = templates.NavigationLoggedOut()
-	}
-	
-	component := templates.Layout("Home", nav, templates.HomeContent())
+	component := templates.Layout("Home", templates.NavigationLoggedOut(), templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
 // ProfileHandler handles the user profile page
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Get session token from cookie
 	_, err := r.Cookie("session_token")
 	if err != nil {
