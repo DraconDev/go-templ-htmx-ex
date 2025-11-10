@@ -39,3 +39,10 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	component := templates.Layout("Profile", templates.NavigationLoggedOut(), templates.ProfileContent("", "", ""))
 	component.Render(r.Context(), w)
 }
+
+// LoginHandler handles the login page
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	component := templates.Layout("Login", templates.NavigationLoggedOut(), templates.LoginContent())
+	component.Render(r.Context(), w)
+}
