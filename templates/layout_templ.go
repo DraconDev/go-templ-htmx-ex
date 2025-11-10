@@ -99,7 +99,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"relative\"><button onclick=\"toggleProfileDropdown()\" class=\"flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-gray-600 hover:border-cyan-400 transition-colors duration-200\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<nav class=\"glass-nav\"><div class=\"max-w-7xl mx-auto px-6\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><a href=\"/\" class=\"text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200\">🚀 Startup Platform</a></div><div class=\"relative\"><button onclick=\"toggleProfileDropdown()\" class=\"flex items-center justify-center w-12 h-12 rounded-full overflow-hidden hover:scale-105 transition-transform duration-200\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,7 +107,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</button><div id=\"profile-dropdown\" class=\"hidden absolute right-0 top-12 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50\"><a href=\"/profile\" class=\"block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-t-lg\">Profile</a> <button onclick=\"logout()\" class=\"block w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-700 rounded-b-lg\">Logout</button></div></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</button><div id=\"profile-dropdown\" class=\"hidden absolute right-0 top-14 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50\"><a href=\"/profile\" class=\"block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-t-lg\">Profile</a> <button onclick=\"logout()\" class=\"block w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-700 rounded-b-lg\">Logout</button></div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
