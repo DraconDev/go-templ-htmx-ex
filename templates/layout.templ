@@ -133,24 +133,6 @@ templ UserInitials(user UserInfo) {
 	}
 }
 
-// Footer renders the main application footer
-templ Footer() {
-	<footer class="border-t border-gray-800/50 bg-black/50 backdrop-blur-sm">
-		<div class="max-w-7xl mx-auto px-6 py-6">
-			<div class="flex flex-col md:flex-row justify-between items-center">
-				<div class="flex items-center space-x-2 mb-4 md:mb-0">
-					<span class="text-xl">🚀</span>
-					<span class="text-sm text-gray-400">© 2025 Startup Platform</span>
-				</div>
-				<div class="flex space-x-6">
-					<a href="/health" class="text-sm text-gray-400 hover:text-cyan-400 transition-colors duration-200">Status</a>
-					<a href="/profile" class="text-sm text-gray-400 hover:text-cyan-400 transition-colors duration-200">Profile</a>
-				</div>
-			</div>
-		</div>
-	</footer>
-}
-
 // NavigationLoggedOut renders the logged-out navigation
 templ NavigationLoggedOut() {
 	<nav class="glass-nav">
