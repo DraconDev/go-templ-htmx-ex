@@ -60,20 +60,19 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 
 // NavigationLoggedIn renders the logged-in navigation
 templ NavigationLoggedIn(user UserInfo) {
-	<nav class="glass-nav shadow-2xl">
-		<div class="max-w-7xl mx-auto px-4">
-			<div class="flex justify-between h-16">
+	<nav class="glass-nav">
+		<div class="max-w-7xl mx-auto px-6">
+			<div class="flex justify-between items-center h-16">
 				<div class="flex items-center">
-					<a href="/" class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent hover:from-cyan-300 hover:to-purple-400 transition-all duration-300 transform hover:scale-105">🚀 Startup Platform</a>
+					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
 				</div>
 				<div class="flex items-center space-x-4">
-					<a href="/profile" class="text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10">Profile</a>
-					<div class="flex items-center space-x-3 glass-card rounded-full px-4 py-2 shadow-lg">
+					<a href="/profile" class="text-gray-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">Profile</a>
+					<div class="flex items-center space-x-3 bg-white/5 rounded-lg px-4 py-2 border border-white/10">
 						@UserAvatar(user)
 						<span class="text-sm font-medium text-white">{ user.Name }</span>
-						<button onclick="logout()" class="text-red-400 hover:text-red-300 font-medium text-sm transition-colors duration-200">Logout</button>
+						<button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors duration-200 ml-2">Logout</button>
 					</div>
-					<a href="/health" class="text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-white/10">Health</a>
 				</div>
 			</div>
 		</div>
