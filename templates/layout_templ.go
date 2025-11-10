@@ -149,7 +149,7 @@ func UserAvatar(user UserInfo) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-8 h-8 rounded-full overflow-hidden ring-2 ring-cyan-400/50 shadow-lg\"><img src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-7 h-7 rounded-full overflow-hidden border border-cyan-400/30\"><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
