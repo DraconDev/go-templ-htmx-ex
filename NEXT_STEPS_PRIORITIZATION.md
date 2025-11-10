@@ -127,14 +127,14 @@ We've successfully built a solid foundation:
 ## 🎯 **Recommended Development Strategy**
 
 ### **Option A: Revenue-Focused (Recommended for Startups)**
-1. **Week 1:** Payment Integration & Stripe
+1. **Week 1:** Payment Integration (API client to microservice)
 2. **Week 2:** Basic User Profile & Error Handling
 3. **Week 3:** Production Ready & Environment Management
 4. **Week 4:** Launch & iterate
 
 ### **Option B: Technical Foundation First**
 1. **Week 1:** Error Handling & Environment Management
-2. **Week 2:** Payment Integration & Stripe
+2. **Week 2:** Payment Integration (API client to microservice)
 3. **Week 3:** Basic User Profile
 4. **Week 4:** Production Ready
 
