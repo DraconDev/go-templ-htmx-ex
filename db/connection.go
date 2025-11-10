@@ -48,11 +48,6 @@ func NewDatabase(config *Config) (*Database, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Configure connection pool
-	db.SetMaxOpenConns(config.MaxOpen)
-	db.SetMaxIdleConns(config.MaxIdle)
-	db.SetConnMaxLifetime(config.MaxLife)
-
 	// Test connection
 	if err := db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
