@@ -7,6 +7,11 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
+// Handlers contains all the handlers
+type Handlers struct {
+	AuthHandler *AuthHandler
+}
+
 // HealthHandler handles health check requests
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -17,28 +22,7 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 // HomeHandler handles the home page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// Get user authentication status for dynamic navigation
-	var userInfo templates.UserInfo
-	cookie, err := r.Cookie("session_token")
-	if err == nil {
-		// User has a session token - try to validate with auth service
-		userInfo = templates.UserInfo{LoggedIn: true}
-		// In a real implementation, we would validate the token here
-		// For now, having a session token indicates login
-	} else {
-		userInfo = templates.UserInfo{LoggedIn: false}
-	}
-	
-	// Choose navigation based on auth status
-	var nav templ.Component
-	if userInfo.LoggedIn {
-		nav = templates.NavigationLoggedIn(userInfo)
-	} else {
-		nav = templates.NavigationLoggedOut()
-	}
-	
-	component := templates.Layout("Home", nav, templates.HomeContent())
+	component := templates.Layout("Home", templates.NavigationLoggedOut(), templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
