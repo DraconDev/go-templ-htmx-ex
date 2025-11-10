@@ -17,10 +17,7 @@ type Database struct {
 
 // Config represents database configuration
 type Config struct {
-	URL     string
-	MaxOpen int
-	MaxIdle int
-	MaxLife time.Duration
+	URL string
 }
 
 // DefaultConfig returns default database configuration
