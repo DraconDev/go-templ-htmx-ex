@@ -25,6 +25,23 @@ func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
 
+	// Initialize database connection
+	dbConfig := db.DefaultConfig()
+	database, err := db.NewDatabase(dbConfig)
+	if err != nil {
+		log.Printf("⚠️  Database connection failed: %v", err)
+		log.Println("💡 The application will continue without database functionality")
+	} else {
+		log.Println("✅ Database connection established successfully")
+		
+		// Create database schema
+		if err := database.CreateTables(); err != nil {
+			log.Printf("⚠️  Database table creation failed: %v", err)
+		} else {
+			log.Println("✅ Database tables ready")
+		}
+	}
+
 	// Create auth service
 	authService := auth.NewService(cfg)
 
