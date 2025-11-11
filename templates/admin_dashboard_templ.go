@@ -111,7 +111,7 @@ func AdminDashboardContent(user UserInfo, data DashboardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-500\">Real database status</div></div></div><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><!-- Recent Users --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">👤 Recent Users</h3><div class=\"space-y-3\"><div class=\"text-sm text-gray-500 mb-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-500\">Real database status</div></div></div><div class=\"grid grid-cols-1 lg:grid-cols-1 gap-6\"><!-- Recent Users --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">👤 Recent Users</h3><div class=\"space-y-3\"><div class=\"text-sm text-gray-500 mb-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -124,7 +124,76 @@ func AdminDashboardContent(user UserInfo, data DashboardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " recent users found</div><!-- Show basic info for now --><div class=\"flex items-center justify-center p-8 text-gray-500\">Database integration active - Data loaded from real database</div></div></div><!-- Quick Actions --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">⚡ Quick Actions</h3><div class=\"space-y-3\"><button hx-get=\"/api/admin/analytics\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-blue-600\">📊</span><div><div class=\"font-medium text-blue-900\">View Analytics</div><div class=\"text-sm text-blue-600\">Detailed usage statistics</div></div></div></button> <button hx-get=\"/api/admin/settings\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-green-600\">⚙️</span><div><div class=\"font-medium text-green-900\">System Settings</div><div class=\"text-sm text-green-600\">Configure application</div></div></div></button> <button hx-get=\"/api/admin/logs\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-purple-600\">📝</span><div><div class=\"font-medium text-purple-900\">View Logs</div><div class=\"text-sm text-purple-600\">System logs and errors</div></div></div></button> <button hx-get=\"/\" hx-swap=\"none\" class=\"w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-gray-600\">🏠</span><div><div class=\"font-medium text-gray-900\">Back to Home</div><div class=\"text-sm text-gray-600\">Return to main application</div></div></div></button></div></div></div><!-- Content Area for Dynamic Updates --><div id=\"admin-content\" class=\"mt-8\"><!-- This area will be updated by HTMX requests --></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " recent users found</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if len(data.RecentUsers) > 0 {
+			for _, recentUser := range data.RecentUsers {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"flex items-center justify-between p-3 bg-gray-50 rounded-lg\"><div class=\"flex items-center space-x-3\"><div class=\"w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center\"><span class=\"text-blue-600 text-sm font-medium\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(recentUser.Name[:2])
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/admin_dashboard.templ`, Line: 83, Col: 79}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><div><div class=\"font-medium text-gray-900\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var9 string
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(recentUser.Name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/admin_dashboard.templ`, Line: 86, Col: 66}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-sm text-gray-500\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var10 string
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(recentUser.Email)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/admin_dashboard.templ`, Line: 87, Col: 63}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div></div><div class=\"text-sm text-gray-500\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var11 string
+				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(recentUser.Date)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/admin_dashboard.templ`, Line: 90, Col: 60}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"flex items-center justify-center p-8 text-gray-500\">No recent users found</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

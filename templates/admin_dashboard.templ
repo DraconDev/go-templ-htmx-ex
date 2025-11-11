@@ -71,11 +71,12 @@ templ AdminDashboardContent(user UserInfo, data DashboardData) {
 			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
 				<h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Recent Users</h3>
 				<div class="space-y-3">
-					{ if len(data.RecentUsers) > 0 }
-						<div class="text-sm text-gray-500 mb-4">
-							{ len(data.RecentUsers) } recent users
-						</div>
-						{ for _, recentUser := range data.RecentUsers }
+					<div class="text-sm text-gray-500 mb-4">
+						{ len(data.RecentUsers) } recent users found
+					</div>
+					
+					if len(data.RecentUsers) > 0 {
+						for _, recentUser := range data.RecentUsers {
 							<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
 								<div class="flex items-center space-x-3">
 									<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -88,19 +89,14 @@ templ AdminDashboardContent(user UserInfo, data DashboardData) {
 								</div>
 								<div class="text-sm text-gray-500">{ recentUser.Date }</div>
 							</div>
-						{ endfor }
-					{ else }
+						}
+					} else {
 						<div class="flex items-center justify-center p-8 text-gray-500">
-							No users found
+							No recent users found
 						</div>
-					{ endif }
+					}
 				</div>
 			</div>
-		</div>
-		
-		<!-- Content Area for Dynamic Updates -->
-		<div id="admin-content" class="mt-8">
-			<!-- This area will be updated by HTMX requests -->
 		</div>
 	</div>
 }
