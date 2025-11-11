@@ -103,11 +103,9 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                         const newSessionCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('session_token='));
                         console.log('🔄 TOKEN REFRESH TEST: New session_token cookie set:', !!newSessionCookie);
                         
-                        resultDiv.innerHTML = `
-                            <p class="text-green-600">✅ SUCCESS: Token refreshed!</p>
-                            <p class="text-sm text-gray-600 mt-2">New session_token cookie should now be set.</p>
-                            <p class="text-sm text-gray-600">Check browser console for detailed logs.</p>
-                        `;
+                        resultDiv.innerHTML = '<p class="text-green-600">✅ SUCCESS: Token refreshed!</p>' +
+                            '<p class="text-sm text-gray-600 mt-2">New session_token cookie should now be set.</p>' +
+                            '<p class="text-sm text-gray-600">Check browser console for detailed logs.</p>';
                     } else {
                         console.log('❌ TOKEN REFRESH TEST: FAILED - Server returned error');
                         resultDiv.innerHTML = `<p class="text-red-600">❌ ERROR: ${data.error || 'Unknown error'}</p>`;
