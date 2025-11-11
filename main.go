@@ -17,6 +17,7 @@ import (
 )
 
 var authHandler *handlers.AuthHandler
+var adminHandler *handlers.AdminHandler
 
 func main() {
 	// Load configuration
@@ -24,6 +25,9 @@ func main() {
 
 	// Create auth service
 	authService := auth.NewService(cfg)
+
+	// Create admin handler
+	adminHandler = handlers.NewAdminHandler(cfg)
 
 	// Create auth handler
 	authHandler = handlers.NewAuthHandler(authService, cfg)
@@ -49,7 +53,7 @@ func main() {
 
 	// Admin dashboard
 	router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
-	
+
 	// Admin API routes
 	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")
 	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET")
