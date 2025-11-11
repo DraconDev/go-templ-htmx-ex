@@ -133,10 +133,10 @@ func TestAdminDashboardClaimExtraction(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.testName, func(t *testing.T) {
 			req := httptest.NewRequest("GET", "/admin", nil)
 			ctx := req.Context()
-			ctx = setTestUserClaims(ctx, tc.email, tc.name, tc.isAdmin)
+			ctx = setTestUserClaims(ctx, tc.email, tc.userName, tc.isAdmin)
 			
 			rr := httptest.NewRecorder()
 			handler.AdminDashboardHandler(rr, req.WithContext(ctx))
