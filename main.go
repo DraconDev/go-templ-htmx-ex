@@ -14,6 +14,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/db"
+	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 )
