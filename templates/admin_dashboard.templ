@@ -2,7 +2,7 @@ package templates
 
 //go:generate templ generate
 
-templ AdminDashboardContent(user UserInfo, data templates.DashboardData) {
+templ AdminDashboardContent(user UserInfo) {
 	<div class="max-w-6xl mx-auto">
 		<!-- Dashboard Header -->
 		<div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-8 mb-8">
@@ -19,13 +19,8 @@ templ AdminDashboardContent(user UserInfo, data templates.DashboardData) {
 						<span class="text-blue-600 text-lg">👥</span>
 					</div>
 				</div>
-				<div class="text-3xl font-bold text-gray-900 mb-2">
-					{ data.TotalUsers }
-				</div>
-				<div class="text-sm text-green-600 flex items-center">
-					<span class="mr-1">↗</span>
-					+{ data.UsersThisWeek } this week
-				</div>
+				<div class="text-3xl font-bold text-gray-900 mb-2">Loading...</div>
+				<div class="text-sm text-green-600">Real database count will appear here</div>
 			</div>
 			
 			<!-- Signups Today Card -->
@@ -36,10 +31,8 @@ templ AdminDashboardContent(user UserInfo, data templates.DashboardData) {
 						<span class="text-green-600 text-lg">📅</span>
 					</div>
 				</div>
-				<div class="text-3xl font-bold text-gray-900 mb-2">
-					{ data.SignupsToday }
-				</div>
-				<div class="text-sm text-gray-500">New signups today</div>
+				<div class="text-3xl font-bold text-gray-900 mb-2">Loading...</div>
+				<div class="text-sm text-gray-500">Real daily signups will appear here</div>
 			</div>
 			
 			<!-- Database Status Card -->
@@ -50,10 +43,8 @@ templ AdminDashboardContent(user UserInfo, data templates.DashboardData) {
 						<span class="text-green-600 text-lg">🟢</span>
 					</div>
 				</div>
-				<div class="text-lg font-semibold text-gray-900 mb-2">
-					{ data.SystemHealth }
-				</div>
-				<div class="text-sm text-gray-500">Real database status</div>
+				<div class="text-lg font-semibold text-gray-900 mb-2">Loading...</div>
+				<div class="text-sm text-gray-500">Real database status will appear here</div>
 			</div>
 		</div>
 		
@@ -62,8 +53,8 @@ templ AdminDashboardContent(user UserInfo, data templates.DashboardData) {
 			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
 				<h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Recent Users</h3>
 				<div class="space-y-3">
-					<div class="text-sm text-gray-500">
-						{ data.RecentUsers } recent users loaded
+					<div class="flex items-center justify-center p-8 text-gray-500">
+						Loading recent users from database...
 					</div>
 				</div>
 			</div>
