@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/a-h/templ"
+	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
@@ -19,8 +20,8 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"status": "healthy", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`))
 }
 
-// getUserFromJWT gets user info using local JWT validation (5-10ms, no API call)
-func getUserFromJWT(r *http.Request) templates.UserInfo {
+// GetUserFromJWT gets user info using local JWT validation (5-10ms, no API call)
+func GetUserFromJWT(r *http.Request) templates.UserInfo {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		return templates.UserInfo{LoggedIn: false}
@@ -95,16 +96,14 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 	return base64.URLEncoding.DecodeString(data)
 }
 
-// HomeHandler handles the home page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
-	// Use local JWT validation for EVERY page (fast + consistent)
-	userInfo := getUserFromJWT(r)
+	// Get user info from middleware context
+	userInfo := middleware.GetUserFromContext(r)
 
 	var navigation templ.Component
 	if userInfo.LoggedIn {
-		// Fast local validation: 5-10ms for real user data
 		navigation = templates.NavigationLoggedIn(userInfo)
 	} else {
 		navigation = templates.NavigationLoggedOut()
@@ -119,7 +118,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
 	// Use local JWT validation for consistency (5-10ms everywhere)
-	userInfo := getUserFromJWT(r)
+	userInfo := GetUserFromJWT(r)
 	if !userInfo.LoggedIn {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)

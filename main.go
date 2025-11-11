@@ -14,6 +14,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
+	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 )
 
 var authHandler *handlers.AuthHandler
@@ -34,6 +35,9 @@ func main() {
 
 	// Create router
 	router := mux.NewRouter()
+
+	// Add authentication middleware to all routes
+	router.Use(middleware.AuthMiddleware)
 
 	// Define routes using clean handlers from handlers/handlers.go
 	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")

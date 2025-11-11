@@ -25,22 +25,16 @@ func NewAdminHandler(config *config.Config) *AdminHandler {
 func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("📋 ADMIN: Admin dashboard requested\n")
 	
-	// Get current user info (this would typically come from your auth system)
-	_, err := r.Cookie("session_token")
-	if err != nil {
-		fmt.Printf("📋 ADMIN: No session token found\n")
-		http.Redirect(w, r, "/login", http.StatusFound)
+	// Get user info using existing JWT validation logic
+	userInfo := GetUserFromJWT(r)
+	
+	if !userInfo.LoggedIn {
+		fmt.Printf("📋 ADMIN: User not logged in\n")
+		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
-	// For demo purposes, create a test user
-	// In real implementation, you'd validate the JWT and get real user data
-	userInfo := templates.UserInfo{
-		LoggedIn: true,
-		Name:     "Admin User",
-		Email:    "admin@example.com",
-		Picture:  "",
-	}
+	fmt.Printf("📋 ADMIN: User logged in: %s (%s)\n", userInfo.Name, userInfo.Email)
 
 	// Check if this user is admin
 	if !h.Config.IsAdmin(userInfo.Email) {
