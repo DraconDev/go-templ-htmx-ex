@@ -41,7 +41,7 @@ func LoadConfig() *Config {
 		ServerPort:     getEnvOrDefault("PORT", "8081"),
 		AuthServiceURL: getEnvOrDefault("AUTH_SERVICE_URL", "http://localhost:8080"),
 		RedirectURL:    getEnvOrDefault("REDIRECT_URL", "http://localhost:8081"),
-		AdminEmail:     getEnvOrDefault("ADMIN_EMAIL", ""),
+		AdminEmail:     getEnvOrDefault("ADMIN_EMAIL", "admin@startup-platform.local"),
 		AuthSecret:     getEnvOrDefault("AUTH_SECRET", ""),
 	}
 
