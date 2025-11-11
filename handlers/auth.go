@@ -38,12 +38,16 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 // OAUTH LOGIN FLOWS
 // =============================================================================
 
+// GoogleLoginHandler handles Google OAuth login
+// Flow: User clicks "Login with Google" -> Redirect to our auth service ->
+//       Auth service handles Google OAuth -> Returns to our callback with JWT
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
 	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
 	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
 
-	// OAuth endpoints are public - just redirect
+	// STEP 1: Redirect to our auth microservice with redirect_uri parameter
+	// The auth service will handle the actual Google OAuth flow
 	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
 
