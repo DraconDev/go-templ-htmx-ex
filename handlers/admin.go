@@ -63,8 +63,50 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 
 	fmt.Printf("📋 ADMIN: Access granted for admin %s\n", userInfo.Email)
 
+	// Pre-load real dashboard data from database
+	dashboardData := templates.DashboardData{
+		TotalUsers:   0,
+		SignupsToday: 0,
+		SystemHealth: "operational",
+		RecentUsers:  []templates.RecentUser{},
+		UsersThisWeek: 0,
+	}
+
+	// Get real analytics data from database
+	if h.Queries != nil {
+		// Total users
+		totalUsers, err := h.Queries.CountUsers(r.Context())
+		if err == nil {
+			dashboardData.TotalUsers = int(totalUsers)
+		}
+
+		// Today's signups
+		signupsToday, err := h.Queries.CountUsersCreatedToday(r.Context())
+		if err == nil {
+			dashboardData.SignupsToday = int(signupsToday)
+		}
+
+		// This week's signups
+		signupsThisWeek, err := h.Queries.CountUsersCreatedThisWeek(r.Context())
+		if err == nil {
+			dashboardData.UsersThisWeek = int(signupsThisWeek)
+		}
+
+		// Recent users
+		recentUsers, err := h.Queries.GetRecentUsers(r.Context())
+		if err == nil && len(recentUsers) > 0 {
+			for _, user := range recentUsers[:5] { // Show first 5
+				dashboardData.RecentUsers = append(dashboardData.RecentUsers, templates.RecentUser{
+					Name:  user.Name,
+					Email: user.Email,
+					Date:  user.CreatedAt.Time.Format("2006-01-02"),
+				})
+			}
+		}
+	}
+
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Admin Dashboard", templates.NavigationLoggedIn(userInfo), templates.AdminDashboardContent(userInfo))
+	component := templates.Layout("Admin Dashboard", templates.NavigationLoggedIn(userInfo), templates.AdminDashboardContent(userInfo, dashboardData))
 	component.Render(r.Context(), w)
 }
 
