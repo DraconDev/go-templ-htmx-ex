@@ -101,11 +101,16 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	
 	// Get user info from middleware context
 	userInfo := middleware.GetUserFromContext(r)
+	
+	fmt.Printf("🏠 HOME: User info - LoggedIn: %v, Name: %s, Email: %s\n",
+		userInfo.LoggedIn, userInfo.Name, userInfo.Email)
 
 	var navigation templ.Component
 	if userInfo.LoggedIn {
+		fmt.Printf("🏠 HOME: Rendering NavigationLoggedIn\n")
 		navigation = templates.NavigationLoggedIn(userInfo)
 	} else {
+		fmt.Printf("🏠 HOME: Rendering NavigationLoggedOut\n")
 		navigation = templates.NavigationLoggedOut()
 	}
 
