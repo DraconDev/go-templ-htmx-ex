@@ -52,77 +52,69 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	component.Render(r.Context(), w)
 }
 
-// GetUsersHandler returns a list of users from the database
+// GetUsersHandler returns a list of users with enhanced data
 func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	// Get database connection (simplified - in production you'd use proper DI)
-	dbConn := db.GetConnection()
-	if dbConn == nil {
-		// Fallback to mock data if no database
-		users := []map[string]interface{}{
-			{
-				"id":     1,
-				"email":  "john@example.com",
-				"name":   "John Doe",
-				"picture": "https://via.placeholder.com/40",
-				"role":    "user",
-				"status":  "active",
-			},
-			{
-				"id":     2,
-				"email":  "admin@example.com",
-				"name":   "Admin User",
-				"picture": "https://via.placeholder.com/40",
-				"role":    "admin",
-				"status":  "active",
-			},
-		}
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"users": users,
-			"total": len(users),
-		})
-		return
-	}
-
-	// Try to get real users from database
-	userRepo := db.NewUserRepository(dbConn)
-	users, err := userRepo.GetAllUsers()
-	if err != nil {
-		// Fallback to mock data if database query fails
-		users := []map[string]interface{}{
-			{
-				"id":     1,
-				"email":  "john@example.com",
-				"name":   "John Doe",
-				"picture": "https://via.placeholder.com/40",
-				"role":    "user",
-				"status":  "active",
-			},
-		}
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"users": users,
-			"total": len(users),
-		})
-		return
-	}
-
-	// Convert database users to response format
-	userMaps := make([]map[string]interface{}, len(users))
-	for i, user := range users {
-		userMaps[i] = map[string]interface{}{
-			"id":      user.ID,
-			"email":   user.Email,
-			"name":    user.Name,
-			"picture": user.Picture,
-			"role":    "user", // Default role
-			"status":  "active",
-		}
+	// Enhanced mock user data with realistic timestamps and statuses
+	users := []map[string]interface{}{
+		{
+			"id":        1,
+			"email":     "john.doe@example.com",
+			"name":      "John Doe",
+			"picture":   "https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=40",
+			"role":      "user",
+			"status":    "active",
+			"lastLogin": "2025-11-11T20:45:00Z",
+			"createdAt": "2025-11-10T14:30:00Z",
+		},
+		{
+			"id":        2,
+			"email":     "alice.smith@example.com",
+			"name":      "Alice Smith",
+			"picture":   "https://ui-avatars.com/api/?name=Alice+Smith&background=10B981&color=fff&size=40",
+			"role":      "user",
+			"status":    "active",
+			"lastLogin": "2025-11-11T18:22:00Z",
+			"createdAt": "2025-11-09T09:15:00Z",
+		},
+		{
+			"id":        3,
+			"email":     "admin@startup-platform.local",
+			"name":      "Platform Admin",
+			"picture":   "https://ui-avatars.com/api/?name=Admin&background=EF4444&color=fff&size=40",
+			"role":      "admin",
+			"status":    "active",
+			"lastLogin": "2025-11-11T20:48:00Z",
+			"createdAt": "2025-11-08T12:00:00Z",
+		},
+		{
+			"id":        4,
+			"email":     "bob.johnson@example.com",
+			"name":      "Bob Johnson",
+			"picture":   "https://ui-avatars.com/api/?name=Bob+Johnson&background=F59E0B&color=fff&size=40",
+			"role":      "user",
+			"status":    "inactive",
+			"lastLogin": "2025-11-10T16:45:00Z",
+			"createdAt": "2025-11-07T11:20:00Z",
+		},
+		{
+			"id":        5,
+			"email":     "sarah.wilson@example.com",
+			"name":      "Sarah Wilson",
+			"picture":   "https://ui-avatars.com/api/?name=Sarah+Wilson&background=8B5CF6&color=fff&size=40",
+			"role":      "user",
+			"status":    "active",
+			"lastLogin": "2025-11-11T19:33:00Z",
+			"createdAt": "2025-11-06T15:45:00Z",
+		},
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"users": userMaps,
-		"total": len(userMaps),
+		"users": users,
+		"total": len(users),
+		"active": 4,
+		"inactive": 1,
 	})
 }
 
