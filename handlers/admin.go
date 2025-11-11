@@ -24,6 +24,21 @@ func NewAdminHandler(config *config.Config, queries *dbSqlc.Queries) *AdminHandl
 	}
 }
 
+// DashboardData represents the complete admin dashboard data
+type DashboardData struct {
+	TotalUsers    int
+	SignupsToday  int
+	SystemHealth  string
+	RecentUsers   []RecentUser
+	UsersThisWeek int
+}
+
+type RecentUser struct {
+	Name  string
+	Email string
+	Date  string
+}
+
 // AdminDashboardHandler serves the admin dashboard
 func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("📋 ADMIN: Admin dashboard requested\n")
