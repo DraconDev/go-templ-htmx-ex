@@ -56,12 +56,24 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 
 	fmt.Printf("🔐 AUTHSVC: JSON data: %s\n", string(jsonData))
 
+	// Add auth secret to params if not present
+	if _, exists := params["secret"]; !exists && s.config.AuthSecret != "" {
+		params["secret"] = s.config.AuthSecret
+		fmt.Printf("🔐 AUTHSVC: Added auth secret to params\n")
+	}
+
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Printf("🔐 AUTHSVC: Request creation failed: %v\n", err)
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	
+	// Add X-Auth-Secret header for protected endpoints
+	if s.config.AuthSecret != "" {
+		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
+		fmt.Printf("🔐 AUTHSVC: Added X-Auth-Secret header\n")
+	}
 
 	fmt.Printf("🔐 AUTHSVC: Sending request to auth service...\n")
 	resp, err := client.Do(req)
