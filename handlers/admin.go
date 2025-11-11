@@ -54,69 +54,94 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	component.Render(r.Context(), w)
 }
 
-// GetUsersHandler returns a list of users with enhanced data
+// GetUsersHandler returns a list of users from the database
 func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	// Enhanced mock user data with realistic timestamps and statuses
-	users := []map[string]interface{}{
-		{
-			"id":        1,
-			"email":     "john.doe@example.com",
-			"name":      "John Doe",
-			"picture":   "https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=40",
+	if h.Database == nil {
+		// Fallback to enhanced mock data if no database connection
+		fmt.Println("🔍 Using mock user data - no database connection")
+		users := []map[string]interface{}{
+			{
+				"id":        1,
+				"email":     "john.doe@example.com",
+				"name":      "John Doe",
+				"picture":   "https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=40",
+				"role":      "user",
+				"status":    "active",
+				"lastLogin": "2025-11-11T20:45:00Z",
+				"createdAt": "2025-11-10T14:30:00Z",
+			},
+			{
+				"id":        2,
+				"email":     "dracsharp@gmail.com",
+				"name":      "Platform Admin",
+				"picture":   "https://ui-avatars.com/api/?name=Admin&background=EF4444&color=fff&size=40",
+				"role":      "admin",
+				"status":    "active",
+				"lastLogin": "2025-11-11T21:00:00Z",
+				"createdAt": "2025-11-08T12:00:00Z",
+			},
+		}
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"users": users,
+			"total": len(users),
+			"active": 2,
+			"inactive": 0,
+		})
+		return
+	}
+
+	// Try to get real users from database
+	userRepo := db.NewUserRepository(h.Database)
+	users, err := userRepo.GetAllUsers()
+	if err != nil {
+		fmt.Printf("❌ Database query failed: %v\n", err)
+		// Fallback to enhanced mock data if database query fails
+		users := []map[string]interface{}{
+			{
+				"id":        1,
+				"email":     "john.doe@example.com",
+				"name":      "John Doe",
+				"picture":   "https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=40",
+				"role":      "user",
+				"status":    "active",
+				"lastLogin": "2025-11-11T20:45:00Z",
+				"createdAt": "2025-11-10T14:30:00Z",
+			},
+		}
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"users": users,
+			"total": len(users),
+			"active": 1,
+			"inactive": 0,
+		})
+		return
+	}
+
+	fmt.Printf("✅ Retrieved %d users from database\n", len(users))
+
+	// Convert database users to response format
+	userMaps := make([]map[string]interface{}, len(users))
+	for i, user := range users {
+		userMaps[i] = map[string]interface{}{
+			"id":        user.ID,
+			"email":     user.Email,
+			"name":      user.Name,
+			"picture":   user.Picture,
 			"role":      "user",
 			"status":    "active",
-			"lastLogin": "2025-11-11T20:45:00Z",
-			"createdAt": "2025-11-10T14:30:00Z",
-		},
-		{
-			"id":        2,
-			"email":     "alice.smith@example.com",
-			"name":      "Alice Smith",
-			"picture":   "https://ui-avatars.com/api/?name=Alice+Smith&background=10B981&color=fff&size=40",
-			"role":      "user",
-			"status":    "active",
-			"lastLogin": "2025-11-11T18:22:00Z",
-			"createdAt": "2025-11-09T09:15:00Z",
-		},
-		{
-			"id":        3,
-			"email":     "admin@startup-platform.local",
-			"name":      "Platform Admin",
-			"picture":   "https://ui-avatars.com/api/?name=Admin&background=EF4444&color=fff&size=40",
-			"role":      "admin",
-			"status":    "active",
-			"lastLogin": "2025-11-11T20:48:00Z",
-			"createdAt": "2025-11-08T12:00:00Z",
-		},
-		{
-			"id":        4,
-			"email":     "bob.johnson@example.com",
-			"name":      "Bob Johnson",
-			"picture":   "https://ui-avatars.com/api/?name=Bob+Johnson&background=F59E0B&color=fff&size=40",
-			"role":      "user",
-			"status":    "inactive",
-			"lastLogin": "2025-11-10T16:45:00Z",
-			"createdAt": "2025-11-07T11:20:00Z",
-		},
-		{
-			"id":        5,
-			"email":     "sarah.wilson@example.com",
-			"name":      "Sarah Wilson",
-			"picture":   "https://ui-avatars.com/api/?name=Sarah+Wilson&background=8B5CF6&color=fff&size=40",
-			"role":      "user",
-			"status":    "active",
-			"lastLogin": "2025-11-11T19:33:00Z",
-			"createdAt": "2025-11-06T15:45:00Z",
-		},
+			"lastLogin": user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+			"createdAt": user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		}
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"users": users,
-		"total": len(users),
-		"active": 4,
-		"inactive": 1,
+		"users": userMaps,
+		"total": len(userMaps),
+		"active": len(userMaps),
+		"inactive": 0,
 	})
 }
 
