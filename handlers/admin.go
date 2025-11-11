@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/db"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
