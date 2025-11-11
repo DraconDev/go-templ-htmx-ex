@@ -2,7 +2,7 @@ package templates
 
 //go:generate templ generate
 
-templ AdminDashboardContent(user UserInfo) {
+templ AdminDashboardContent(user UserInfo, data DashboardData) {
 	<div class="max-w-6xl mx-auto">
 		<!-- Dashboard Header -->
 		<div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-8 mb-8">
