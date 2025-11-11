@@ -71,19 +71,23 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 	}
 	defer resp.Body.Close()
 
-	// fmt.Printf("🔐 GOOGLE LOGIN: Response status: %s\n", resp.Status)
+	// Forward the redirect response to the client
+	fmt.Printf("🔐 GOOGLE LOGIN: Response status: %s\n", resp.Status)
+	
+	for name, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(name, value)
+		}
+	}
 
-	// // Forward the redirect response to the client
-	// for name, values := range resp.Header {
-	// 	for _, value := range values {
-	// 		w.Header().Add(name, value)
-	// 	}
-	// }
-
-	// w.WriteHeader(resp.StatusCode)
-	// if resp.Body != nil {
-	// 	w.Write([]byte{})
-	// }
+	w.WriteHeader(resp.StatusCode)
+	if resp.Body != nil {
+		// Copy any response body (usually empty for redirects)
+		_, err := io.Copy(w, resp.Body)
+		if err != nil {
+			fmt.Printf("🔐 GOOGLE LOGIN: Failed to copy response body: %v\n", err)
+		}
+	}
 }
 
 // GitHubLoginHandler handles GitHub OAuth login
