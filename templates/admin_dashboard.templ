@@ -26,7 +26,7 @@ templ AdminDashboardContent(user UserInfo) {
 					</div>
 				</div>
 				<div id="user-count" class="text-3xl font-bold text-gray-900 mb-2">Loading...</div>
-				<div class="text-sm text-gray-500">Click to refresh</div>
+				<div class="text-sm text-gray-500">Auto-refreshes every 30s</div>
 			</div>
 			
 			<!-- Signups Today Card -->
@@ -44,7 +44,7 @@ templ AdminDashboardContent(user UserInfo) {
 					</div>
 				</div>
 				<div id="signup-count" class="text-3xl font-bold text-gray-900 mb-2">Loading...</div>
-				<div class="text-sm text-gray-500">Click to refresh</div>
+				<div class="text-sm text-gray-500">Auto-refreshes every 60s</div>
 			</div>
 			
 			<!-- Database Status Card -->
@@ -150,28 +150,5 @@ templ AdminDashboardContent(user UserInfo) {
 		<div id="admin-content" class="mt-8">
 			<!-- This area will be updated by HTMX requests -->
 		</div>
-	</div>
-}
-
-// Helper function to format user initials
-templ UserInitials(name string) {
-	<span class="text-white text-sm font-medium">
-		{ strings.ToUpper(name)[0:2] }
-	</span>
-}
-
-// Template for displaying recent users
-templ RecentUserItem(user map[string]interface{}) {
-	<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-		<div class="flex items-center space-x-3">
-			<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-				@UserInitials(user["user_name"].(string))
-			</div>
-			<div>
-				<div class="font-medium text-gray-900">{ user["user_name"].(string) }</div>
-				<div class="text-sm text-gray-500">{ user["user"].(string) }</div>
-			</div>
-		</div>
-		<div class="text-sm text-gray-500">{ user["timestamp"].(string) }</div>
 	</div>
 }
