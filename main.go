@@ -47,7 +47,7 @@ func main() {
 	authService := auth.NewService(cfg)
 
 	// Create admin handler
-	adminHandler = handlers.NewAdminHandler(cfg)
+	adminHandler = handlers.NewAdminHandler(cfg, database)
 
 	// Create auth handler
 	authHandler = handlers.NewAuthHandler(authService, cfg)
