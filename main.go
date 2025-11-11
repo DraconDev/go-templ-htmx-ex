@@ -34,19 +34,12 @@ func main() {
 		log.Println("💡 The application will continue without database functionality")
 	} else {
 		log.Println("✅ Database connection established successfully")
-		
+
 		// Create database schema
 		if err := database.CreateTables(); err != nil {
 			log.Printf("⚠️  Database table creation failed: %v", err)
 		} else {
 			log.Println("✅ Database tables ready")
-		}
-
-		// Run migrations to add new columns
-		if err := database.Migrate(); err != nil {
-			log.Printf("⚠️  Database migration failed: %v", err)
-		} else {
-			log.Println("✅ Database migrations applied")
 		}
 	}
 
