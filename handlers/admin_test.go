@@ -110,23 +110,23 @@ func TestAdminDashboardClaimExtraction(t *testing.T) {
 	}
 	
 	testCases := []struct {
-		name     string
+		testName string
 		email    string
-		name     string
+		userName string
 		isAdmin  bool
 		expected int
 	}{
 		{
-			name:     "Admin User",
+			testName: "Admin User",
 			email:    "admin@example.com",
-			name:     "Admin User",
+			userName: "Admin User",
 			isAdmin:  true,
 			expected: http.StatusOK, // Would be OK if we had database
 		},
 		{
-			name:     "Regular User",
+			testName: "Regular User",
 			email:    "user@example.com", 
-			name:     "Regular User",
+			userName: "Regular User",
 			isAdmin:  false,
 			expected: http.StatusFound, // Should redirect
 		},
