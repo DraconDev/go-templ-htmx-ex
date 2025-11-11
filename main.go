@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
@@ -30,11 +29,12 @@ func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
 
-	// Initialize database connection using SQLC
-	var err error
-	if cfg.DBURL != "" {
+	// Get database URL from environment
+	dbURL := os.Getenv("DB_URL")
+	if dbURL != "" {
 		log.Printf("🔗 Connecting to database...")
-		db, err = sql.Open("postgres", cfg.DBURL)
+		var err error
+		db, err = sql.Open("postgres", dbURL)
 		if err != nil {
 			log.Printf("❌ Database connection failed: %v", err)
 			log.Println("⚠️  Continuing without database...")
