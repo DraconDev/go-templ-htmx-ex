@@ -69,6 +69,8 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // AuthCallbackHandler handles the OAuth callback
+// Flow: Google redirects here with JWT in URL fragment (#access_token=...)
+//       Client-side JS extracts token and calls /api/auth/set-session
 func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 CALLBACK: === OAuth callback STARTED ===\n")
 	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
@@ -77,7 +79,9 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 
 	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
 	w.Header().Set("Content-Type", "text/html")
-	// Use the new JWT-based approach with navigation
+	
+	// STEP 2: Render callback page with JavaScript to extract JWT from URL fragment
+	// The fragment (#access_token=...) is not sent to server, so JS must handle it
 	component := templates.Layout("Authenticating", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
 
 	fmt.Printf("🔐 CALLBACK: About to render component...\n")
