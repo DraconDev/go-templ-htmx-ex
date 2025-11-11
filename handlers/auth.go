@@ -326,28 +326,16 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 }
 
-// GetUserHandler returns current user information
-func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 GETUSER: === GetUser STARTED ===\n")
-	w.Header().Set("Content-Type", "application/json")
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
 
-	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
-	if err != nil {
-		fmt.Printf("🔐 GETUSER: No session cookie found: %v\n", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"logged_in": false,
-		})
-		return
-	}
-
-	fmt.Printf("🔐 GETUSER: Session cookie found, value length: %d\n", len(cookie.Value))
-
-	// Get user info from auth microservice
-	fmt.Printf("🔐 GETUSER: Calling auth service to validate user...\n")
-	userResp, err := h.AuthService.ValidateUser(cookie.Value)
-	if err != nil {
+	"github.com/DraconDev/go-templ-htmx-ex/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/templates"
+)
 		fmt.Printf("🔐 GETUSER: Auth service failed: %v\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
