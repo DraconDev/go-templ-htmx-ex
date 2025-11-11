@@ -1,15 +1,13 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
