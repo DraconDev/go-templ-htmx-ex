@@ -56,6 +56,31 @@ func NewDatabase(config *Config) (*Database, error) {
 	return &Database{db}, nil
 }
 
+// Migrate runs database migrations to add new columns/tables
+func (db *Database) Migrate() error {
+	// Add is_admin column if it doesn't exist
+	_, err := db.Exec(`
+		ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to add is_admin column: %w", err)
+	}
+
+	// Set admin flag for initial admin from environment
+	initialAdmin := os.Getenv("ADMIN_EMAIL")
+	if initialAdmin != "" {
+		_, err := db.Exec(`
+			UPDATE users SET is_admin = TRUE WHERE email = $1
+		`, initialAdmin)
+		if err != nil {
+			return fmt.Errorf("failed to set initial admin: %w", err)
+		}
+		log.Printf("✅ Set %s as initial admin", initialAdmin)
+	}
+
+	return nil
+}
+
 // CreateTables creates the database schema
 func (db *Database) CreateTables() error {
 	schema := `
