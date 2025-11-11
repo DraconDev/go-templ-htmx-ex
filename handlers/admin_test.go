@@ -101,7 +101,7 @@ func TestAdminDashboardNoAuth(t *testing.T) {
 	handler := MockAdminHandler()
 	
 	// Create test request without authentication
-	req := httptest.NewRequest("GET, "/admin", nil)
+	req := httptest.NewRequest("GET", "/admin", nil)
 	
 	// Create response recorder
 	rr := httptest.NewRecorder()
