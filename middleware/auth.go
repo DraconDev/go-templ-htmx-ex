@@ -21,21 +21,21 @@ const userContextKey UserContextKey = "user"
 func AuthMiddleware(next http.Handler) http.Handler {
 	// Protected routes that require authentication
 	protectedPaths := map[string]bool{
-		"/profile":             true, // User profile page
-		"/admin":               true, // Admin dashboard
-		"/api/admin":           true, // Admin API routes
+		"/profile":   true, // User profile page
+		"/admin":     true, // Admin dashboard
+		"/api/admin": true, // Admin API routes
 	}
 
 	// API routes that require authentication
 	apiProtectedPaths := map[string]bool{
-		"/api/admin":           true, // Admin API routes
+		"/api/admin": true, // Admin API routes
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Always validate JWT and add to context (for UI purposes)
 		userInfo := validateJWT(r)
 		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
-		
+
 		// Check if this route requires authentication
 		var requiresAuth bool
 		if strings.HasPrefix(r.URL.Path, "/api/") {
@@ -55,7 +55,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				})
 				return
 			}
-			
+
 			// For web routes, redirect to home
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
@@ -78,10 +78,7 @@ func validateJWT(r *http.Request) templates.UserInfo {
 		return templates.UserInfo{LoggedIn: false}
 	}
 
-	// Reduced JWT validation logging to prevent spam
-	if len(cookie.Value) > 0 && len(cookie.Value) % 100 == 0 {
-		fmt.Printf("🔐 MIDDLEWARE: JWT validation (every 100th request)\n")
-	}
+	fmt.Printf("🔐 MIDDLEWARE: Validating JWT token, length: %d\n", len(cookie.Value))
 
 	// Parse JWT to get real user data
 	parts := strings.Split(cookie.Value, ".")
@@ -167,7 +164,7 @@ func GetUserFromContext(r *http.Request) templates.UserInfo {
 func RequireAdmin(next http.Handler, adminEmail string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userInfo := GetUserFromContext(r)
-		
+
 		if !userInfo.LoggedIn {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
