@@ -320,22 +320,6 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	http.SetCookie(w, cookie)
 	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", cookie.Name, len(cookie.Value))
 
-	// Create/update user in database and make first user admin
-	userInfo, err := h.AuthService.GetUserInfo(req.Token)
-	if err != nil {
-		fmt.Printf("🔐 SESSION: Could not get user info: %v\n", err)
-	} else {
-		fmt.Printf("🔐 SESSION: Got user info: %s <%s>\n", userInfo.Name, userInfo.Email)
-		
-		// Create user in database (first user becomes admin)
-		isFirstAdmin, err := db.CreateUserIfFirst(userInfo.Email, userInfo.Name, userInfo.ID, userInfo.Picture)
-		if err != nil {
-			fmt.Printf("🔐 SESSION: Database error: %v\n", err)
-		} else if isFirstAdmin {
-			fmt.Printf("🔐 SESSION: 🎉 FIRST USER! %s became admin automatically!\n", userInfo.Email)
-		}
-	}
-
 	fmt.Printf("🔐 SESSION: Sending success response\n")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
