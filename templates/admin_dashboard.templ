@@ -66,80 +66,34 @@ templ AdminDashboardContent(user UserInfo, data DashboardData) {
 			</div>
 		</div>
 		
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+		<div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
 			<!-- Recent Users -->
 			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
 				<h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Recent Users</h3>
 				<div class="space-y-3">
-					<div class="text-sm text-gray-500 mb-4">
-						{ len(data.RecentUsers) } recent users found
-					</div>
-					<!-- Show basic info for now -->
-					<div class="flex items-center justify-center p-8 text-gray-500">
-						Database integration active - Data loaded from real database
-					</div>
-				</div>
-			</div>
-			
-			<!-- Quick Actions -->
-			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-				<h3 class="text-lg font-semibold text-gray-900 mb-4">⚡ Quick Actions</h3>
-				<div class="space-y-3">
-					<button 
-						hx-get="/api/admin/analytics"
-						hx-target="#admin-content"
-						hx-swap="innerHTML"
-						class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-					>
-						<div class="flex items-center space-x-3">
-							<span class="text-blue-600">📊</span>
-							<div>
-								<div class="font-medium text-blue-900">View Analytics</div>
-								<div class="text-sm text-blue-600">Detailed usage statistics</div>
-							</div>
+					{ if len(data.RecentUsers) > 0 }
+						<div class="text-sm text-gray-500 mb-4">
+							{ len(data.RecentUsers) } recent users
 						</div>
-					</button>
-					<button 
-						hx-get="/api/admin/settings"
-						hx-target="#admin-content"
-						hx-swap="innerHTML"
-						class="w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
-					>
-						<div class="flex items-center space-x-3">
-							<span class="text-green-600">⚙️</span>
-							<div>
-								<div class="font-medium text-green-900">System Settings</div>
-								<div class="text-sm text-green-600">Configure application</div>
+						{ for _, recentUser := range data.RecentUsers }
+							<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+								<div class="flex items-center space-x-3">
+									<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+										<span class="text-blue-600 text-sm font-medium">{ recentUser.Name[:2] }</span>
+									</div>
+									<div>
+										<div class="font-medium text-gray-900">{ recentUser.Name }</div>
+										<div class="text-sm text-gray-500">{ recentUser.Email }</div>
+									</div>
+								</div>
+								<div class="text-sm text-gray-500">{ recentUser.Date }</div>
 							</div>
+						{ endfor }
+					{ else }
+						<div class="flex items-center justify-center p-8 text-gray-500">
+							No users found
 						</div>
-					</button>
-					<button 
-						hx-get="/api/admin/logs"
-						hx-target="#admin-content"
-						hx-swap="innerHTML"
-						class="w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-					>
-						<div class="flex items-center space-x-3">
-							<span class="text-purple-600">📝</span>
-							<div>
-								<div class="font-medium text-purple-900">View Logs</div>
-								<div class="text-sm text-purple-600">System logs and errors</div>
-							</div>
-						</div>
-					</button>
-					<button 
-						hx-get="/"
-						hx-swap="none"
-						class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-					>
-						<div class="flex items-center space-x-3">
-							<span class="text-gray-600">🏠</span>
-							<div>
-								<div class="font-medium text-gray-900">Back to Home</div>
-								<div class="text-sm text-gray-600">Return to main application</div>
-							</div>
-						</div>
-					</button>
+					{ endif }
 				</div>
 			</div>
 		</div>
