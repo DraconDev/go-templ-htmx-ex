@@ -58,72 +58,12 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	if h.Database == nil {
-		// Fallback to enhanced mock data if no database connection
-		fmt.Println("🔍 Using mock user data - no database connection")
-		users := []map[string]interface{}{
-			{
-				"id":        1,
-				"email":     "john.doe@example.com",
-				"name":      "John Doe",
-				"picture":   "https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=40",
-				"role":      "user",
-				"status":    "active",
-				"lastLogin": "2025-11-11T20:45:00Z",
-				"createdAt": "2025-11-10T14:30:00Z",
-			},
-			{
-				"id":        2,
-				"email":     "dracsharp@gmail.com",
-				"name":      "Platform Admin",
-				"picture":   "https://ui-avatars.com/api/?name=Admin&background=EF4444&color=fff&size=40",
-				"role":      "admin",
-				"status":    "active",
-				"lastLogin": "2025-11-11T21:00:00Z",
-				"createdAt": "2025-11-08T12:00:00Z",
-			},
-		}
-
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"users": users,
-			"total": len(users),
-			"active": 2,
-			"inactive": 0,
-		})
-		return
-	}
-
-	// Try to get real users from database
-	userRepo := db.NewUserRepository(h.Database)
-	
-	// Try to get the admin user from database first
-	adminUser, err := userRepo.GetUserByEmail(h.Config.AdminEmail)
-	if err == nil && adminUser != nil {
-		fmt.Printf("✅ Found admin user in database: %s\n", adminUser.Email)
-		
-		// Convert admin user to response format
-		userMaps := []map[string]interface{}{
-			{
-				"id":        adminUser.ID,
-				"email":     adminUser.Email,
-				"name":      adminUser.Name,
-				"picture":   adminUser.Picture,
-				"role":      "admin",
-				"status":    "active",
-				"lastLogin": adminUser.CreatedAt.Format("2006-01-02T15:04:05Z"),
-				"createdAt": adminUser.CreatedAt.Format("2006-01-02T15:04:05Z"),
-			},
-		}
-
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"users": userMaps,
-			"total": len(userMaps),
-			"active": len(userMaps),
-			"inactive": 0,
-		})
-	} else {
-		fmt.Printf("🔍 Admin user not found in database or DB query failed: %v\n", err)
-		// Fallback to enhanced mock data including the admin email
+	// Get all users from database using SQLC
+	ctx := r.Context()
+	users, err := h.Queries.GetAllUsers(ctx)
+	if err != nil {
+		fmt.Printf("❌ Database query failed: %v\n", err)
+		// Fallback to enhanced mock data if database query fails
 		users := []map[string]interface{}{
 			{
 				"id":        1,
@@ -153,7 +93,37 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 			"active": len(users),
 			"inactive": 0,
 		})
+		return
 	}
+
+	fmt.Printf("✅ Retrieved %d users from database\n", len(users))
+
+	// Convert SQLC users to response format
+	userMaps := make([]map[string]interface{}, len(users))
+	for i, user := range users {
+		role := "user"
+		if user.IsAdmin.Valid && user.IsAdmin.Bool {
+			role = "admin"
+		}
+		
+		userMaps[i] = map[string]interface{}{
+			"id":        user.ID,
+			"email":     user.Email,
+			"name":      user.Name,
+			"picture":   user.Picture.String,
+			"role":      role,
+			"status":    "active",
+			"lastLogin": user.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
+			"createdAt": user.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
+		}
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"users": userMaps,
+		"total": len(userMaps),
+		"active": len(userMaps),
+		"inactive": 0,
+	})
 }
 
 // GetAnalyticsHandler returns analytics data (stub for now)
