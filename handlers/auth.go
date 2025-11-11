@@ -242,6 +242,8 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) templates.UserInfo {
 		Email:    userResp.Email,
 		Picture:  userResp.Picture,
 	}
+}
+
 // RefreshTokenHandler handles token refresh requests
 func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
