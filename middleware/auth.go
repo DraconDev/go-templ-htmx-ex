@@ -21,7 +21,6 @@ const userContextKey UserContextKey = "user"
 func AuthMiddleware(next http.Handler) http.Handler {
 	// Public routes that don't require authentication
 	publicPaths := map[string]bool{
-		"/":                    true, // Home page can be public
 		"/health":              true, // Health check
 		"/login":               true, // Login page
 		"/auth/google":         true, // OAuth login
