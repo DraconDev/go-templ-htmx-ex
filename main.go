@@ -47,6 +47,7 @@ func main() {
 	// Session management
 	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
+	router.HandleFunc("/api/auth/refresh", authHandler.RefreshTokenHandler).Methods("POST")
 	router.HandleFunc("/api/auth/user", authHandler.GetUserHandler).Methods("GET")
 	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
 
