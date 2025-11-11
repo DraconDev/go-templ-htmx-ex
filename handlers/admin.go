@@ -246,7 +246,6 @@ func (h *AdminHandler) GetAnalyticsHTMXHandler(w http.ResponseWriter, r *http.Re
 	w.Header().Set("Content-Type", "text/html")
 	
 	totalUsers := 0
-	signupsToday := 0
 	signupsThisWeek := 0
 
 	// Get real user counts from database if available
@@ -257,14 +256,6 @@ func (h *AdminHandler) GetAnalyticsHTMXHandler(w http.ResponseWriter, r *http.Re
 			fmt.Printf("📊 ANALYTICS: Error getting total users: %v\n", err)
 		} else {
 			totalUsers = int(totalUsersResult)
-		}
-
-		// Get today's signups
-		signupsTodayResult, err := h.Queries.CountUsersCreatedToday(r.Context())
-		if err != nil {
-			fmt.Printf("📊 ANALYTICS: Error getting today's signups: %v\n", err)
-		} else {
-			signupsToday = int(signupsTodayResult)
 		}
 
 		// Get this week's signups
