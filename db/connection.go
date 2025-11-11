@@ -67,6 +67,7 @@ func (db *Database) CreateTables() error {
 		email VARCHAR(255) UNIQUE NOT NULL,
 		name VARCHAR(255) NOT NULL,
 		picture TEXT,
+		is_admin BOOLEAN DEFAULT FALSE, -- Admin role for access control
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 		updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 	);
