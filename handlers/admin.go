@@ -40,9 +40,8 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	fmt.Printf("📋 ADMIN: User logged in: %s (%s)\n", userInfo.Name, userInfo.Email)
 
 	// Check if this user is admin using database
-	var userRecord *dbSqlc.GetUserByEmailRow
 	if h.Queries != nil {
-		userRecord, err = h.Queries.GetUserByEmail(r.Context(), userInfo.Email)
+		userRecord, err := h.Queries.GetUserByEmail(r.Context(), userInfo.Email)
 		if err != nil {
 			fmt.Printf("📋 ACCESS DENIED: Could not fetch user from database: %v\n", err)
 			http.Error(w, "Access denied: Admin privileges required", http.StatusForbidden)
