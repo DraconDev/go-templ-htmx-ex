@@ -241,3 +241,71 @@ func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 		"total": len(logs),
 	})
 }
+// GetAnalyticsHTMXHandler returns HTML fragment for HTMX updates
+func (h *AdminHandler) GetAnalyticsHTMXHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	
+	totalUsers := 0
+	signupsToday := 0
+	signupsThisWeek := 0
+
+	// Get real user counts from database if available
+	if h.Queries != nil {
+		// Get total user count
+		totalUsersResult, err := h.Queries.CountUsers(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting total users: %v\n", err)
+		} else {
+			totalUsers = int(totalUsersResult)
+		}
+
+		// Get today's signups
+		signupsTodayResult, err := h.Queries.CountUsersCreatedToday(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting today's signups: %v\n", err)
+		} else {
+			signupsToday = int(signupsTodayResult)
+		}
+
+		// Get this week's signups
+		signupsThisWeekResult, err := h.Queries.CountUsersCreatedThisWeek(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting this week's signups: %v\n", err)
+		} else {
+			signupsThisWeek = int(signupsThisWeekResult)
+		}
+	}
+
+	// Return HTML fragment for HTMX
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `%d
+<div class="text-sm text-green-600 flex items-center">
+	<span class="mr-1">↗</span>
+	+%d this week
+</div>`, totalUsers, signupsThisWeek)
+}
+
+// GetAnalyticsSignupsHTMXHandler returns HTML fragment for signups count
+func (h *AdminHandler) GetAnalyticsSignupsHTMXHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	
+	signupsToday := 0
+
+	// Get today's signups
+	if h.Queries != nil {
+		signupsTodayResult, err := h.Queries.CountUsersCreatedToday(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting today's signups: %v\n", err)
+		} else {
+			signupsToday = int(signupsTodayResult)
+		}
+	}
+
+	// Return HTML fragment for HTMX
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `%d
+<div class="text-sm text-green-600 flex items-center">
+	<span class="mr-1">↗</span>
+	New signups today
+</div>`, signupsToday)
+}
