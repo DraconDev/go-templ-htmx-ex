@@ -78,7 +78,10 @@ func validateJWT(r *http.Request) templates.UserInfo {
 		return templates.UserInfo{LoggedIn: false}
 	}
 
-	fmt.Printf("🔐 MIDDLEWARE: Validating JWT token, length: %d\n", len(cookie.Value))
+	// Reduced JWT validation logging to prevent spam
+	if len(cookie.Value) > 0 && len(cookie.Value) % 100 == 0 {
+		fmt.Printf("🔐 MIDDLEWARE: JWT validation (every 100th request)\n")
+	}
 
 	// Parse JWT to get real user data
 	parts := strings.Split(cookie.Value, ".")
