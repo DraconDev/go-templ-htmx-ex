@@ -2,7 +2,22 @@ package templates
 
 //go:generate templ generate
 
-templ AdminDashboardContent(user UserInfo) {
+// DashboardData represents the complete admin dashboard data
+type DashboardData struct {
+	TotalUsers    int
+	SignupsToday  int
+	SystemHealth  string
+	RecentUsers   []RecentUser
+	UsersThisWeek int
+}
+
+type RecentUser struct {
+	Name  string
+	Email string
+	Date  string
+}
+
+templ AdminDashboardContent(user UserInfo, data DashboardData) {
 	<div class="max-w-6xl mx-auto">
 		<!-- Dashboard Header -->
 		<div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-8 mb-8">
@@ -19,13 +34,13 @@ templ AdminDashboardContent(user UserInfo) {
 						<span class="text-blue-600 text-lg">👥</span>
 					</div>
 				</div>
-				<div 
-					hx-get="/api/admin/analytics/htmx"
-					hx-swap="innerHTML"
-					hx-trigger="load"
-					class="text-3xl font-bold text-gray-900 mb-2"
-				>Loading...</div>
-				<div class="text-sm text-gray-500">Real database count</div>
+				<div class="text-3xl font-bold text-gray-900 mb-2">
+					{ data.TotalUsers }
+				</div>
+				<div class="text-sm text-green-600 flex items-center">
+					<span class="mr-1">↗</span>
+					+{ data.UsersThisWeek } this week
+				</div>
 			</div>
 			
 			<!-- Signups Today Card -->
@@ -36,13 +51,10 @@ templ AdminDashboardContent(user UserInfo) {
 						<span class="text-green-600 text-lg">📅</span>
 					</div>
 				</div>
-				<div 
-					hx-get="/api/admin/signups/htmx"
-					hx-swap="innerHTML"
-					hx-trigger="load"
-					class="text-3xl font-bold text-gray-900 mb-2"
-				>Loading...</div>
-				<div class="text-sm text-gray-500">Real daily signups</div>
+				<div class="text-3xl font-bold text-gray-900 mb-2">
+					{ data.SignupsToday }
+				</div>
+				<div class="text-sm text-gray-500">New signups today</div>
 			</div>
 			
 			<!-- Database Status Card -->
@@ -53,12 +65,9 @@ templ AdminDashboardContent(user UserInfo) {
 						<span class="text-green-600 text-lg">🟢</span>
 					</div>
 				</div>
-				<div 
-					hx-get="/api/admin/settings/htmx"
-					hx-swap="innerHTML"
-					hx-trigger="load"
-					class="text-lg font-semibold text-gray-900 mb-2"
-				>Loading...</div>
+				<div class="text-lg font-semibold text-gray-900 mb-2">
+					{ data.SystemHealth }
+				</div>
 				<div class="text-sm text-gray-500">Real database status</div>
 			</div>
 		</div>
@@ -67,15 +76,31 @@ templ AdminDashboardContent(user UserInfo) {
 			<!-- Recent Users -->
 			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
 				<h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Recent Users</h3>
-				<div 
-					hx-get="/api/admin/logs/htmx"
-					hx-swap="innerHTML"
-					hx-trigger="load"
-					class="space-y-3"
-				>
-					<div class="flex items-center justify-center p-8 text-gray-500">
-						Loading recent users from database...
-					</div>
+				<div class="space-y-3">
+					{ if len(data.RecentUsers) > 0 }
+						{ for i, recentUser := range data.RecentUsers }
+							{ if i < 5 }
+								<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+									<div class="flex items-center space-x-3">
+										<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+											<span class="text-blue-600 text-sm font-medium">
+												{ recentUser.Name[:2] }
+											</span>
+										</div>
+										<div>
+											<div class="font-medium text-gray-900">{ recentUser.Name }</div>
+											<div class="text-sm text-gray-500">{ recentUser.Email }</div>
+										</div>
+									</div>
+									<div class="text-sm text-gray-500">{ recentUser.Date }</div>
+								</div>
+							{ endif }
+						{ endfor }
+					{ else }
+						<div class="flex items-center justify-center p-8 text-gray-500">
+							No recent users found
+						</div>
+					{ endif }
 				</div>
 			</div>
 			
