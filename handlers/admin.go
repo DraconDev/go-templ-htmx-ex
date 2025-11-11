@@ -210,30 +210,30 @@ func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request
 	json.NewEncoder(w).Encode(settings)
 }
 
-// GetLogsHandler returns system logs (stub for now)
+// GetLogsHandler returns recent user activity
 func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	// Mock log data
-	logs := []map[string]interface{}{
-		{
-			"timestamp": "2025-11-11T02:58:00Z",
-			"level":     "INFO",
-			"message":   "User login successful",
-			"user":      "john@example.com",
-		},
-		{
-			"timestamp": "2025-11-11T02:57:00Z",
-			"level":     "WARN",
-			"message":   "High memory usage detected",
-			"user":      "system",
-		},
-		{
-			"timestamp": "2025-11-11T02:56:00Z",
-			"level":     "ERROR",
-			"message":   "Database connection failed",
-			"user":      "system",
-		},
+	// Get recent user activity as logs
+	logs := []map[string]interface{}{}
+	
+	if h.Queries != nil {
+		recentUsers, err := h.Queries.GetRecentUsers(r.Context())
+		if err != nil {
+			fmt.Printf("📊 LOGS: Error getting recent users: %v\n", err)
+		} else {
+			for _, user := range recentUsers {
+				logs = append(logs, map[string]interface{}{
+					"timestamp": user.CreatedAt.Time.Format("2006-01-02T15:04:05Z07:00"),
+					"level":     "INFO",
+					"message":   "New user registration",
+					"user":      user.Email,
+					"user_name": user.Name,
+				})
+			}
+		}
+	} else {
+		fmt.Printf("📊 LOGS: No database connection - showing empty logs\n")
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
