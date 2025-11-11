@@ -10,10 +10,20 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
+// =============================================================================
+// AUTHENTICATION HANDLER
+// =============================================================================
+// This handler manages the complete OAuth + JWT authentication flow for the app:
+// 1. OAuth redirects to external providers (Google, GitHub)
+// 2. Callback processing to extract JWT tokens from URL fragments
+// 3. Session management with HTTP-only cookies
+// 4. Token validation and refresh logic
+// =============================================================================
+
 // AuthHandler handles authentication-related HTTP requests
 type AuthHandler struct {
-	AuthService *auth.Service
-	Config      *config.Config
+	AuthService *auth.Service // Communication with auth microservice
+	Config      *config.Config // App configuration
 }
 
 // NewAuthHandler creates a new authentication handler
@@ -23,6 +33,10 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 		Config:      config,
 	}
 }
+
+// =============================================================================
+// OAUTH LOGIN FLOWS
+// =============================================================================
 
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
