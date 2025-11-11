@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
@@ -22,7 +23,7 @@ import (
 
 // AuthHandler handles authentication-related HTTP requests
 type AuthHandler struct {
-	AuthService *auth.Service // Communication with auth microservice
+	AuthService *auth.Service  // Communication with auth microservice
 	Config      *config.Config // App configuration
 }
 
@@ -42,7 +43,7 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 // TestTokenRefreshHandler serves a test page with token refresh button
 func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	testHTML := `
 <!DOCTYPE html>
 <html>
@@ -218,12 +219,14 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
 `
 	w.Write([]byte(testHTML))
 }
+
 // OAUTH LOGIN FLOWS
 // =============================================================================
 
 // GoogleLoginHandler handles Google OAuth login
 // Flow: User clicks "Login with Google" -> Redirect to our auth service ->
-//       Auth service handles Google OAuth -> Returns to our callback with JWT
+//
+//	Auth service handles Google OAuth -> Returns to our callback with JWT
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
 	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
@@ -253,7 +256,8 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 
 // AuthCallbackHandler handles the OAuth callback
 // Flow: Google redirects here with JWT in URL fragment (#access_token=...)
-//       Client-side JS extracts token and calls /api/auth/set-session
+//
+//	Client-side JS extracts token and calls /api/auth/set-session
 func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 CALLBACK: === OAuth callback STARTED ===\n")
 	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
@@ -262,7 +266,7 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 
 	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// STEP 2: Render callback page with JavaScript to extract JWT from URL fragment
 	// The fragment (#access_token=...) is not sent to server, so JS must handle it
 	component := templates.Layout("Authenticating", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
@@ -326,16 +330,28 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 }
 
-import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
+// GetUserHandler returns current user information
+func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 GETUSER: === GetUser STARTED ===\n")
+	w.Header().Set("Content-Type", "application/json")
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
-	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
-)
+	// Get session token from cookie
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		fmt.Printf("🔐 GETUSER: No session cookie found: %v\n", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"logged_in": false,
+		})
+		return
+	}
+
+	fmt.Printf("🔐 GETUSER: Session cookie found, value length: %d\n", len(cookie.Value))
+
+	// Get user info from auth microservice
+	fmt.Printf("🔐 GETUSER: Calling auth service to validate user...\n")
+	userResp, err := h.AuthService.ValidateUser(cookie.Value)
+	if err != nil {
 		fmt.Printf("🔐 GETUSER: Auth service failed: %v\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -439,9 +455,10 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) templates.UserInfo {
 
 // RefreshTokenHandler handles token refresh requests
 // Flow: Frontend calls when JWT expires ->
-//       Server reads refresh_token cookie ->
-//       Calls auth service for new JWT ->
-//       **Sets new session_token cookie automatically**
+//
+//	Server reads refresh_token cookie ->
+//	Calls auth service for new JWT ->
+//	**Sets new session_token cookie automatically**
 func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
