@@ -146,7 +146,13 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.WriteHeader(resp.StatusCode)
-	w.Write([]byte{})
+	if resp.Body != nil {
+		// Copy any response body (usually empty for redirects)
+		_, err := io.Copy(w, resp.Body)
+		if err != nil {
+			fmt.Printf("🔐 GITHUB LOGIN: Failed to copy response body: %v\n", err)
+		}
+	}
 }
 
 // AuthCallbackHandler handles the OAuth callback
