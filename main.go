@@ -41,6 +41,13 @@ func main() {
 		} else {
 			log.Println("✅ Database tables ready")
 		}
+
+		// Run migrations to add new columns
+		if err := database.Migrate(); err != nil {
+			log.Printf("⚠️  Database migration failed: %v", err)
+		} else {
+			log.Println("✅ Database migrations applied")
+		}
 	}
 
 	// Create auth service
