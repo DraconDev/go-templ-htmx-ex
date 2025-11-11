@@ -13,6 +13,7 @@ type Config struct {
 	ServerPort     string
 	AuthServiceURL string
 	RedirectURL    string
+	AuthSecret     string
 }
 
 var (
