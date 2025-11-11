@@ -1,15 +1,11 @@
 package handlers
 
 import (
-	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
@@ -21,8 +17,7 @@ type AdminHandler struct {
 }
 
 // NewAdminHandler creates a new admin handler
-func NewAdminHandler(config *config.Config, database *db.Database) *AdminHandler {
-	queries := dbSqlc.New(database.DB) // Create SQLC queries instance
+func NewAdminHandler(config *config.Config, queries *dbSqlc.Queries) *AdminHandler {
 	return &AdminHandler{
 		Config:  config,
 		Queries: queries,
