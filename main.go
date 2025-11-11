@@ -20,6 +20,7 @@ import (
 
 var authHandler *handlers.AuthHandler
 var adminHandler *handlers.AdminHandler
+var database *db.Database
 
 func main() {
 	// Load configuration
