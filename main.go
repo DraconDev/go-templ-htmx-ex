@@ -47,6 +47,15 @@ func main() {
 	// User profile page
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
+	// Admin dashboard
+	router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
+	
+	// Admin API routes
+	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")
+	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET")
+	router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")
+	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")
+
 	// Session management
 	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
