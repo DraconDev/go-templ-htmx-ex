@@ -1,11 +1,9 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 )
