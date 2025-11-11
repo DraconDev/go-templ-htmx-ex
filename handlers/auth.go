@@ -50,6 +50,109 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
     <title>Auth Test - Token Refresh</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // =============================================================================
+        // TOKEN REFRESH TESTING FUNCTIONS
+        // =============================================================================
+        
+        // Test the complete token refresh flow with detailed logging
+        function testTokenRefresh() {
+            console.log('🔄 TOKEN REFRESH TEST: === STARTED ===');
+            const resultDiv = document.getElementById('refresh-result');
+            
+            // STEP 1: Log that we're starting the test
+            console.log('🔄 TOKEN REFRESH TEST: Step 1 - Starting refresh test...');
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Starting token refresh test...</p>';
+            
+            // STEP 2: Check if refresh_token cookie exists
+            const cookies = document.cookie.split(';');
+            const refreshCookie = cookies.find(cookie => cookie.trim().startsWith('refresh_token='));
+            console.log('🔄 TOKEN REFRESH TEST: Step 2 - Checking for refresh_token cookie...');
+            console.log('🔄 TOKEN REFRESH TEST: All cookies:', cookies);
+            console.log('🔄 TOKEN REFRESH TEST: refresh_token cookie found:', !!refreshCookie);
+            
+            if (!refreshCookie) {
+                console.log('❌ TOKEN REFRESH TEST: No refresh_token cookie found - user may not be logged in');
+                resultDiv.innerHTML = '<p class="text-red-600">❌ No refresh_token cookie found. User may not be logged in.</p>';
+                return;
+            }
+            
+            // STEP 3: Call the refresh endpoint
+            console.log('🔄 TOKEN REFRESH TEST: Step 3 - Calling /api/auth/refresh...');
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Calling refresh endpoint...</p>';
+            
+            fetch('/api/auth/refresh', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                console.log('🔄 TOKEN REFRESH TEST: Step 4 - Got response from server');
+                console.log('🔄 TOKEN REFRESH TEST: Response status:', response.status);
+                console.log('🔄 TOKEN REFRESH TEST: Response headers:', response.headers);
+                
+                return response.json().then(data => {
+                    console.log('🔄 TOKEN REFRESH TEST: Response data:', data);
+                    
+                    if (response.ok && data.success) {
+                        console.log('✅ TOKEN REFRESH TEST: SUCCESS - Token refreshed successfully!');
+                        console.log('🔄 TOKEN REFRESH TEST: New session token should be set in cookies');
+                        
+                        // Check if new session_token cookie was set
+                        const newSessionCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('session_token='));
+                        console.log('🔄 TOKEN REFRESH TEST: New session_token cookie set:', !!newSessionCookie);
+                        
+                        resultDiv.innerHTML = `
+                            <p class="text-green-600">✅ SUCCESS: Token refreshed!</p>
+                            <p class="text-sm text-gray-600 mt-2">New session_token cookie should now be set.</p>
+                            <p class="text-sm text-gray-600">Check browser console for detailed logs.</p>
+                        `;
+                    } else {
+                        console.log('❌ TOKEN REFRESH TEST: FAILED - Server returned error');
+                        resultDiv.innerHTML = `<p class="text-red-600">❌ ERROR: ${data.error || 'Unknown error'}</p>`;
+                    }
+                });
+            })
+            .catch(error => {
+                console.log('❌ TOKEN REFRESH TEST: NETWORK ERROR');
+                console.log('❌ TOKEN REFRESH TEST: Error:', error);
+                resultDiv.innerHTML = `<p class="text-red-600">❌ NETWORK ERROR: ${error.message}</p>`;
+            });
+            
+            console.log('🔄 TOKEN REFRESH TEST: === TEST INITIATED ===');
+        }
+        
+        // Helper function to check current user status
+        function checkUserStatus() {
+            console.log('👤 USER STATUS CHECK: === STARTED ===');
+            const resultDiv = document.getElementById('user-result');
+            
+            fetch('/api/auth/user')
+            .then(response => response.json())
+            .then(data => {
+                console.log('👤 USER STATUS CHECK: Response:', data);
+                
+                if (data.logged_in) {
+                    resultDiv.innerHTML = `
+                        <p class="text-green-600">✅ Logged in as: ${data.name}</p>
+                        <p class="text-sm text-gray-600">Email: ${data.email}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p class="text-red-600">❌ Not logged in</p>';
+                }
+            })
+            .catch(error => {
+                console.log('👤 USER STATUS CHECK: Error:', error);
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Error: ${error.message}</p>`;
+            });
+        }
+        
+        // Log when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 AUTH TEST PAGE: Loaded - Check browser console for detailed testing logs');
+        });
+    </script>
 </head>
 <body class="bg-blue-300 min-h-screen">
     <div class="container mx-auto py-8 px-4">
@@ -59,7 +162,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
             <!-- Test Token Refresh -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">Test Token Refresh</h2>
-                <p class="text-gray-600 mb-4">This button will test the token refresh flow.</p>
+                <p class="text-gray-600 mb-4">This button will test the complete token refresh flow with detailed console logging.</p>
                 <button
                     onclick="testTokenRefresh()"
                     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -74,9 +177,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 <h2 class="text-xl font-semibold mb-4">Check Current User</h2>
                 <p class="text-gray-600 mb-4">Check if user is currently logged in.</p>
                 <button
-                    hx-get="/api/auth/user"
-                    hx-target="#user-result"
-                    hx-swap="innerHTML"
+                    onclick="checkUserStatus()"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
                     Check User Status
@@ -87,6 +188,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
             <!-- OAuth Login Buttons -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">OAuth Login</h2>
+                <p class="text-gray-600 mb-4">Use these to test the full OAuth flow.</p>
                 <div class="space-x-4">
                     <a href="/auth/google" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Login with Google</a>
                     <a href="/auth/github" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Login with GitHub</a>
@@ -96,11 +198,22 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
             <!-- Callback Test -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">Test Callback</h2>
-                <p class="text-gray-600 mb-4">Test the callback page that processes JWT tokens.</p>
+                <p class="text-gray-600 mb-4">Test the callback page that processes JWT tokens from URL fragments.</p>
                 <a href="/auth/callback#access_token=test-jwt-token&token_type=Bearer"
                    class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                     Test Callback with Fake Token
                 </a>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-yellow-800 mb-2">🔍 Testing Instructions</h3>
+                <ol class="text-sm text-yellow-700 space-y-1">
+                    <li>1. Open browser console (F12) to see detailed logs</li>
+                    <li>2. First login with Google or GitHub</li>
+                    <li>3. Then click "Test Token Refresh" to see the flow</li>
+                    <li>4. Check console logs for every step of the process</li>
+                </ol>
             </div>
         </div>
     </div>
