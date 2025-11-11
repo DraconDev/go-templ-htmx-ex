@@ -26,7 +26,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	fmt.Printf("📋 ADMIN: Admin dashboard requested\n")
 	
 	// Get current user info (this would typically come from your auth system)
-	cookie, err := r.Cookie("session_token")
+	_, err := r.Cookie("session_token")
 	if err != nil {
 		fmt.Printf("📋 ADMIN: No session token found\n")
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -44,7 +44,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 
 	// Check if this user is admin
 	if !h.Config.IsAdmin(userInfo.Email) {
-		fmt.Printf("📋 ACCESS DENIED: User %s is not admin (admin email: %s)\n", 
+		fmt.Printf("📋 ACCESS DENIED: User %s is not admin (admin email: %s)\n",
 			userInfo.Email, h.Config.AdminEmail)
 		http.Error(w, "Access denied: Admin privileges required", http.StatusForbidden)
 		return
@@ -53,7 +53,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	fmt.Printf("📋 ADMIN: Access granted for admin %s\n", userInfo.Email)
 
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Admin Dashboard", templates.AdminDashboardContent(userInfo))
+	component := templates.Layout("Admin Dashboard", templates.NavigationLoggedIn(userInfo), templates.AdminDashboardContent(userInfo))
 	component.Render(r.Context(), w)
 }
 
