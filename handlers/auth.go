@@ -330,10 +330,167 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 }
 
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/DraconDev/go-templ-htmx-ex/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/templates"
+)
+
+// =============================================================================
+// AUTHENTICATION HANDLER
+// =============================================================================
+// This handler manages the complete OAuth + JWT authentication flow for the app:
+// 1. OAuth redirects to external providers (Google, GitHub)
+// 2. Callback processing to extract JWT tokens from URL fragments
+// 3. Session management with HTTP-only cookies
+// 4. Token validation and refresh logic
+// =============================================================================
+
+// AuthHandler handles authentication-related HTTP requests
+type AuthHandler struct {
+	AuthService *auth.Service // Communication with auth microservice
+	Config      *config.Config // App configuration
+}
+
+// NewAuthHandler creates a new authentication handler
+func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandler {
+	return &AuthHandler{
+		AuthService: authService,
+		Config:      config,
+	}
+}
+
+// =============================================================================
+// OAUTH LOGIN FLOWS
+// =============================================================================
+
+// GoogleLoginHandler handles Google OAuth login
+// Flow: User clicks "Login with Google" -> Redirect to our auth service ->
+//       Auth service handles Google OAuth -> Returns to our callback with JWT
+func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
+	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+
+	// STEP 1: Redirect to our auth microservice with redirect_uri parameter
+	// The auth service will handle the actual Google OAuth flow
+	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
+		h.Config.AuthServiceURL, h.Config.RedirectURL)
+
+	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
+func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 GITHUB LOGIN: Starting GitHub OAuth flow\n")
+
+	// OAuth endpoints are public - just redirect
+	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
+		h.Config.AuthServiceURL, h.Config.RedirectURL)
+
+	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
+// =============================================================================
+// OAUTH CALLBACK
+// =============================================================================
+
+// AuthCallbackHandler handles the OAuth callback
+// Flow: Google redirects here with JWT in URL fragment (#access_token=...)
+//       Client-side JS extracts token and calls /api/auth/set-session
+func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 CALLBACK: === OAuth callback STARTED ===\n")
+	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
+	fmt.Printf("🔐 CALLBACK: Query params = %v\n", r.URL.Query())
+	fmt.Printf("🔐 CALLBACK: Fragment = %s\n", r.URL.Fragment)
+
+	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
+	w.Header().Set("Content-Type", "text/html")
+	
+	// STEP 2: Render callback page with JavaScript to extract JWT from URL fragment
+	// The fragment (#access_token=...) is not sent to server, so JS must handle it
+	component := templates.Layout("Authenticating", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
+
+	fmt.Printf("🔐 CALLBACK: About to render component...\n")
+	component.Render(r.Context(), w)
+	fmt.Printf("🔐 CALLBACK: Component rendered successfully\n")
+	fmt.Printf("🔐 CALLBACK: === OAuth callback COMPLETED ===\n")
+}
+
+// SetSessionHandler sets the user session from client-side JavaScript
+func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 SESSION: === Set session STARTED ===\n")
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		Token string `json:"token"`
+	}
+
+	// Parse the request body
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		fmt.Printf("🔐 SESSION: Failed to decode request: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Invalid request",
+		})
+		return
+	}
+
+	if req.Token == "" {
+		fmt.Printf("🔐 SESSION: No token provided\n")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Token is required",
+		})
+		return
+	}
+
+	fmt.Printf("🔐 SESSION: Token received (length: %d)\n", len(req.Token))
+
+	// Set the session token cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    req.Token,
+		Path:     "/",
+		MaxAge:   3600, // 1 hour
+		HttpOnly: true,
+		Secure:   false, // Set to true in production
+	})
+
+	fmt.Printf("🔐 SESSION: Session cookie set successfully\n")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Session set successfully",
+	})
+}
+
+// =============================================================================
+// API ENDPOINTS
+// =============================================================================
+
 // GetUserHandler returns current user information
 func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GETUSER: === GetUser STARTED ===\n")
 	w.Header().Set("Content-Type", "application/json")
+	
+	// DEFERRED RECOVERY - Don't crash on panic
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("GetUserHandler panic: %v", r)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error": "Internal server error",
+			})
+		}
+	}()
 
 	// Get session token from cookie
 	cookie, err := r.Cookie("session_token")
@@ -342,6 +499,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"logged_in": false,
+			"error":     "No session token",
 		})
 		return
 	}
@@ -352,6 +510,15 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GETUSER: Calling auth service to validate user...\n")
 	userResp, err := h.AuthService.ValidateUser(cookie.Value)
 	if err != nil {
+		log.Printf("Auth service error: %v", err)
+		fmt.Printf("🔐 GETUSER: Auth service error: %v\n", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"logged_in": false,
+			"error":     "Failed to validate user session",
+		})
+		return
+	}
 		fmt.Printf("🔐 GETUSER: Auth service failed: %v\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
