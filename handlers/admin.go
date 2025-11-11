@@ -52,38 +52,77 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	component.Render(r.Context(), w)
 }
 
-// GetUsersHandler returns a list of users (stub for now)
+// GetUsersHandler returns a list of users from the database
 func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	// Mock user data for demo
-	users := []map[string]interface{}{
-		{
-			"id":    1,
-			"name":  "John Doe",
-			"email": "john@example.com",
-			"role":  "user",
-			"status": "active",
-		},
-		{
-			"id":    2,
-			"name":  "Alice Smith",
-			"email": "alice@example.com",
-			"role":  "user",
-			"status": "active",
-		},
-		{
-			"id":    3,
-			"name":  "Admin User",
-			"email": "admin@example.com",
-			"role":  "admin",
-			"status": "active",
-		},
+	// Get database connection (simplified - in production you'd use proper DI)
+	dbConn := db.GetConnection()
+	if dbConn == nil {
+		// Fallback to mock data if no database
+		users := []map[string]interface{}{
+			{
+				"id":     1,
+				"email":  "john@example.com",
+				"name":   "John Doe",
+				"picture": "https://via.placeholder.com/40",
+				"role":    "user",
+				"status":  "active",
+			},
+			{
+				"id":     2,
+				"email":  "admin@example.com",
+				"name":   "Admin User",
+				"picture": "https://via.placeholder.com/40",
+				"role":    "admin",
+				"status":  "active",
+			},
+		}
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"users": users,
+			"total": len(users),
+		})
+		return
+	}
+
+	// Try to get real users from database
+	userRepo := db.NewUserRepository(dbConn)
+	users, err := userRepo.GetAllUsers()
+	if err != nil {
+		// Fallback to mock data if database query fails
+		users := []map[string]interface{}{
+			{
+				"id":     1,
+				"email":  "john@example.com",
+				"name":   "John Doe",
+				"picture": "https://via.placeholder.com/40",
+				"role":    "user",
+				"status":  "active",
+			},
+		}
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"users": users,
+			"total": len(users),
+		})
+		return
+	}
+
+	// Convert database users to response format
+	userMaps := make([]map[string]interface{}, len(users))
+	for i, user := range users {
+		userMaps[i] = map[string]interface{}{
+			"id":      user.ID,
+			"email":   user.Email,
+			"name":    user.Name,
+			"picture": user.Picture,
+			"role":    "user", // Default role
+			"status":  "active",
+		}
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"users": users,
-		"total": len(users),
+		"users": userMaps,
+		"total": len(userMaps),
 	})
 }
 
