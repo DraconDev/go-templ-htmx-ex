@@ -35,24 +35,19 @@ func main() {
 	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
 	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
-
-	// OAuth login routes
-	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
-	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
-	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
 	
-	// Test routes
-	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
+	// Test route (simple, doesn't use auth methods)
+	router.HandleFunc("/test", handlers.AuthTestHandler).Methods("GET")
 
 	// User profile page
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
 	// Session management
-	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
-	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
-	router.HandleFunc("/api/auth/refresh", authHandler.RefreshTokenHandler).Methods("POST")
-	router.HandleFunc("/api/auth/user", authHandler.GetUserHandler).Methods("GET")
-	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/validate", handlers.ValidateSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/logout", handlers.LogoutHandler).Methods("POST")
+	router.HandleFunc("/api/auth/refresh", handlers.RefreshTokenHandler).Methods("POST")
+	router.HandleFunc("/api/auth/user", handlers.GetUserHandler).Methods("GET")
+	router.HandleFunc("/api/auth/set-session", handlers.SetSessionHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
