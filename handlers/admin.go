@@ -95,10 +95,35 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Try to get real users from database
 	userRepo := db.NewUserRepository(h.Database)
-	users, err := userRepo.GetAllUsers()
-	if err != nil {
-		fmt.Printf("❌ Database query failed: %v\n", err)
-		// Fallback to enhanced mock data if database query fails
+	
+	// Try to get the admin user from database first
+	adminUser, err := userRepo.GetUserByEmail(h.Config.AdminEmail)
+	if err == nil && adminUser != nil {
+		fmt.Printf("✅ Found admin user in database: %s\n", adminUser.Email)
+		
+		// Convert admin user to response format
+		userMaps := []map[string]interface{}{
+			{
+				"id":        adminUser.ID,
+				"email":     adminUser.Email,
+				"name":      adminUser.Name,
+				"picture":   adminUser.Picture,
+				"role":      "admin",
+				"status":    "active",
+				"lastLogin": adminUser.CreatedAt.Format("2006-01-02T15:04:05Z"),
+				"createdAt": adminUser.CreatedAt.Format("2006-01-02T15:04:05Z"),
+			},
+		}
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"users": userMaps,
+			"total": len(userMaps),
+			"active": len(userMaps),
+			"inactive": 0,
+		})
+	} else {
+		fmt.Printf("🔍 Admin user not found in database or DB query failed: %v\n", err)
+		// Fallback to enhanced mock data including the admin email
 		users := []map[string]interface{}{
 			{
 				"id":        1,
@@ -110,39 +135,25 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 				"lastLogin": "2025-11-11T20:45:00Z",
 				"createdAt": "2025-11-10T14:30:00Z",
 			},
+			{
+				"id":        2,
+				"email":     h.Config.AdminEmail,
+				"name":      "Platform Admin",
+				"picture":   "https://ui-avatars.com/api/?name=Admin&background=EF4444&color=fff&size=40",
+				"role":      "admin",
+				"status":    "active",
+				"lastLogin": "2025-11-11T21:01:00Z",
+				"createdAt": "2025-11-08T12:00:00Z",
+			},
 		}
+
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"users": users,
 			"total": len(users),
-			"active": 1,
+			"active": len(users),
 			"inactive": 0,
 		})
-		return
 	}
-
-	fmt.Printf("✅ Retrieved %d users from database\n", len(users))
-
-	// Convert database users to response format
-	userMaps := make([]map[string]interface{}, len(users))
-	for i, user := range users {
-		userMaps[i] = map[string]interface{}{
-			"id":        user.ID,
-			"email":     user.Email,
-			"name":      user.Name,
-			"picture":   user.Picture,
-			"role":      "user",
-			"status":    "active",
-			"lastLogin": user.CreatedAt.Format("2006-01-02T15:04:05Z"),
-			"createdAt": user.CreatedAt.Format("2006-01-02T15:04:05Z"),
-		}
-	}
-
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"users": userMaps,
-		"total": len(userMaps),
-		"active": len(userMaps),
-		"inactive": 0,
-	})
 }
 
 // GetAnalyticsHandler returns analytics data (stub for now)
