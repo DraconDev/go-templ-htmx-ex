@@ -14,6 +14,7 @@ import (
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
@@ -29,10 +30,16 @@ func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
 
-	// Get database URL from environment
+	// Initialize database if configured
+	if err := db.InitDatabaseIfConfigured(); err != nil {
+		log.Printf("⚠️  Database initialization failed: %v", err)
+		log.Println("💡 Continuing without database functionality")
+	}
+
+	// Get database URL from environment for runtime connection
 	dbURL := os.Getenv("DB_URL")
 	if dbURL != "" {
-		log.Printf("🔗 Connecting to database...")
+		log.Printf("🔗 Connecting to database for runtime...")
 		var err error
 		db, err = sql.Open("postgres", dbURL)
 		if err != nil {
