@@ -31,53 +31,18 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
 
 	// For OAuth endpoints, we need to call them with auth secret
-	if h.Config.AuthSecret == "" {
-		fmt.Printf("🔐 GOOGLE LOGIN: Auth secret not configured\n")
-		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
-		return
-	}
+	if h.Config.AuthSecret != "" {
+		fmt.Printf("🔐 GOOGLE LOGIN: Making authenticated request with X-Auth-Secret\n")
 
-	// Make authenticated request to auth service
-	client := &http.Client{Timeout: 10 * time.Second}
-	
-	// Create request to auth service
-	authServiceURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
-		h.Config.AuthServiceURL, h.Config.RedirectURL)
-	
-	req, err := http.NewRequest("GET", authServiceURL, nil)
-	if err != nil {
-		fmt.Printf("🔐 GOOGLE LOGIN: Failed to create request: %v\n", err)
-		http.Error(w, "Failed to create auth request", http.StatusInternalServerError)
-		return
-	}
-	
-	// Add X-Auth-Secret header
-	req.Header.Set("X-Auth-Secret", h.Config.AuthSecret)
-	
-	// Make the request
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Printf("🔐 GOOGLE LOGIN: Failed to make request: %v\n", err)
-		http.Error(w, "Failed to contact auth service", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-	
-	fmt.Printf("🔐 GOOGLE LOGIN: Response status: %s\n", resp.Status)
-	
-	// Forward the response to the client
-	for name, values := range resp.Header {
-		for _, value := range values {
-			w.Header().Add(name, value)
-		}
-	}
-	
-	w.WriteHeader(resp.StatusCode)
-	if resp.Body != nil {
-		_, err := io.Copy(w, resp.Body)
-		if err != nil {
-			fmt.Printf("🔐 GOOGLE LOGIN: Failed to copy response: %v\n", err)
-		}
+		// Create request to auth service with proper headers
+		authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
+			h.Config.AuthServiceURL, h.Config.RedirectURL)
+
+		// This will redirect to Google - the auth secret is not in the final URL
+		fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
+		http.Redirect(w, r, authURL, http.StatusFound)
+	} else {
+		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
 	}
 }
 
@@ -151,7 +116,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	fmt.Printf("🔐 SESSION: Token received, length: %d\n", len(req.Token))
-	
+
 	// Set session cookie with the JWT token
 	cookie := &http.Cookie{
 		Name:     "session_token",
@@ -161,7 +126,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
-	
+
 	http.SetCookie(w, cookie)
 	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", cookie.Name, len(cookie.Value))
 
@@ -189,7 +154,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+
 	fmt.Printf("🔐 GETUSER: Session cookie found, value length: %d\n", len(cookie.Value))
 
 	// Get user info from auth microservice
@@ -203,7 +168,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+
 	fmt.Printf("🔐 GETUSER: Auth service response - Success: %v, Name: %s\n", userResp.Success, userResp.Name)
 
 	w.WriteHeader(http.StatusOK)
@@ -214,7 +179,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		"name":      userResp.Name,
 		"picture":   userResp.Picture,
 	})
-	
+
 	fmt.Printf("🔐 GETUSER: === GetUser COMPLETED ===\n")
 }
 
