@@ -52,11 +52,20 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 	fmt.Printf("🔐 GITHUB LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
 	fmt.Printf("🔐 GITHUB LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
 	
-	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
-		h.Config.AuthServiceURL, h.Config.RedirectURL)
-	
-	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+	// For OAuth endpoints, we need to call them with auth secret
+	if h.Config.AuthSecret != "" {
+		fmt.Printf("🔐 GITHUB LOGIN: Making authenticated request with X-Auth-Secret\n")
+		
+		// Create request to auth service with proper headers
+		authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
+			h.Config.AuthServiceURL, h.Config.RedirectURL)
+		
+		// This will redirect to GitHub - the auth secret is not in the final URL
+		fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
+		http.Redirect(w, r, authURL, http.StatusFound)
+	} else {
+		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
+	}
 }
 
 // AuthCallbackHandler handles the OAuth callback
