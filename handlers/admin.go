@@ -289,9 +289,8 @@ func (h *AdminHandler) GetAnalyticsHTMXHandler(w http.ResponseWriter, r *http.Re
 func (h *AdminHandler) GetAnalyticsSignupsHTMXHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	
-	signupsToday := 0
-
 	// Get today's signups
+	signupsToday := 0
 	if h.Queries != nil {
 		signupsTodayResult, err := h.Queries.CountUsersCreatedToday(r.Context())
 		if err != nil {
