@@ -2,6 +2,21 @@ package templates
 
 //go:generate templ generate
 
+// DashboardData represents the complete admin dashboard data
+type DashboardData struct {
+	TotalUsers    int
+	SignupsToday  int
+	SystemHealth  string
+	RecentUsers   []RecentUser
+	UsersThisWeek int
+}
+
+type RecentUser struct {
+	Name  string
+	Email string
+	Date  string
+}
+
 templ AdminDashboardContent(user UserInfo, data DashboardData) {
 	<div class="max-w-6xl mx-auto">
 		<!-- Dashboard Header -->
