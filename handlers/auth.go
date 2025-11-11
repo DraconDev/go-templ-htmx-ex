@@ -29,60 +29,144 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 // GoogleLoginHandler handles Google OAuth login
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
-	
+	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+
 	// Check if auth secret is configured
 	if h.Config.AuthSecret == "" {
 		fmt.Printf("🔐 GOOGLE LOGIN: Auth secret not configured\n")
 		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
 		return
 	}
-	
-	// Create the auth service URL with secret parameter
-	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s&secret=%s",
-		h.Config.AuthServiceURL, 
-		url.QueryEscape(fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)),
-		h.Config.AuthSecret)
-	
-	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+
+	// Make authenticated request to auth service
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	// Create the auth service URL with parameters
+	authServiceURL := fmt.Sprintf("%s/auth/google", h.Config.AuthServiceURL)
+
+	// Build query parameters
+	redirectURL := fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)
+	fullURL := fmt.Sprintf("%s?redirect_uri=%s", authServiceURL, url.QueryEscape(redirectURL))
+
+	fmt.Printf("🔐 GOOGLE LOGIN: Making authenticated request to: %s\n", fullURL)
+
+	// Create request with auth secret header
+	req, err := http.NewRequest("GET", fullURL, nil)
+	if err != nil {
+		fmt.Printf("🔐 GOOGLE LOGIN: Failed to create request: %v\n", err)
+		http.Error(w, "Failed to create auth request", http.StatusInternalServerError)
+		return
+	}
+
+	// Add required X-Auth-Secret header
+	req.Header.Set("X-Auth-Secret", h.Config.AuthSecret)
+
+	// Make the request
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("🔐 GOOGLE LOGIN: Failed to make request: %v\n", err)
+		http.Error(w, "Failed to contact auth service", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	// fmt.Printf("🔐 GOOGLE LOGIN: Response status: %s\n", resp.Status)
+
+	// // Forward the redirect response to the client
+	// for name, values := range resp.Header {
+	// 	for _, value := range values {
+	// 		w.Header().Add(name, value)
+	// 	}
+	// }
+
+	// w.WriteHeader(resp.StatusCode)
+	// if resp.Body != nil {
+	// 	w.Write([]byte{})
+	// }
 }
 
 // GitHubLoginHandler handles GitHub OAuth login
 func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GITHUB LOGIN: Starting GitHub OAuth flow\n")
-	
+	fmt.Printf("🔐 GITHUB LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 GITHUB LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+
 	// Check if auth secret is configured
 	if h.Config.AuthSecret == "" {
 		fmt.Printf("🔐 GITHUB LOGIN: Auth secret not configured\n")
 		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
 		return
 	}
-	
-	// Create the auth service URL with secret parameter
-	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s&secret=%s",
-		h.Config.AuthServiceURL, 
-		url.QueryEscape(fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)),
-		h.Config.AuthSecret)
-	
-	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+
+	// Make authenticated request to auth service
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	// Create the auth service URL with parameters
+	authServiceURL := fmt.Sprintf("%s/auth/github", h.Config.AuthServiceURL)
+
+	// Build query parameters
+	redirectURL := fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)
+	fullURL := fmt.Sprintf("%s?redirect_uri=%s", authServiceURL, url.QueryEscape(redirectURL))
+
+	fmt.Printf("🔐 GITHUB LOGIN: Making authenticated request to: %s\n", fullURL)
+
+	// Create request with auth secret header
+	req, err := http.NewRequest("GET", fullURL, nil)
+	if err != nil {
+		fmt.Printf("🔐 GITHUB LOGIN: Failed to create request: %v\n", err)
+		http.Error(w, "Failed to create auth request", http.StatusInternalServerError)
+		return
+	}
+
+	// Add required X-Auth-Secret header
+	req.Header.Set("X-Auth-Secret", h.Config.AuthSecret)
+
+	// Make the request
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("🔐 GITHUB LOGIN: Failed to make request: %v\n", err)
+		http.Error(w, "Failed to contact auth service", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	fmt.Printf("🔐 GITHUB LOGIN: Response status: %s\n", resp.Status)
+
+	// Forward the redirect response to the client
+	for name, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(name, value)
+		}
+	}
+
+	w.WriteHeader(resp.StatusCode)
+	w.Write([]byte{})
 }
 
 // AuthCallbackHandler handles the OAuth callback
 func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 CALLBACK: === OAuth callback STARTED ===\n")
 	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
-	
+	fmt.Printf("🔐 CALLBACK: Query params = %v\n", r.URL.Query())
+	fmt.Printf("🔐 CALLBACK: Fragment = %s\n", r.URL.Fragment)
+
+	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
 	w.Header().Set("Content-Type", "text/html")
+	// Use the new JWT-based approach with navigation
 	component := templates.Layout("Authenticating", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
+
+	fmt.Printf("🔐 CALLBACK: About to render component...\n")
 	component.Render(r.Context(), w)
+	fmt.Printf("🔐 CALLBACK: Component rendered successfully\n")
 	fmt.Printf("🔐 CALLBACK: === OAuth callback COMPLETED ===\n")
 }
 
 // SetSessionHandler sets the user session from client-side JavaScript
 func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 SESSION: === Set session STARTED ===\n")
-	
+	fmt.Printf("🔐 SESSION: Content-Type: %s\n", r.Header.Get("Content-Type"))
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
@@ -108,7 +192,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	fmt.Printf("🔐 SESSION: Token received, length: %d\n", len(req.Token))
-	
+
 	// Set session cookie with the JWT token
 	cookie := &http.Cookie{
 		Name:     "session_token",
@@ -118,7 +202,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
-	
+
 	http.SetCookie(w, cookie)
 	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", cookie.Name, len(cookie.Value))
 
@@ -146,7 +230,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+
 	fmt.Printf("🔐 GETUSER: Session cookie found, value length: %d\n", len(cookie.Value))
 
 	// Get user info from auth microservice
@@ -160,7 +244,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+
 	fmt.Printf("🔐 GETUSER: Auth service response - Success: %v, Name: %s\n", userResp.Success, userResp.Name)
 
 	w.WriteHeader(http.StatusOK)
@@ -171,7 +255,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		"name":      userResp.Name,
 		"picture":   userResp.Picture,
 	})
-	
+
 	fmt.Printf("🔐 GETUSER: === GetUser COMPLETED ===\n")
 }
 
@@ -203,12 +287,12 @@ func (h *AuthHandler) ValidateSessionHandler(w http.ResponseWriter, r *http.Requ
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"valid":    userResp.Success,
-		"user_id":  userResp.UserID,
-		"email":    userResp.Email,
-		"name":     userResp.Name,
-		"picture":  userResp.Picture,
-		"status":   "validated",
+		"valid":   userResp.Success,
+		"user_id": userResp.UserID,
+		"email":   userResp.Email,
+		"name":    userResp.Name,
+		"picture": userResp.Picture,
+		"status":  "validated",
 	})
 }
 
