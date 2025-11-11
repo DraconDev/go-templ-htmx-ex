@@ -145,3 +145,74 @@ templ AdminDashboardContent(user UserInfo) {
 		</div>
 	</div>
 }
+
+<script>
+// Process JSON responses and update DOM for admin dashboard
+document.addEventListener('htmx:afterRequest', function(evt) {
+    if (evt.detail.xhr.getResponseHeader('Content-Type') && 
+        evt.detail.xhr.getResponseHeader('Content-Type').includes('application/json')) {
+        try {
+            const data = JSON.parse(evt.detail.xhr.responseText);
+            const targetId = evt.detail.elt.id;
+            
+            switch(targetId) {
+                case 'user-count':
+                    updateUserCount(data);
+                    break;
+                case 'signup-count':
+                    updateSignupCount(data);
+                    break;
+                case 'db-status':
+                    updateDBStatus(data);
+                    break;
+                case 'recent-users':
+                    updateRecentUsers(data);
+                    break;
+            }
+        } catch(e) {
+            console.error('Error parsing JSON:', e);
+        }
+    }
+});
+
+function updateUserCount(data) {
+    const element = document.getElementById('user-count');
+    const trendHtml = data.signups_this_week > 0 ? 
+        `<div class="text-sm text-green-600 flex items-center"><span class="mr-1">↗</span>+${data.signups_this_week} this week</div>` : 
+        '';
+    element.innerHTML = `${data.total_users || 0}${trendHtml}`;
+}
+
+function updateSignupCount(data) {
+    const element = document.getElementById('signup-count');
+    element.innerHTML = `${data.signups_today || 0}`;
+}
+
+function updateDBStatus(data) {
+    const element = document.getElementById('db-status');
+    element.innerHTML = `${data.system_health || 'operational'}`;
+}
+
+function updateRecentUsers(data) {
+    const container = document.getElementById('recent-users');
+    if (data.users && Array.isArray(data.users)) {
+        const userHtml = data.users.slice(0, 5).map(user => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600 text-sm font-medium">${user.name ? user.name.substring(0,2).toUpperCase() : 'UN'}</span>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-900">${user.name || 'Unknown User'}</div>
+                        <div class="text-sm text-gray-500">${user.email || 'No email'}</div>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-500">${new Date(user.created_at || Date.now()).toLocaleDateString()}</div>
+            </div>
+        `).join('');
+        container.innerHTML = userHtml;
+    } else {
+        container.innerHTML = '<div class="text-gray-500">No recent users found</div>';
+    }
+}
+</script>
