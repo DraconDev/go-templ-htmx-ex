@@ -156,6 +156,13 @@ func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 	return s.ValidateSession(token)
 }
 
+// RefreshToken refreshes a token using the refresh token
+func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error) {
+	return s.CallAuthService(fmt.Sprintf("%s/auth/refresh", s.config.AuthServiceURL), map[string]string{
+		"token": refreshToken,
+	})
+}
+
 // =============================================================================
 // JWT LOCAL VALIDATION - FOR OPTIMIZED UI
 // =============================================================================
