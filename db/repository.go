@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"time"
 )
 
 // UserRepository provides database operations for users
@@ -26,7 +25,7 @@ func (r *UserRepository) CreateUser(user *User) error {
 
 	err := r.db.QueryRow(query, user.AuthID, user.Email, user.Name, user.Picture).
 		Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
 	}
@@ -45,11 +44,11 @@ func (r *UserRepository) GetUserByAuthID(authID string) (*User, error) {
 
 	err := r.db.QueryRow(query, authID).
 		Scan(&user.ID, &user.AuthID, &user.Email, &user.Name, &user.Picture, &user.CreatedAt, &user.UpdatedAt)
-	
+
 	if err == sql.ErrNoRows {
 		return nil, nil // User not found
 	}
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by auth_id: %w", err)
 	}
@@ -68,11 +67,11 @@ func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
 
 	err := r.db.QueryRow(query, email).
 		Scan(&user.ID, &user.AuthID, &user.Email, &user.Name, &user.Picture, &user.CreatedAt, &user.UpdatedAt)
-	
+
 	if err == sql.ErrNoRows {
 		return nil, nil // User not found
 	}
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by email: %w", err)
 	}
@@ -91,11 +90,11 @@ func (r *UserRepository) GetUserByID(id string) (*User, error) {
 
 	err := r.db.QueryRow(query, id).
 		Scan(&user.ID, &user.AuthID, &user.Email, &user.Name, &user.Picture, &user.CreatedAt, &user.UpdatedAt)
-	
+
 	if err == sql.ErrNoRows {
 		return nil, nil // User not found
 	}
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by id: %w", err)
 	}
@@ -114,108 +113,12 @@ func (r *UserRepository) UpdateUser(user *User) error {
 
 	err := r.db.QueryRow(query, user.ID, user.Email, user.Name, user.Picture).
 		Scan(&user.UpdatedAt)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
 	}
 
 	return nil
-}
-
-// GetAllUsers retrieves all users for admin dashboard
-func (r *UserRepository) GetAllUsers() ([]User, error) {
-	users := []User{}
-	query := `
-		SELECT id, auth_id, email, name, picture, created_at, updated_at
-		FROM users
-		ORDER BY created_at DESC
-	`
-
-	rows, err := r.db.Query(query)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get all users: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var user User
-		err := rows.Scan(&user.ID, &user.AuthID, &user.Email, &user.Name, &user.Picture, &user.CreatedAt, &user.UpdatedAt)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan user: %w", err)
-		}
-		users = append(users, user)
-	}
-
-	return users, nil
-}
-
-// GetUserCount returns the total number of users
-func (r *UserRepository) GetUserCount() (int, error) {
-	var count int
-	query := `SELECT COUNT(*) FROM users`
-
-	err := r.db.QueryRow(query).Scan(&count)
-	if err != nil {
-		return 0, fmt.Errorf("failed to get user count: %w", err)
-	}
-
-	return count, nil
-}
-
-// GetNewUsersCount returns count of users created in the last 30 days
-func (r *UserRepository) GetNewUsersCount(days int) (int, error) {
-	var count int
-	query := `
-		SELECT COUNT(*) FROM users
-		WHERE created_at >= NOW() - INTERVAL '%d days'
-	`
-
-	err := r.db.QueryRow(fmt.Sprintf(query, days)).Scan(&count)
-	if err != nil {
-		return 0, fmt.Errorf("failed to get new users count: %w", err)
-	}
-
-	return count, nil
-}
-
-// UserSession represents a user session for admin analytics
-type UserSession struct {
-	ID        int       `json:"id"`
-	UserID    string    `json:"user_id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
-	LoginTime time.Time `json:"login_time"`
-	IPAddress string    `json:"ip_address"`
-	Active    bool      `json:"active"`
-}
-
-// GetActiveSessions returns currently active user sessions
-func (r *UserRepository) GetActiveSessions() ([]UserSession, error) {
-	sessions := []UserSession{}
-	query := `
-		SELECT s.id, s.user_id, u.email, u.name, s.login_time, s.ip_address, s.active
-		FROM user_sessions s
-		JOIN users u ON s.user_id = u.id
-		WHERE s.active = true AND s.last_seen > NOW() - INTERVAL '1 hour'
-		ORDER BY s.last_seen DESC
-	`
-
-	rows, err := r.db.Query(query)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get active sessions: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var session UserSession
-		err := rows.Scan(&session.ID, &session.UserID, &session.Email, &session.Name, &session.LoginTime, &session.IPAddress, &session.Active)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan session: %w", err)
-		}
-		sessions = append(sessions, session)
-	}
-
-	return sessions, nil
 }
 
 // UserPreferencesRepository provides database operations for user preferences
@@ -238,7 +141,7 @@ func (r *UserPreferencesRepository) CreateUserPreferences(prefs *UserPreferences
 
 	err := r.db.QueryRow(query, prefs.UserID, prefs.Theme, prefs.Language, prefs.EmailNotifications, prefs.PushNotifications).
 		Scan(&prefs.ID, &prefs.CreatedAt, &prefs.UpdatedAt)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to create user preferences: %w", err)
 	}
@@ -257,25 +160,25 @@ func (r *UserPreferencesRepository) GetUserPreferences(userID string) (*UserPref
 
 	err := r.db.QueryRow(query, userID).
 		Scan(&prefs.ID, &prefs.UserID, &prefs.Theme, &prefs.Language, &prefs.EmailNotifications, &prefs.PushNotifications, &prefs.CreatedAt, &prefs.UpdatedAt)
-	
+
 	if err == sql.ErrNoRows {
 		// Create default preferences if not found
 		defaultPrefs := &UserPreferences{
-			UserID:            userID,
-			Theme:             "dark",
-			Language:          "en",
+			UserID:             userID,
+			Theme:              "dark",
+			Language:           "en",
 			EmailNotifications: true,
 			PushNotifications:  true,
 		}
-		
+
 		err := r.CreateUserPreferences(defaultPrefs)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create default user preferences: %w", err)
 		}
-		
+
 		return defaultPrefs, nil
 	}
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user preferences: %w", err)
 	}
@@ -294,7 +197,7 @@ func (r *UserPreferencesRepository) UpdateUserPreferences(prefs *UserPreferences
 
 	err := r.db.QueryRow(query, prefs.ID, prefs.Theme, prefs.Language, prefs.EmailNotifications, prefs.PushNotifications).
 		Scan(&prefs.UpdatedAt)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to update user preferences: %w", err)
 	}
