@@ -80,7 +80,7 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 	
 	w.WriteHeader(resp.StatusCode)
 	if resp.Body != nil {
-		w.Write([]byte{}))
+		w.Write([]byte{})
 	}
 }
 
