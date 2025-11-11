@@ -144,13 +144,41 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	// Mock analytics data
+	// Real analytics data from database
 	analytics := map[string]interface{}{
-		"total_users":      127,
-		"active_sessions":  23,
-		"signups_today":   5,
-		"signups_this_week": 34,
+		"total_users":      0,
+		"signups_today":   0,
+		"signups_this_week": 0,
 		"system_health":    "operational",
+	}
+
+	// Get real user counts from database if available
+	if h.Queries != nil {
+		// Get total user count
+		totalUsers, err := h.Queries.CountUsers(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting total users: %v\n", err)
+		} else {
+			analytics["total_users"] = totalUsers
+		}
+
+		// Get today's signups
+		signupsToday, err := h.Queries.CountUsersCreatedToday(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting today's signups: %v\n", err)
+		} else {
+			analytics["signups_today"] = signupsToday
+		}
+
+		// Get this week's signups
+		signupsThisWeek, err := h.Queries.CountUsersCreatedThisWeek(r.Context())
+		if err != nil {
+			fmt.Printf("📊 ANALYTICS: Error getting this week's signups: %v\n", err)
+		} else {
+			analytics["signups_this_week"] = signupsThisWeek
+		}
+	} else {
+		fmt.Printf("📊 ANALYTICS: No database connection - using default values\n")
 	}
 
 	json.NewEncoder(w).Encode(analytics)
