@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
@@ -99,7 +100,7 @@ func validateJWT(r *http.Request) templates.UserInfo {
 	}
 
 	// Check if token is still valid (not expired)
-	if claims.Exp < 0 { // Simplified check for demo
+	if claims.Exp < time.Now().Unix() {
 		return templates.UserInfo{LoggedIn: false}
 	}
 
