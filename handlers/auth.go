@@ -92,20 +92,56 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 	fmt.Printf("🔐 GITHUB LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
 	fmt.Printf("🔐 GITHUB LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
 
-	// For OAuth endpoints, we need to call them with auth secret
-	if h.Config.AuthSecret != "" {
-		fmt.Printf("🔐 GITHUB LOGIN: Making authenticated request with X-Auth-Secret\n")
-
-		// Create request to auth service with proper headers
-		authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
-			h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-		// This will redirect to GitHub - the auth secret is not in the final URL
-		fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
-		http.Redirect(w, r, authURL, http.StatusFound)
-	} else {
+	// Check if auth secret is configured
+	if h.Config.AuthSecret == "" {
+		fmt.Printf("🔐 GITHUB LOGIN: Auth secret not configured\n")
 		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
+		return
 	}
+
+	// Make authenticated request to auth service
+	client := &http.Client{Timeout: 10 * time.Second}
+	
+	// Create the auth service URL with parameters
+	authServiceURL := fmt.Sprintf("%s/auth/github", h.Config.AuthServiceURL)
+	
+	// Build query parameters
+	redirectURL := fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)
+	fullURL := fmt.Sprintf("%s?redirect_uri=%s", authServiceURL, url.QueryEscape(redirectURL))
+	
+	fmt.Printf("🔐 GITHUB LOGIN: Making authenticated request to: %s\n", fullURL)
+	
+	// Create request with auth secret header
+	req, err := http.NewRequest("GET", fullURL, nil)
+	if err != nil {
+		fmt.Printf("🔐 GITHUB LOGIN: Failed to create request: %v\n", err)
+		http.Error(w, "Failed to create auth request", http.StatusInternalServerError)
+		return
+	}
+	
+	// Add required X-Auth-Secret header
+	req.Header.Set("X-Auth-Secret", h.Config.AuthSecret)
+	
+	// Make the request
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("🔐 GITHUB LOGIN: Failed to make request: %v\n", err)
+		http.Error(w, "Failed to contact auth service", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+	
+	fmt.Printf("🔐 GITHUB LOGIN: Response status: %s\n", resp.Status)
+	
+	// Forward the redirect response to the client
+	for name, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(name, value)
+		}
+	}
+	
+	w.WriteHeader(resp.StatusCode)
+	w.Write([]byte{})
 }
 
 // AuthCallbackHandler handles the OAuth callback
