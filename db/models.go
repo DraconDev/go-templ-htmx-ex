@@ -10,6 +10,7 @@ type User struct {
 	Email     string    `json:"email" db:"email"`
 	Name      string    `json:"name" db:"name"`
 	Picture   string    `json:"picture" db:"picture"`
+	IsAdmin   bool      `json:"is_admin" db:"is_admin"` // Admin flag for role-based access
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
