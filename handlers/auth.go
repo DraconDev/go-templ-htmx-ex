@@ -24,26 +24,17 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 	}
 }
 
-// GoogleLoginHandler handles Google OAuth login
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
 	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
 	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
 
-	// For OAuth endpoints, we need to call them with auth secret
-	if h.Config.AuthSecret != "" {
-		fmt.Printf("🔐 GOOGLE LOGIN: Making authenticated request with X-Auth-Secret\n")
+	// OAuth endpoints are public - just redirect
+	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
+		h.Config.AuthServiceURL, h.Config.RedirectURL)
 
-		// Create request to auth service with proper headers
-		authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
-			h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-		// This will redirect to Google - the auth secret is not in the final URL
-		fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
-		http.Redirect(w, r, authURL, http.StatusFound)
-	} else {
-		http.Error(w, "Auth secret not configured", http.StatusInternalServerError)
-	}
+	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
 // GitHubLoginHandler handles GitHub OAuth login
