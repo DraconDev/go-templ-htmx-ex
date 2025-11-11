@@ -273,4 +273,3 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 		"token": userResp.Token,
 	})
 }
-}
