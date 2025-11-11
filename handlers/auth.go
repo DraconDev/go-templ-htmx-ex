@@ -61,9 +61,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 <h2 class="text-xl font-semibold mb-4">Test Token Refresh</h2>
                 <p class="text-gray-600 mb-4">This button will test the token refresh flow.</p>
                 <button
-                    hx-post="/api/auth/refresh"
-                    hx-target="#refresh-result"
-                    hx-swap="innerHTML"
+                    onclick="testTokenRefresh()"
                     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                 >
                     Test Token Refresh
