@@ -46,8 +46,9 @@ func main() {
 	// Create auth service
 	authService := auth.NewService(cfg)
 
-	// Create admin handler
-	adminHandler = handlers.NewAdminHandler(cfg, database)
+	// Create admin handler with SQLC queries
+	queries := dbSqlc.New(database.DB)
+	adminHandler = handlers.NewAdminHandler(cfg, queries)
 
 	// Create auth handler
 	authHandler = handlers.NewAuthHandler(authService, cfg)
