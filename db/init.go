@@ -84,6 +84,52 @@ func InitDatabase(dbURL string) error {
 	return nil
 }
 
+// CreateUserIfFirst creates a user and makes them admin if they're the first user
+func CreateUserIfFirst(email, name, authID, picture string) (bool, error) {
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		return false, nil // No database configured
+	}
+
+	// Connect to database
+	db, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		return false, err
+	}
+	defer db.Close()
+
+	// Check if any admin users exist
+	var adminCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE is_admin = TRUE").Scan(&adminCount)
+	if err != nil {
+		return false, err
+	}
+
+	// If no admins exist, this user becomes admin
+	isFirstAdmin := adminCount == 0
+
+	// Insert user (if not exists)
+	_, err = db.Exec(`
+		INSERT INTO users (auth_id, email, name, picture, is_admin)
+		VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (auth_id) DO UPDATE SET
+			email = EXCLUDED.email,
+			name = EXCLUDED.name,
+			picture = EXCLUDED.picture,
+			is_admin = CASE WHEN users.is_admin = FALSE AND EXCLUDED.is_admin = TRUE THEN TRUE ELSE users.is_admin END
+	`, authID, email, name, picture, isFirstAdmin)
+
+	if err != nil {
+		return false, err
+	}
+
+	if isFirstAdmin {
+		log.Printf("🎉 First user %s became admin automatically!", email)
+	}
+
+	return isFirstAdmin, nil
+}
+
 // InitDatabaseIfConfigured initializes database if DB_URL is available
 func InitDatabaseIfConfigured() error {
 	dbURL := os.Getenv("DB_URL")
