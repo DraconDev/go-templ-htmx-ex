@@ -24,6 +24,15 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.countUsersStmt, err = db.PrepareContext(ctx, countUsers); err != nil {
+		return nil, fmt.Errorf("error preparing query CountUsers: %w", err)
+	}
+	if q.countUsersCreatedThisWeekStmt, err = db.PrepareContext(ctx, countUsersCreatedThisWeek); err != nil {
+		return nil, fmt.Errorf("error preparing query CountUsersCreatedThisWeek: %w", err)
+	}
+	if q.countUsersCreatedTodayStmt, err = db.PrepareContext(ctx, countUsersCreatedToday); err != nil {
+		return nil, fmt.Errorf("error preparing query CountUsersCreatedToday: %w", err)
+	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
@@ -32,6 +41,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getAllUsersStmt, err = db.PrepareContext(ctx, getAllUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllUsers: %w", err)
+	}
+	if q.getRecentUsersStmt, err = db.PrepareContext(ctx, getRecentUsers); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRecentUsers: %w", err)
 	}
 	if q.getUserByAuthIDStmt, err = db.PrepareContext(ctx, getUserByAuthID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByAuthID: %w", err)
@@ -53,6 +65,21 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.countUsersStmt != nil {
+		if cerr := q.countUsersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countUsersStmt: %w", cerr)
+		}
+	}
+	if q.countUsersCreatedThisWeekStmt != nil {
+		if cerr := q.countUsersCreatedThisWeekStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countUsersCreatedThisWeekStmt: %w", cerr)
+		}
+	}
+	if q.countUsersCreatedTodayStmt != nil {
+		if cerr := q.countUsersCreatedTodayStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countUsersCreatedTodayStmt: %w", cerr)
+		}
+	}
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
@@ -66,6 +93,11 @@ func (q *Queries) Close() error {
 	if q.getAllUsersStmt != nil {
 		if cerr := q.getAllUsersStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getAllUsersStmt: %w", cerr)
+		}
+	}
+	if q.getRecentUsersStmt != nil {
+		if cerr := q.getRecentUsersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRecentUsersStmt: %w", cerr)
 		}
 	}
 	if q.getUserByAuthIDStmt != nil {
@@ -130,29 +162,37 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                        DBTX
-	tx                        *sql.Tx
-	createUserStmt            *sql.Stmt
-	getAdminUsersStmt         *sql.Stmt
-	getAllUsersStmt           *sql.Stmt
-	getUserByAuthIDStmt       *sql.Stmt
-	getUserByEmailStmt        *sql.Stmt
-	getUserByIDStmt           *sql.Stmt
-	updateUserStmt            *sql.Stmt
-	updateUserAdminStatusStmt *sql.Stmt
+	db                            DBTX
+	tx                            *sql.Tx
+	countUsersStmt                *sql.Stmt
+	countUsersCreatedThisWeekStmt *sql.Stmt
+	countUsersCreatedTodayStmt    *sql.Stmt
+	createUserStmt                *sql.Stmt
+	getAdminUsersStmt             *sql.Stmt
+	getAllUsersStmt               *sql.Stmt
+	getRecentUsersStmt            *sql.Stmt
+	getUserByAuthIDStmt           *sql.Stmt
+	getUserByEmailStmt            *sql.Stmt
+	getUserByIDStmt               *sql.Stmt
+	updateUserStmt                *sql.Stmt
+	updateUserAdminStatusStmt     *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                        tx,
-		tx:                        tx,
-		createUserStmt:            q.createUserStmt,
-		getAdminUsersStmt:         q.getAdminUsersStmt,
-		getAllUsersStmt:           q.getAllUsersStmt,
-		getUserByAuthIDStmt:       q.getUserByAuthIDStmt,
-		getUserByEmailStmt:        q.getUserByEmailStmt,
-		getUserByIDStmt:           q.getUserByIDStmt,
-		updateUserStmt:            q.updateUserStmt,
-		updateUserAdminStatusStmt: q.updateUserAdminStatusStmt,
+		db:                            tx,
+		tx:                            tx,
+		countUsersStmt:                q.countUsersStmt,
+		countUsersCreatedThisWeekStmt: q.countUsersCreatedThisWeekStmt,
+		countUsersCreatedTodayStmt:    q.countUsersCreatedTodayStmt,
+		createUserStmt:                q.createUserStmt,
+		getAdminUsersStmt:             q.getAdminUsersStmt,
+		getAllUsersStmt:               q.getAllUsersStmt,
+		getRecentUsersStmt:            q.getRecentUsersStmt,
+		getUserByAuthIDStmt:           q.getUserByAuthIDStmt,
+		getUserByEmailStmt:            q.getUserByEmailStmt,
+		getUserByIDStmt:               q.getUserByIDStmt,
+		updateUserStmt:                q.updateUserStmt,
+		updateUserAdminStatusStmt:     q.updateUserAdminStatusStmt,
 	}
 }

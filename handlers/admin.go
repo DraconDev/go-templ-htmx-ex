@@ -184,16 +184,27 @@ func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(analytics)
 }
 
-// GetSettingsHandler returns system settings (stub for now)
+// GetSettingsHandler returns system settings
 func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
-	// Mock settings data
+	// Real settings data from database
 	settings := map[string]interface{}{
 		"maintenance_mode": false,
 		"registration_enabled": true,
-		"max_users": 1000,
+		"database_connected": h.Queries != nil,
+		"total_users": 0,
 		"session_timeout": 3600,
+	}
+
+	// Get real user count if database is available
+	if h.Queries != nil {
+		totalUsers, err := h.Queries.CountUsers(r.Context())
+		if err != nil {
+			fmt.Printf("📊 SETTINGS: Error getting user count: %v\n", err)
+		} else {
+			settings["total_users"] = totalUsers
+		}
 	}
 
 	json.NewEncoder(w).Encode(settings)

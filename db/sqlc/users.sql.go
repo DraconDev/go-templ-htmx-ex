@@ -12,6 +12,39 @@ import (
 	"github.com/google/uuid"
 )
 
+const countUsers = `-- name: CountUsers :one
+SELECT COUNT(*) FROM users
+`
+
+func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countUsersStmt, countUsers)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countUsersCreatedThisWeek = `-- name: CountUsersCreatedThisWeek :one
+SELECT COUNT(*) FROM users WHERE created_at >= DATE_TRUNC('week', CURRENT_DATE)
+`
+
+func (q *Queries) CountUsersCreatedThisWeek(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countUsersCreatedThisWeekStmt, countUsersCreatedThisWeek)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countUsersCreatedToday = `-- name: CountUsersCreatedToday :one
+SELECT COUNT(*) FROM users WHERE DATE(created_at) = CURRENT_DATE
+`
+
+func (q *Queries) CountUsersCreatedToday(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countUsersCreatedTodayStmt, countUsersCreatedToday)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (auth_id, email, name, picture, is_admin)
 VALUES ($1, $2, $3, $4, $5)
@@ -120,6 +153,45 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+const getRecentUsers = `-- name: GetRecentUsers :many
+SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 10
+`
+
+type GetRecentUsersRow struct {
+	ID        uuid.UUID    `json:"id"`
+	Email     string       `json:"email"`
+	Name      string       `json:"name"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
+func (q *Queries) GetRecentUsers(ctx context.Context) ([]GetRecentUsersRow, error) {
+	rows, err := q.query(ctx, q.getRecentUsersStmt, getRecentUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRecentUsersRow
+	for rows.Next() {
+		var i GetRecentUsersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Name,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserByAuthID = `-- name: GetUserByAuthID :one
 SELECT id, auth_id, email, name, picture, is_admin, created_at, updated_at FROM users WHERE auth_id = $1
 `
@@ -181,7 +253,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 }
 
 const updateUser = `-- name: UpdateUser :exec
-UPDATE users 
+UPDATE users
 SET name = COALESCE($2, name),
     picture = COALESCE($3, picture),
     updated_at = NOW()
