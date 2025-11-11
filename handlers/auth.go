@@ -35,8 +35,8 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 		fmt.Printf("🔐 GOOGLE LOGIN: Making authenticated request with X-Auth-Secret\n")
 
 		// Create request to auth service with proper headers
-		authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
-			h.Config.AuthServiceURL, h.Config.RedirectURL)
+		authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback&secret=%s",
+			h.Config.AuthServiceURL, h.Config.RedirectURL, h.Config.AuthSecret)
 
 		// This will redirect to Google - the auth secret is not in the final URL
 		fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
