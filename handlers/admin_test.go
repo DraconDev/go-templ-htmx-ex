@@ -9,7 +9,6 @@ import (
 
 	"github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // MockAdminHandler creates a test admin handler with mock database
@@ -35,20 +34,54 @@ func (m *mockQueries) CountUsersCreatedThisWeek(ctx context.Context) (int64, err
 }
 
 func (m *mockQueries) GetRecentUsers(ctx context.Context) ([]sqlc.GetRecentUsersRow, error) {
+	now := time.Now()
 	return []sqlc.GetRecentUsersRow{
 		{
-			ID:    1,
-			Email: "test@example.com",
-			Name:  "Test User",
-			CreatedAt: time.Now(),
+			ID:       1,
+			Email:    "test@example.com",
+			Name:     "Test User",
+			CreatedAt: now,
 		},
 		{
-			ID:    2,
-			Email: "admin@example.com", 
-			Name:  "Admin User",
-			CreatedAt: time.Now(),
+			ID:       2,
+			Email:    "admin@example.com", 
+			Name:     "Admin User",
+			CreatedAt: now,
 		},
 	}, nil
+}
+
+// Implement other required interface methods for testing
+func (m *mockQueries) CreateUser(ctx context.Context, arg sqlc.CreateUserParams) (sqlc.User, error) {
+	return sqlc.User{}, nil
+}
+
+func (m *mockQueries) GetUserByEmail(ctx context.Context, email string) (sqlc.User, error) {
+	return sqlc.User{}, nil
+}
+
+func (m *mockQueries) GetUserByAuthID(ctx context.Context, authID string) (sqlc.User, error) {
+	return sqlc.User{}, nil
+}
+
+func (m *mockQueries) GetUserByID(ctx context.Context, id int64) (sqlc.User, error) {
+	return sqlc.User{}, nil
+}
+
+func (m *mockQueries) GetAllUsers(ctx context.Context) ([]sqlc.User, error) {
+	return []sqlc.User{}, nil
+}
+
+func (m *mockQueries) GetAdminUsers(ctx context.Context) ([]sqlc.User, error) {
+	return []sqlc.User{}, nil
+}
+
+func (m *mockQueries) UpdateUserAdminStatus(ctx context.Context, arg sqlc.UpdateUserAdminStatusParams) error {
+	return nil
+}
+
+func (m *mockQueries) UpdateUser(ctx context.Context, arg sqlc.UpdateUserParams) error {
+	return nil
 }
 
 // TestAdminDashboardAccess tests admin dashboard access
