@@ -242,4 +242,37 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) templates.UserInfo {
 		Email:    userResp.Email,
 		Picture:  userResp.Picture,
 	}
+// RefreshTokenHandler handles token refresh requests
+func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Get refresh token from HTTP-only cookie
+	cookie, err := r.Cookie("refresh_token")
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "No refresh token found",
+		})
+		return
+	}
+
+	// Call auth service to refresh token
+	userResp, err := h.AuthService.RefreshToken(cookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": userResp.Success,
+		"token":   userResp.Token,
+		"name":    userResp.Name,
+		"email":   userResp.Email,
+		"picture": userResp.Picture,
+	})
+}
 }
