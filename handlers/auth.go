@@ -35,6 +35,82 @@ func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandl
 }
 
 // =============================================================================
+// TEST ROUTES
+// =============================================================================
+// These routes help test the authentication flow during development
+
+// TestTokenRefreshHandler serves a test page with token refresh button
+func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	
+	testHTML := `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test - Token Refresh</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-300 min-h-screen">
+    <div class="container mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold text-center mb-8">Authentication Test Page</h1>
+        
+        <div class="max-w-2xl mx-auto space-y-6">
+            <!-- Test Token Refresh -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Test Token Refresh</h2>
+                <p class="text-gray-600 mb-4">This button will test the token refresh flow.</p>
+                <button
+                    hx-post="/api/auth/refresh"
+                    hx-target="#refresh-result"
+                    hx-swap="innerHTML"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Test Token Refresh
+                </button>
+                <div id="refresh-result" class="mt-4 p-3 bg-gray-100 rounded"></div>
+            </div>
+            
+            <!-- Check Current User -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Check Current User</h2>
+                <p class="text-gray-600 mb-4">Check if user is currently logged in.</p>
+                <button
+                    hx-get="/api/auth/user"
+                    hx-target="#user-result"
+                    hx-swap="innerHTML"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Check User Status
+                </button>
+                <div id="user-result" class="mt-4 p-3 bg-gray-100 rounded"></div>
+            </div>
+            
+            <!-- OAuth Login Buttons -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">OAuth Login</h2>
+                <div class="space-x-4">
+                    <a href="/auth/google" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Login with Google</a>
+                    <a href="/auth/github" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Login with GitHub</a>
+                </div>
+            </div>
+            
+            <!-- Callback Test -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Test Callback</h2>
+                <p class="text-gray-600 mb-4">Test the callback page that processes JWT tokens.</p>
+                <a href="/auth/callback#access_token=test-jwt-token&token_type=Bearer"
+                   class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    Test Callback with Fake Token
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+`
+	w.Write([]byte(testHTML))
+}
 // OAUTH LOGIN FLOWS
 // =============================================================================
 
