@@ -40,6 +40,9 @@ func main() {
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
+	
+	// Test routes
+	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
 
 	// User profile page
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
