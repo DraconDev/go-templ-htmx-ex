@@ -23,35 +23,47 @@ import (
 
 var authHandler *handlers.AuthHandler
 var adminHandler *handlers.AdminHandler
-var database *db.Database
+var db *sql.DB
+var queries *dbSqlc.Queries
 
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
 
-	// Initialize database connection
-	dbConfig := db.DefaultConfig()
-	database, err := db.NewDatabase(dbConfig)
-	if err != nil {
-		log.Printf("⚠️  Database connection failed: %v", err)
-		log.Println("💡 The application will continue without database functionality")
-	} else {
-		log.Println("✅ Database connection established successfully")
-
-		// Create database schema
-		if err := database.CreateTables(); err != nil {
-			log.Printf("⚠️  Database table creation failed: %v", err)
+	// Initialize database connection using SQLC
+	var err error
+	if cfg.DBURL != "" {
+		log.Printf("🔗 Connecting to database...")
+		db, err = sql.Open("postgres", cfg.DBURL)
+		if err != nil {
+			log.Printf("❌ Database connection failed: %v", err)
+			log.Println("⚠️  Continuing without database...")
+			db = nil
 		} else {
-			log.Println("✅ Database tables ready")
+			// Test connection
+			if err := db.Ping(); err != nil {
+				log.Printf("❌ Database ping failed: %v", err)
+				log.Println("⚠️  Continuing without database...")
+				db = nil
+			} else {
+				log.Println("✅ Database connected successfully")
+				
+				// Initialize SQLC queries
+				queries = dbSqlc.New(db)
+				log.Println("✅ SQLC queries initialized")
+			}
 		}
 	}
 
 	// Create auth service
 	authService := auth.NewService(cfg)
 
-	// Create admin handler with SQLC queries
-	queries := dbSqlc.New(database.DB)
-	adminHandler = handlers.NewAdminHandler(cfg, queries)
+	// Create admin handler with SQLC queries (handle nil db gracefully)
+	if queries != nil {
+		adminHandler = handlers.NewAdminHandler(cfg, queries)
+	} else {
+		log.Println("⚠️  Admin handler not initialized - no database connection")
+	}
 
 	// Create auth handler
 	authHandler = handlers.NewAuthHandler(authService, cfg)
