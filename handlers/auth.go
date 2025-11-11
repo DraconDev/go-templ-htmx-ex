@@ -41,16 +41,16 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 
 	// Make authenticated request to auth service
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Create the auth service URL with parameters
 	authServiceURL := fmt.Sprintf("%s/auth/google", h.Config.AuthServiceURL)
-	
+
 	// Build query parameters
 	redirectURL := fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)
 	fullURL := fmt.Sprintf("%s?redirect_uri=%s", authServiceURL, url.QueryEscape(redirectURL))
-	
+
 	fmt.Printf("🔐 GOOGLE LOGIN: Making authenticated request to: %s\n", fullURL)
-	
+
 	// Create request with auth secret header
 	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
@@ -58,10 +58,10 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Failed to create auth request", http.StatusInternalServerError)
 		return
 	}
-	
+
 	// Add required X-Auth-Secret header
 	req.Header.Set("X-Auth-Secret", h.Config.AuthSecret)
-	
+
 	// Make the request
 	resp, err := client.Do(req)
 	if err != nil {
@@ -70,20 +70,20 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer resp.Body.Close()
-	
-	fmt.Printf("🔐 GOOGLE LOGIN: Response status: %s\n", resp.Status)
-	
-	// Forward the redirect response to the client
-	for name, values := range resp.Header {
-		for _, value := range values {
-			w.Header().Add(name, value)
-		}
-	}
-	
-	w.WriteHeader(resp.StatusCode)
-	if resp.Body != nil {
-		w.Write([]byte{})
-	}
+
+	// fmt.Printf("🔐 GOOGLE LOGIN: Response status: %s\n", resp.Status)
+
+	// // Forward the redirect response to the client
+	// for name, values := range resp.Header {
+	// 	for _, value := range values {
+	// 		w.Header().Add(name, value)
+	// 	}
+	// }
+
+	// w.WriteHeader(resp.StatusCode)
+	// if resp.Body != nil {
+	// 	w.Write([]byte{})
+	// }
 }
 
 // GitHubLoginHandler handles GitHub OAuth login
@@ -101,16 +101,16 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 
 	// Make authenticated request to auth service
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Create the auth service URL with parameters
 	authServiceURL := fmt.Sprintf("%s/auth/github", h.Config.AuthServiceURL)
-	
+
 	// Build query parameters
 	redirectURL := fmt.Sprintf("%s/auth/callback", h.Config.RedirectURL)
 	fullURL := fmt.Sprintf("%s?redirect_uri=%s", authServiceURL, url.QueryEscape(redirectURL))
-	
+
 	fmt.Printf("🔐 GITHUB LOGIN: Making authenticated request to: %s\n", fullURL)
-	
+
 	// Create request with auth secret header
 	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
@@ -118,10 +118,10 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Failed to create auth request", http.StatusInternalServerError)
 		return
 	}
-	
+
 	// Add required X-Auth-Secret header
 	req.Header.Set("X-Auth-Secret", h.Config.AuthSecret)
-	
+
 	// Make the request
 	resp, err := client.Do(req)
 	if err != nil {
@@ -130,16 +130,16 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer resp.Body.Close()
-	
+
 	fmt.Printf("🔐 GITHUB LOGIN: Response status: %s\n", resp.Status)
-	
+
 	// Forward the redirect response to the client
 	for name, values := range resp.Header {
 		for _, value := range values {
 			w.Header().Add(name, value)
 		}
 	}
-	
+
 	w.WriteHeader(resp.StatusCode)
 	w.Write([]byte{})
 }
