@@ -6,18 +6,21 @@ import (
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/db"
 	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
 // AdminHandler handles admin-specific operations
 type AdminHandler struct {
-	Config *config.Config
+	Config   *config.Config
+	Database *db.Database
 }
 
 // NewAdminHandler creates a new admin handler
-func NewAdminHandler(config *config.Config) *AdminHandler {
+func NewAdminHandler(config *config.Config, database *db.Database) *AdminHandler {
 	return &AdminHandler{
-		Config: config,
+		Config:   config,
+		Database: database,
 	}
 }
 
