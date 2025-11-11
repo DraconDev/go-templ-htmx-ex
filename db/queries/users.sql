@@ -22,8 +22,20 @@ SELECT * FROM users WHERE is_admin = true ORDER BY created_at DESC;
 UPDATE users SET is_admin = $2 WHERE email = $1;
 
 -- name: UpdateUser :exec
-UPDATE users 
+UPDATE users
 SET name = COALESCE($2, name),
     picture = COALESCE($3, picture),
     updated_at = NOW()
 WHERE id = $1;
+
+-- name: CountUsers :one
+SELECT COUNT(*) FROM users;
+
+-- name: CountUsersCreatedToday :one
+SELECT COUNT(*) FROM users WHERE DATE(created_at) = CURRENT_DATE;
+
+-- name: CountUsersCreatedThisWeek :one
+SELECT COUNT(*) FROM users WHERE created_at >= DATE_TRUNC('week', CURRENT_DATE);
+
+-- name: GetRecentUsers :many
+SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 10;
