@@ -108,14 +108,14 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                             '<p class="text-sm text-gray-600">Check browser console for detailed logs.</p>';
                     } else {
                         console.log('❌ TOKEN REFRESH TEST: FAILED - Server returned error');
-                        resultDiv.innerHTML = `<p class="text-red-600">❌ ERROR: ${data.error || 'Unknown error'}</p>`;
+                        resultDiv.innerHTML = '<p class="text-red-600">❌ ERROR: ' + (data.error || 'Unknown error') + '</p>';
                     }
                 });
             })
             .catch(error => {
                 console.log('❌ TOKEN REFRESH TEST: NETWORK ERROR');
                 console.log('❌ TOKEN REFRESH TEST: Error:', error);
-                resultDiv.innerHTML = `<p class="text-red-600">❌ NETWORK ERROR: ${error.message}</p>`;
+                resultDiv.innerHTML = '<p class="text-red-600">❌ NETWORK ERROR: ' + error.message + '</p>';
             });
             
             console.log('🔄 TOKEN REFRESH TEST: === TEST INITIATED ===');
