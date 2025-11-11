@@ -65,23 +65,36 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 
 	// Pre-load real dashboard data from database
 	var dashboardData templates.DashboardData
+	dashboardData.SystemHealth = "operational"
+	
 	if h.Queries != nil {
+		fmt.Printf("📊 ADMIN: Loading real database data...\n")
+		
 		// Total users
 		totalUsers, err := h.Queries.CountUsers(r.Context())
 		if err == nil {
 			dashboardData.TotalUsers = int(totalUsers)
+			fmt.Printf("📊 ADMIN: Total users loaded: %d\n", dashboardData.TotalUsers)
+		} else {
+			fmt.Printf("❌ ADMIN: Error loading total users: %v\n", err)
 		}
 
 		// Today's signups
 		signupsToday, err := h.Queries.CountUsersCreatedToday(r.Context())
 		if err == nil {
 			dashboardData.SignupsToday = int(signupsToday)
+			fmt.Printf("📊 ADMIN: Today's signups loaded: %d\n", dashboardData.SignupsToday)
+		} else {
+			fmt.Printf("❌ ADMIN: Error loading today's signups: %v\n", err)
 		}
 
 		// This week's signups
 		signupsThisWeek, err := h.Queries.CountUsersCreatedThisWeek(r.Context())
 		if err == nil {
 			dashboardData.UsersThisWeek = int(signupsThisWeek)
+			fmt.Printf("📊 ADMIN: This week's signups loaded: %d\n", dashboardData.UsersThisWeek)
+		} else {
+			fmt.Printf("❌ ADMIN: Error loading this week's signups: %v\n", err)
 		}
 
 		// Recent users
@@ -92,17 +105,26 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 			if len(recentUsers) < maxUsers {
 				maxUsers = len(recentUsers)
 			}
-			for _, user := range recentUsers[:maxUsers] {
+			for i, user := range recentUsers[:maxUsers] {
 				dashboardData.RecentUsers = append(dashboardData.RecentUsers, templates.RecentUser{
 					Name:  user.Name,
 					Email: user.Email,
 					Date:  user.CreatedAt.Time.Format("2006-01-02"),
 				})
+				fmt.Printf("📊 ADMIN: Recent user %d: %s (%s)\n", i+1, user.Name, user.Email)
 			}
+		} else if err != nil {
+			fmt.Printf("❌ ADMIN: Error loading recent users: %v\n", err)
+		} else {
+			fmt.Printf("⚠️ ADMIN: No recent users found\n")
 		}
+		
+		fmt.Printf("📊 ADMIN: Dashboard data ready - Total: %d, Today: %d, ThisWeek: %d, Recent: %d\n",
+			dashboardData.TotalUsers, dashboardData.SignupsToday, dashboardData.UsersThisWeek, len(dashboardData.RecentUsers))
 	} else {
 		// Default values when no database connection
 		dashboardData.SystemHealth = "offline"
+		fmt.Printf("⚠️ ADMIN: No database connection available\n")
 	}
 
 	w.Header().Set("Content-Type", "text/html")

@@ -59,7 +59,72 @@ func AdminDashboardContent(user UserInfo, data DashboardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " - Full administrative access</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8\"><!-- User Stats Card --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-gray-900\">👥 Total Users</h3><div class=\"w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center\"><span class=\"text-blue-600 text-lg\">👥</span></div></div><div class=\"text-3xl font-bold text-gray-900 mb-2\">Loading...</div><div class=\"text-sm text-green-600\">Real database count will appear here</div></div><!-- Signups Today Card --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-gray-900\">📅 Signups Today</h3><div class=\"w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center\"><span class=\"text-green-600 text-lg\">📅</span></div></div><div class=\"text-3xl font-bold text-gray-900 mb-2\">Loading...</div><div class=\"text-sm text-gray-500\">Real daily signups will appear here</div></div><!-- Database Status Card --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-gray-900\">🟢 Database</h3><div class=\"w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center\"><span class=\"text-green-600 text-lg\">🟢</span></div></div><div class=\"text-lg font-semibold text-gray-900 mb-2\">Loading...</div><div class=\"text-sm text-gray-500\">Real database status will appear here</div></div></div><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><!-- Recent Users --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">👤 Recent Users</h3><div class=\"space-y-3\"><div class=\"flex items-center justify-center p-8 text-gray-500\">Loading recent users from database...</div></div></div><!-- Quick Actions --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">⚡ Quick Actions</h3><div class=\"space-y-3\"><button hx-get=\"/api/admin/analytics\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-blue-600\">📊</span><div><div class=\"font-medium text-blue-900\">View Analytics</div><div class=\"text-sm text-blue-600\">Detailed usage statistics</div></div></div></button> <button hx-get=\"/api/admin/settings\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-green-600\">⚙️</span><div><div class=\"font-medium text-green-900\">System Settings</div><div class=\"text-sm text-green-600\">Configure application</div></div></div></button> <button hx-get=\"/api/admin/logs\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-purple-600\">📝</span><div><div class=\"font-medium text-purple-900\">View Logs</div><div class=\"text-sm text-purple-600\">System logs and errors</div></div></div></button> <button hx-get=\"/\" hx-swap=\"none\" class=\"w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-gray-600\">🏠</span><div><div class=\"font-medium text-gray-900\">Back to Home</div><div class=\"text-sm text-gray-600\">Return to main application</div></div></div></button></div></div></div><!-- Content Area for Dynamic Updates --><div id=\"admin-content\" class=\"mt-8\"><!-- This area will be updated by HTMX requests --></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " - Full administrative access</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8\"><!-- User Stats Card --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-gray-900\">👥 Total Users</h3><div class=\"w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center\"><span class=\"text-blue-600 text-lg\">👥</span></div></div><div class=\"text-3xl font-bold text-gray-900 mb-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.TotalUsers)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `admin_dashboard.templ`, Line: 37, Col: 72}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"text-sm text-green-600 flex items-center\"><span class=\"mr-1\">↗</span> +")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.UsersThisWeek)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `admin_dashboard.templ`, Line: 40, Col: 26}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " this week</div></div><!-- Signups Today Card --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-gray-900\">📅 Signups Today</h3><div class=\"w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center\"><span class=\"text-green-600 text-lg\">📅</span></div></div><div class=\"text-3xl font-bold text-gray-900 mb-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.SignupsToday)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `admin_dashboard.templ`, Line: 52, Col: 74}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-sm text-gray-500\">New signups today</div></div><!-- Database Status Card --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-gray-900\">🟢 Database</h3><div class=\"w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center\"><span class=\"text-green-600 text-lg\">🟢</span></div></div><div class=\"text-lg font-semibold text-gray-900 mb-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.SystemHealth)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `admin_dashboard.templ`, Line: 64, Col: 77}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-500\">Real database status</div></div></div><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><!-- Recent Users --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">👤 Recent Users</h3><div class=\"space-y-3\"><div class=\"text-sm text-gray-500 mb-4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(len(data.RecentUsers))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `admin_dashboard.templ`, Line: 75, Col: 29}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " recent users found</div><!-- Show basic info for now --><div class=\"flex items-center justify-center p-8 text-gray-500\">Database integration active - Data loaded from real database</div></div></div><!-- Quick Actions --><div class=\"bg-white rounded-2xl shadow-lg p-6 border border-gray-100\"><h3 class=\"text-lg font-semibold text-gray-900 mb-4\">⚡ Quick Actions</h3><div class=\"space-y-3\"><button hx-get=\"/api/admin/analytics\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-blue-600\">📊</span><div><div class=\"font-medium text-blue-900\">View Analytics</div><div class=\"text-sm text-blue-600\">Detailed usage statistics</div></div></div></button> <button hx-get=\"/api/admin/settings\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-green-600\">⚙️</span><div><div class=\"font-medium text-green-900\">System Settings</div><div class=\"text-sm text-green-600\">Configure application</div></div></div></button> <button hx-get=\"/api/admin/logs\" hx-target=\"#admin-content\" hx-swap=\"innerHTML\" class=\"w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-purple-600\">📝</span><div><div class=\"font-medium text-purple-900\">View Logs</div><div class=\"text-sm text-purple-600\">System logs and errors</div></div></div></button> <button hx-get=\"/\" hx-swap=\"none\" class=\"w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors\"><div class=\"flex items-center space-x-3\"><span class=\"text-gray-600\">🏠</span><div><div class=\"font-medium text-gray-900\">Back to Home</div><div class=\"text-sm text-gray-600\">Return to main application</div></div></div></button></div></div></div><!-- Content Area for Dynamic Updates --><div id=\"admin-content\" class=\"mt-8\"><!-- This area will be updated by HTMX requests --></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
