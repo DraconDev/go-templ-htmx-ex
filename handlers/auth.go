@@ -268,8 +268,19 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// **SET THE NEW JWT COOKIE FOR THE USER**
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    userResp.Token, // NEW JWT
+		Path:     "/",
+		MaxAge:   3600, // 1 hour
+		HttpOnly: true,
+		Secure:   false, // Set to true in production
+	})
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"token": userResp.Token,
+		"success": true,
+		"message": "Token refreshed successfully",
 	})
 }
