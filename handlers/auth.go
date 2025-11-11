@@ -267,10 +267,14 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) templates.UserInfo {
 }
 
 // RefreshTokenHandler handles token refresh requests
+// Flow: Frontend calls when JWT expires ->
+//       Server reads refresh_token cookie ->
+//       Calls auth service for new JWT ->
+//       **Sets new session_token cookie automatically**
 func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Get refresh token from HTTP-only cookie
+	// STEP 1: Get refresh token from HTTP-only cookie (automatically sent by browser)
 	cookie, err := r.Cookie("refresh_token")
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -280,7 +284,7 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Call auth service to refresh token
+	// STEP 2: Call auth service to refresh token using the refresh token
 	userResp, err := h.AuthService.RefreshToken(cookie.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -290,10 +294,11 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// **SET THE NEW JWT COOKIE FOR THE USER**
+	// STEP 3: **CRITICAL** - Set the new JWT cookie for the user
+	// This replaces the expired session_token with a fresh one
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    userResp.Token, // NEW JWT
+		Value:    userResp.Token, // NEW JWT from auth service
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
