@@ -132,17 +132,15 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 console.log('👤 USER STATUS CHECK: Response:', data);
                 
                 if (data.logged_in) {
-                    resultDiv.innerHTML = `
-                        <p class="text-green-600">✅ Logged in as: ${data.name}</p>
-                        <p class="text-sm text-gray-600">Email: ${data.email}</p>
-                    `;
+                    resultDiv.innerHTML = '<p class="text-green-600">✅ Logged in as: ' + data.name + '</p>' +
+                        '<p class="text-sm text-gray-600">Email: ' + data.email + '</p>';
                 } else {
                     resultDiv.innerHTML = '<p class="text-red-600">❌ Not logged in</p>';
                 }
             })
             .catch(error => {
                 console.log('👤 USER STATUS CHECK: Error:', error);
-                resultDiv.innerHTML = `<p class="text-red-600">❌ Error: ${error.message}</p>`;
+                resultDiv.innerHTML = '<p class="text-red-600">❌ Error: ' + error.message + '</p>';
             });
         }
         
