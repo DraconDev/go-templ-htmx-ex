@@ -87,7 +87,12 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 		// Recent users
 		recentUsers, err := h.Queries.GetRecentUsers(r.Context())
 		if err == nil && len(recentUsers) > 0 {
-			for _, user := range recentUsers[:5] { // Show first 5
+			// Show up to 5 recent users
+			maxUsers := 5
+			if len(recentUsers) < maxUsers {
+				maxUsers = len(recentUsers)
+			}
+			for _, user := range recentUsers[:maxUsers] {
 				dashboardData.RecentUsers = append(dashboardData.RecentUsers, templates.RecentUser{
 					Name:  user.Name,
 					Email: user.Email,
