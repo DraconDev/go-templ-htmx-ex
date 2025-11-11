@@ -49,6 +49,11 @@ func LoadConfig() *Config {
 	return config
 }
 
+// IsAdmin checks if the given email matches the admin email
+func (c *Config) IsAdmin(email string) bool {
+	return c.AdminEmail != "" && email == c.AdminEmail
+}
+
 // GetServerAddress returns the full server address
 func (c *Config) GetServerAddress() string {
 	return fmt.Sprintf(":%s", c.ServerPort)
