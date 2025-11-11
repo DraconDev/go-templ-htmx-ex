@@ -2,22 +2,7 @@ package templates
 
 //go:generate templ generate
 
-// DashboardData represents the complete admin dashboard data
-type DashboardData struct {
-	TotalUsers    int
-	SignupsToday  int
-	SystemHealth  string
-	RecentUsers   []RecentUser
-	UsersThisWeek int
-}
-
-type RecentUser struct {
-	Name  string
-	Email string
-	Date  string
-}
-
-templ AdminDashboardContent(user UserInfo, data DashboardData) {
+templ AdminDashboardContent(user UserInfo, data templates.DashboardData) {
 	<div class="max-w-6xl mx-auto">
 		<!-- Dashboard Header -->
 		<div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-8 mb-8">
@@ -77,19 +62,9 @@ templ AdminDashboardContent(user UserInfo, data DashboardData) {
 			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
 				<h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Recent Users</h3>
 				<div class="space-y-3">
-					{ if len(data.RecentUsers) > 0 }
-						<div class="text-sm text-gray-500">
-							Showing { len(data.RecentUsers) } recent users (first 5 displayed)
-						</div>
-						<!-- Show first 5 users as placeholder -->
-						<div class="flex items-center justify-center p-8 text-gray-500">
-							Recent users loaded from database
-						</div>
-					{ else }
-						<div class="flex items-center justify-center p-8 text-gray-500">
-							No recent users found
-						</div>
-					{ endif }
+					<div class="text-sm text-gray-500">
+						{ data.RecentUsers } recent users loaded
+					</div>
 				</div>
 			</div>
 			
