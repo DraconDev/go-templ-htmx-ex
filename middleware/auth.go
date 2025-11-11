@@ -19,31 +19,35 @@ const userContextKey UserContextKey = "user"
 
 // AuthMiddleware validates JWT tokens for protected routes
 func AuthMiddleware(next http.Handler) http.Handler {
-	// Public routes that don't require authentication
-	publicPaths := map[string]bool{
-		"/health":              true, // Health check
-		"/login":               true, // Login page
-		"/auth/google":         true, // OAuth login
-		"/auth/github":         true, // OAuth login
-		"/auth/callback":       true, // OAuth callback
-		"/api/auth/set-session": true, // Session setting
-		"/api/auth/validate":   true, // Auth validation
-		"/api/auth/refresh":    true, // Token refresh
+	// Protected routes that require authentication
+	protectedPaths := map[string]bool{
+		"/profile":             true, // User profile page
+		"/admin":               true, // Admin dashboard
+		"/api/admin":           true, // Admin API routes
+	}
+
+	// API routes that require authentication
+	apiProtectedPaths := map[string]bool{
+		"/api/admin":           true, // Admin API routes
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Skip authentication for public paths
-		if publicPaths[r.URL.Path] {
-			next.ServeHTTP(w, r)
-			return
+		// Always validate JWT and add to context (for UI purposes)
+		userInfo := validateJWT(r)
+		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
+		
+		// Check if this route requires authentication
+		var requiresAuth bool
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			requiresAuth = apiProtectedPaths[r.URL.Path]
+		} else {
+			requiresAuth = protectedPaths[r.URL.Path]
 		}
 
-		// Validate JWT for protected routes
-		userInfo := validateJWT(r)
-		
-		if !userInfo.LoggedIn {
-			// For API routes, return JSON error
+		// If route requires auth but user is not logged in, redirect
+		if requiresAuth && !userInfo.LoggedIn {
 			if strings.HasPrefix(r.URL.Path, "/api/") {
+				// For API routes, return JSON error
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
 				json.NewEncoder(w).Encode(map[string]interface{}{
@@ -52,13 +56,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 			
-			// For web routes, redirect to login
+			// For web routes, redirect to home
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
-		// Add user info to request context
-		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
