@@ -64,15 +64,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	fmt.Printf("📋 ADMIN: Access granted for admin %s\n", userInfo.Email)
 
 	// Pre-load real dashboard data from database
-	dashboardData := templates.DashboardData{
-		TotalUsers:   0,
-		SignupsToday: 0,
-		SystemHealth: "operational",
-		RecentUsers:  []templates.RecentUser{},
-		UsersThisWeek: 0,
-	}
-
-	// Get real analytics data from database
+	var dashboardData templates.DashboardData
 	if h.Queries != nil {
 		// Total users
 		totalUsers, err := h.Queries.CountUsers(r.Context())
@@ -103,6 +95,9 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 				})
 			}
 		}
+	} else {
+		// Default values when no database connection
+		dashboardData.SystemHealth = "offline"
 	}
 
 	w.Header().Set("Content-Type", "text/html")
