@@ -77,30 +77,30 @@ templ AdminDashboardContent(user UserInfo, data DashboardData) {
 			<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
 				<h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Recent Users</h3>
 				<div class="space-y-3">
-					{ if len(data.RecentUsers) > 0 }
-						{ for i, recentUser := range data.RecentUsers }
-							{ if i < 5 }
+					{templ arg "if" {len(data.RecentUsers) > 0}}
+						{templ arg "range" $i, $recentUser := data.RecentUsers}
+							{templ arg "if" {$i < 5}}
 								<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
 									<div class="flex items-center space-x-3">
 										<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
 											<span class="text-blue-600 text-sm font-medium">
-												{ recentUser.Name[:2] }
+												{templ arg "string" {$recentUser.Name[:2]}}
 											</span>
 										</div>
 										<div>
-											<div class="font-medium text-gray-900">{ recentUser.Name }</div>
-											<div class="text-sm text-gray-500">{ recentUser.Email }</div>
+											<div class="font-medium text-gray-900">{templ arg "string" {$recentUser.Name}}</div>
+											<div class="text-sm text-gray-500">{templ arg "string" {$recentUser.Email}}</div>
 										</div>
 									</div>
-									<div class="text-sm text-gray-500">{ recentUser.Date }</div>
+									<div class="text-sm text-gray-500">{templ arg "string" {$recentUser.Date}}</div>
 								</div>
-							{ endif }
-						{ endfor }
-					{ else }
+							{templ arg "end"}
+						{templ arg "end"}
+					{templ arg "else"}}
 						<div class="flex items-center justify-center p-8 text-gray-500">
 							No recent users found
 						</div>
-					{ endif }
+					{templ arg "end"}}
 				</div>
 			</div>
 			
