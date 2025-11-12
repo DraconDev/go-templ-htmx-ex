@@ -268,7 +268,7 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 
 	// STEP 2: Render callback page with JavaScript to extract JWT from URL fragment
 	// The fragment (#access_token=...) is not sent to server, so JS must handle it
-	component := templates.Layout("Authenticating", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
+	component := templates.Layout("Authenticating", "Authentication processing page for OAuth callback and session establishment.", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
 
 	fmt.Printf("🔐 CALLBACK: About to render component...\n")
 	component.Render(r.Context(), w)
