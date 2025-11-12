@@ -7,7 +7,7 @@ import (
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
-	layouts "github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
 
