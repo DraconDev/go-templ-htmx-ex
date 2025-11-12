@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
 // UserContextKey is the key used to store user info in request context
@@ -65,16 +66,16 @@ func AuthMiddleware(next http.Handler) http.Handler {
 }
 
 // validateJWT validates the JWT token from session cookie
-func validateJWT(r *http.Request) templates.UserInfo {
+func validateJWT(r *http.Request) layouts.UserInfo {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: No session cookie found: %v\n", err)
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	if cookie.Value == "" {
 		fmt.Printf("🔐 MIDDLEWARE: Empty session token\n")
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	fmt.Printf("🔐 MIDDLEWARE: Validating JWT token, length: %d\n", len(cookie.Value))
@@ -83,14 +84,14 @@ func validateJWT(r *http.Request) templates.UserInfo {
 	parts := strings.Split(cookie.Value, ".")
 	if len(parts) != 3 {
 		fmt.Printf("🔐 MIDDLEWARE: Invalid JWT format, parts: %d\n", len(parts))
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Decode payload (the middle part)
 	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to decode JWT payload: %v\n", err)
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Parse user data from JWT payload
@@ -106,7 +107,7 @@ func validateJWT(r *http.Request) templates.UserInfo {
 	if err := json.Unmarshal(payload, &claims); err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to parse JWT claims: %v\n", err)
 		fmt.Printf("🔐 MIDDLEWARE: Payload: %s\n", string(payload))
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	fmt.Printf("🔐 MIDDLEWARE: JWT claims - Name: %s, Email: %s, Issuer: %s\n",
@@ -115,19 +116,19 @@ func validateJWT(r *http.Request) templates.UserInfo {
 	// Check if token is still valid (not expired)
 	if claims.Exp < time.Now().Unix() {
 		fmt.Printf("🔐 MIDDLEWARE: JWT expired. Exp: %d, Now: %d\n", claims.Exp, time.Now().Unix())
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Check issuer to make sure it's from our auth service
 	if claims.Iss != "auth-ms" {
 		fmt.Printf("🔐 MIDDLEWARE: Invalid JWT issuer: %s (expected: auth-ms)\n", claims.Iss)
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	fmt.Printf("🔐 MIDDLEWARE: JWT validation successful for %s (%s)\n", claims.Name, claims.Email)
 
 	// Return real user data!
-	return templates.UserInfo{
+	return layouts.UserInfo{
 		LoggedIn: true,
 		Name:     claims.Name,
 		Email:    claims.Email,
@@ -151,10 +152,10 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 }
 
 // GetUserFromContext gets user info from request context
-func GetUserFromContext(r *http.Request) templates.UserInfo {
-	userInfo, ok := r.Context().Value(userContextKey).(templates.UserInfo)
+func GetUserFromContext(r *http.Request) layouts.UserInfo {
+	userInfo, ok := r.Context().Value(userContextKey).(layouts.UserInfo)
 	if !ok {
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 	return userInfo
 }
