@@ -32,27 +32,11 @@ templ AuthCallbackContent() {
 		function setSessionAndRedirect() {
 			var params = parseFragment();
 			var accessToken = params['access_token'];
-			var refreshToken = params['refresh_token'];
-			
-			console.log('🔐 CALLBACK: Parsed tokens from URL fragment:');
-			console.log('🔐 CALLBACK: - access_token length:', accessToken ? accessToken.length : 'null');
-			console.log('🔐 CALLBACK: - refresh_token length:', refreshToken ? refreshToken.length : 'null');
 			
 			if (!accessToken) {
 				showError('No access token found in URL. Please try logging in again.');
 				return;
 			}
-
-			// Prepare request body - include refresh_token if available
-			var requestBody = { token: accessToken };
-			if (refreshToken) {
-				requestBody.refresh_token = refreshToken;
-			}
-
-			console.log('🔐 CALLBACK: Sending tokens to server:', {
-				accessTokenLength: accessToken.length,
-				refreshTokenLength: refreshToken ? refreshToken.length : null
-			});
 
 			// Set session cookie via server endpoint
 			fetch('/api/auth/set-session', {
@@ -60,7 +44,7 @@ templ AuthCallbackContent() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(requestBody)
+				body: JSON.stringify({ token: accessToken })
 			})
 			.then(response => {
 				if (response.ok) {
