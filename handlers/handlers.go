@@ -14,6 +14,14 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
 
+// UserInfo represents user authentication status
+type UserInfo struct {
+	LoggedIn bool   `json:"logged_in"`
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Picture  string `json:"picture,omitempty"`
+}
+
 // HealthHandler handles health check requests
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -22,31 +30,31 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUserFromJWT gets user info using local JWT validation (5-10ms, no API call)
-func GetUserFromJWT(r *http.Request) templates.UserInfo {
+func GetUserFromJWT(r *http.Request) UserInfo {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	return validateJWTWithRealData(cookie.Value)
 }
 
 // validateJWTWithRealData validates JWT and returns real user data
-func validateJWTWithRealData(token string) templates.UserInfo {
+func validateJWTWithRealData(token string) UserInfo {
 	if token == "" {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	// Parse JWT to get real user data
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	// Decode payload (the middle part)
 	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	// Parse user data from JWT payload
@@ -60,21 +68,21 @@ func validateJWTWithRealData(token string) templates.UserInfo {
 	}
 
 	if err := json.Unmarshal(payload, &claims); err != nil {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	// Check if token is still valid (not expired)
 	if claims.Exp < time.Now().Unix() {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	// Check issuer to make sure it's from our auth service
 	if claims.Iss != "auth-ms" {
-		return templates.UserInfo{LoggedIn: false}
+		return UserInfo{LoggedIn: false}
 	}
 
 	// Return real user data!
-	return templates.UserInfo{
+	return UserInfo{
 		LoggedIn: true,
 		Name:     claims.Name,
 		Email:    claims.Email,
@@ -109,13 +117,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	var navigation templ.Component
 	if userInfo.LoggedIn {
 		fmt.Printf("🏠 HOME: Rendering NavigationLoggedIn\n")
-		navigation = templates.NavigationLoggedIn(userInfo)
+		navigation = layouts.NavigationLoggedIn(userInfo)
 	} else {
 		fmt.Printf("🏠 HOME: Rendering NavigationLoggedOut\n")
-		navigation = templates.NavigationLoggedOut()
+		navigation = layouts.NavigationLoggedOut()
 	}
 
-	component := templates.Layout("Home", "Production-ready startup platform with Google OAuth, PostgreSQL database, and admin dashboard. Built with Go + HTMX + Templ.", navigation, templates.HomeContent())
+	component := layouts.Layout("Home", "Production-ready startup platform with Google OAuth, PostgreSQL database, and admin dashboard. Built with Go + HTMX + Templ.", navigation, pages.HomeContent())
 	component.Render(r.Context(), w)
 }
 
@@ -132,14 +140,14 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create profile content with real user data
-	navigation := templates.NavigationLoggedIn(userInfo)
-	component := templates.Layout("Profile", "User profile page with authentication details and account management.", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
+	navigation := layouts.NavigationLoggedIn(userInfo)
+	component := layouts.Layout("Profile", "User profile page with authentication details and account management.", navigation, pages.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
 	component.Render(r.Context(), w)
 }
 
 // LoginHandler handles the login page
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Login", "Secure authentication page with Google OAuth integration for user access.", templates.NavigationLoggedOut(), templates.LoginContent())
+	component := layouts.Layout("Login", "Secure authentication page with Google OAuth integration for user access.", layouts.NavigationLoggedOut(), pages.LoginContent())
 	component.Render(r.Context(), w)
 }
