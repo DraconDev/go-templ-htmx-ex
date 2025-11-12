@@ -1,39 +1,12 @@
 package templates
 
-//go:generate templ generate
-
-templ NavigationLoggedOut() {
-	<nav class="glass-nav">
-		<div class="max-w-7xl mx-auto px-6">
-			<div class="flex justify-between items-center h-16">
-				<div class="flex items-center">
-					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">
-						🚀 Startup Platform
-					</a>
-				</div>
-				<div class="flex items-center space-x-4">
-					<a href="/login" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-lg text-base font-semibold transition-all duration-200">
-						Login
-					</a>
-				</div>
-			</div>
-		</div>
-	</nav>
-}
-
-templ NavigationShell(content templ.Component) {
-	<nav class="glass-nav">
-		<div class="max-w-7xl mx-auto px-6">
-			<div class="flex justify-between items-center h-16">
-				<div class="flex items-center">
-					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">
-						🚀 Startup Platform
-					</a>
-				</div>
-				<div class="flex items-center space-x-4">
-					@content
-				</div>
-			</div>
-		</div>
-	</nav>
-}
+// NOTE: This file intentionally only exists as an extension point.
+// The actual navigation components live in layout.templ so that
+// Layout + Navigation remain co-located and easy to understand
+// for anyone using this starter.
+//
+// If you want to customize or extract navigation per-project,
+// you can move NavigationLoggedIn / NavigationLoggedOut from
+// layout.templ into this file and update handlers accordingly.
+//
+// Kept minimal on purpose to avoid conflicting definitions.
