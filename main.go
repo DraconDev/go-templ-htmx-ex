@@ -54,7 +54,7 @@ func main() {
 				db = nil
 			} else {
 				log.Println("✅ Database connected successfully")
-				
+
 				// Initialize SQLC queries
 				queries = dbSqlc.New(db)
 				log.Println("✅ SQLC queries initialized")
