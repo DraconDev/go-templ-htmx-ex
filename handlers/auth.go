@@ -456,6 +456,10 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("✅ REFRESH: Found refresh_token cookie, length: %d\n", len(cookie.Value))
 	fmt.Printf("🔄 REFRESH: Cookie details - Name: %s, Domain: %s, Path: %s, MaxAge: %d\n",
 		cookie.Name, cookie.Domain, cookie.Path, cookie.MaxAge)
+	
+	// DEV MODE: Log the actual refresh token value for debugging
+	fmt.Printf("🔍 REFRESH: DEV MODE - refresh_token value: %s\n", cookie.Value)
+	fmt.Printf("🔍 REFRESH: DEV MODE - This helps debug if auth service set the cookie correctly")
 
 	// STEP 2: Call auth service to refresh token using the refresh token
 	fmt.Printf("🔄 REFRESH: Calling auth service to refresh token...\n")
