@@ -8,7 +8,9 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
+
 
 // AdminHandler handles admin-specific operations
 type AdminHandler struct {
