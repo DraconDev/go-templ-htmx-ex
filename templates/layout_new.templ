@@ -1,10 +1,10 @@
 package templates
 
-// This file is a temporary scaffold while refactoring layout/navigation.
-// The authoritative layout + navigation currently remain in layout.templ.
-// Once the new structure is finalized and verified, we will:
-// - Move Layout + UserInfo + Navigation components into this file (layouts)
-// - Keep page content in templates/*.templ or templates/pages/
-// - Keep shared UI in templates/components/
+// Temporary scaffold while organizing templates into:
+// - templates/layouts/*.templ     (for Layout + Navigation shells)
+// - templates/pages/*.templ       (for page-level content)
+// - templates/components/*.templ  (for shared UI components)
 //
-// For now, this file is intentionally empty to avoid duplicate symbol errors.
+// This file must not contain imports or templ definitions,
+// so it doesn't conflict with existing generated code.
+// Safe to delete once the new structure is in place.
