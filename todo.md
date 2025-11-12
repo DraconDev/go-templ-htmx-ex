@@ -65,6 +65,24 @@ Choose one based on your startup needs:
 
 3. **Timeline:** Are you looking to launch to users soon, or is this for longer-term development?
 
+### **Strategic Context**
+
+**Current Issues:**
+- 🔴 **HIGH:** Users getting logged out after ~15 minutes (session timeout)
+- 🟡 **MEDIUM:** Business feature priorities need to be chosen
+
+**Project Health:**
+- **Technical:** ✅ Strong - Solid architecture, modern stack, good patterns
+- **UX:** ✅ Good - Professional design, startup-focused messaging  
+- **Business:** ⚠️ Needs Focus - Core platform ready, feature priorities unclear
+- **Documentation:** ✅ Clean - Consolidated and up-to-date
+
+**Business Model Considerations:**
+- Subscription SaaS → Payment integration priority
+- Free with premium → User onboarding + analytics  
+- B2B enterprise → Advanced admin + security
+- Consumer app → UX + mobile APIs
+
 ---
 
 ## **Recommended Action Plan**
