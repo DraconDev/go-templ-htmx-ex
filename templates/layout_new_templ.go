@@ -9,11 +9,11 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 // Temporary scaffold while organizing templates into:
-// - templates/layouts/*.templ     (for Layout + Navigation shells)
+// - templates/layouts/*.templ     (for layout + navigation shells)
 // - templates/pages/*.templ       (for page-level content)
 // - templates/components/*.templ  (for shared UI components)
 //
-// This file must not contain imports or templ definitions,
-// so it doesn't conflict with existing generated code.
-// Safe to delete once the new structure is in place.
+// This file intentionally contains no imports or templ definitions so it
+// does not conflict with existing generated code. Safe to delete once the
+// new structure is fully in place.
 var _ = templruntime.GeneratedTemplate
