@@ -2,9 +2,9 @@ package templates
 
 //go:generate templ generate
 templ HomeContent() {
-	<div class="max-w-6xl mx-auto">
+	<main class="max-w-6xl mx-auto" role="main">
 		<!-- Hero Section -->
-		<div class="text-center mb-16">
+		<section class="text-center mb-16">
 			<div class="inline-block p-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-600 rounded-full mb-8 glow-effect">
 				<div class="glass-card rounded-full px-6 py-2">
 					<span class="text-sm font-semibold text-white">🚀 Built for Modern Startups</span>
@@ -32,12 +32,12 @@ templ HomeContent() {
 			<div id="auth-status" class="mt-6 text-sm text-gray-400">
 				Get started with a single click
 			</div>
-		</div>
+		</section>
 		
 		<!-- Value Proposition Grid -->
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+		<section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16" aria-label="Key benefits">
 			<!-- Quick Setup Card -->
-			<div class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
+			<article class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
 				<div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mb-6 glow-effect">
 					<span class="text-2xl">⚡</span>
 				</div>
@@ -50,9 +50,9 @@ templ HomeContent() {
 					<li>• Database included</li>
 					<li>• Modern UI components</li>
 				</ul>
-			</div>
+			</article>
 			<!-- Enterprise Security Card -->
-			<div class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
+			<article class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
 				<div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mb-6 glow-effect">
 					<span class="text-2xl">🛡️</span>
 				</div>
@@ -65,9 +65,9 @@ templ HomeContent() {
 					<li>• Secure session handling</li>
 					<li>• Industry standards</li>
 				</ul>
-			</div>
+			</article>
 			<!-- Scalability Card -->
-			<div class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
+			<article class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
 				<div class="w-16 h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 glow-effect">
 					<span class="text-2xl">📈</span>
 				</div>
@@ -80,11 +80,11 @@ templ HomeContent() {
 					<li>• Performance optimized</li>
 					<li>• Cloud native</li>
 				</ul>
-			</div>
-		</div>
+			</article>
+		</section>
 		
 		<!-- Use Cases Section -->
-		<div class="glass-card rounded-2xl shadow-2xl p-8 mb-8">
+		<section class="glass-card rounded-2xl shadow-2xl p-8 mb-8" aria-label="Use cases">
 			<div class="text-center mb-8">
 				<h3 class="text-3xl font-bold text-white mb-4">Perfect For Your Startup</h3>
 				<p class="text-gray-300 text-lg">Built for ambitious founders building the next big thing</p>
@@ -127,10 +127,10 @@ templ HomeContent() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</section>
 		
 		<!-- CTA Section -->
-		<div class="text-center">
+		<section class="text-center" aria-label="Primary call to action">
 			<div class="glass-card rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto">
 				<h3 class="text-2xl font-bold text-white mb-4">Ready to Build Something Amazing?</h3>
 				<p class="text-gray-300 mb-6">
@@ -140,6 +140,6 @@ templ HomeContent() {
 					Get Started Now →
 				</a>
 			</div>
-		</div>
-	</div>
+		</section>
+	</main>
 }
