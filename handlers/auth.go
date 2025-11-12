@@ -436,7 +436,7 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔄 REFRESH: === Token refresh STARTED ===\n")
 	fmt.Printf("🔄 REFRESH: Request URL: %s\n", r.URL.String())
-	fmt.Printf("🔄 REFRESH: Request headers: %v\n", r.Header)
+	fmt.Printf("🔄 REFRESH: Method: %s\n", r.Method)
 	
 	w.Header().Set("Content-Type", "application/json")
 
@@ -445,17 +445,19 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 	cookie, err := r.Cookie("refresh_token")
 	if err != nil {
 		fmt.Printf("❌ REFRESH: No refresh_token cookie found: %v\n", err)
-		fmt.Printf("🔄 REFRESH: All cookies: %v\n", r.Cookies())
+		fmt.Printf("❌ REFRESH: This means the auth service did not set refresh_token cookie properly\n")
+		fmt.Printf("❌ REFRESH: Required: Auth service must set refresh_token as HTTP-only cookie on main app domain\n")
+		
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "No refresh token found",
+			"error": "No refresh token found - auth service needs to set refresh_token cookie",
+			"details": "Check auth service OAuth callback configuration",
 		})
 		return
 	}
 
 	fmt.Printf("✅ REFRESH: Found refresh_token cookie, length: %d\n", len(cookie.Value))
-	fmt.Printf("🔄 REFRESH: Cookie details - Name: %s, Domain: %s, Path: %s, MaxAge: %d\n",
-		cookie.Name, cookie.Domain, cookie.Path, cookie.MaxAge)
+	fmt.Printf("✅ REFRESH: Cookie will be automatically sent by browser for security\n")
 
 	// STEP 2: Call auth service to refresh token using the refresh token
 	fmt.Printf("🔄 REFRESH: Calling auth service to refresh token...\n")
@@ -470,26 +472,30 @@ func (h *AuthHandler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	fmt.Printf("✅ REFRESH: Auth service returned success: %v\n", userResp.Success)
-	fmt.Printf("🔄 REFRESH: New token length: %d\n", len(userResp.Token))
+	if userResp.Token != "" {
+		fmt.Printf("✅ REFRESH: New token length: %d\n", len(userResp.Token))
+	}
 
-	// STEP 3: **CRITICAL** - Set the new JWT cookie for the user
-	// This replaces the expired session_token with a fresh one
-	fmt.Printf("🔄 REFRESH: Setting new session_token cookie...\n")
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    userResp.Token, // NEW JWT from auth service
-		Path:     "/",
-		MaxAge:   3600, // 1 hour
-		HttpOnly: true,
-		Secure:   false, // Set to true in production
-	})
+	// STEP 3: Set the new JWT cookie for the user
+	if userResp.Token != "" {
+		fmt.Printf("🔄 REFRESH: Setting new session_token cookie...\n")
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_token",
+			Value:    userResp.Token, // NEW JWT from auth service
+			Path:     "/",
+			MaxAge:   3600, // 1 hour
+			HttpOnly: true,
+			Secure:   false, // Set to true in production
+		})
+		fmt.Printf("✅ REFRESH: New session_token cookie set successfully\n")
+	}
 
-	fmt.Printf("✅ REFRESH: New session_token cookie set successfully\n")
 	fmt.Printf("🔄 REFRESH: === Token refresh COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Token refreshed successfully",
+		"has_token": userResp.Token != "",
 	})
 }
