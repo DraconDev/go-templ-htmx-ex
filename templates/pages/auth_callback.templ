@@ -49,9 +49,10 @@ templ AuthCallbackContent() {
 			.then(response => {
 				if (response.ok) {
 					showSuccess('Authentication successful! Redirecting to home...');
+					// Wait longer to ensure cookies are properly saved
 					setTimeout(() => {
 						window.location.href = '/';
-					}, 1000);
+					}, 3000); // Increased from 1s to 3s
 				} else {
 					return response.json().then(data => {
 						throw new Error(data.error || 'Failed to set session');
