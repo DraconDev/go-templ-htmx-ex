@@ -1,11 +1,10 @@
 package templates
 
-import "github.com/a-h/templ"
+import "strings"
 
 //go:generate templ generate
 
-// Shared types
-
+// UserInfo represents user authentication status
 type UserInfo struct {
 	LoggedIn bool   `json:"logged_in"`
 	Name     string `json:"name,omitempty"`
@@ -13,78 +12,184 @@ type UserInfo struct {
 	Picture  string `json:"picture,omitempty"`
 }
 
-// Base layout (shell only, no page-specific content)
-// - Provides HTML/head/body
-// - Handles SEO/meta/OG/Twitter/JSON-LD
-// - Renders a navigation component + a page content component
+// SEO-friendly Layout with authentication
 templ Layout(title string, description string, navigation templ.Component, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 			<!-- SEO Meta Tags -->
 			<title>{ title } | Startup Platform</title>
 			<meta name="description" content={ description }/>
 			<meta name="keywords" content="startup platform, Go authentication, HTMX templ, PostgreSQL, SaaS template, web development"/>
 			<meta name="author" content="Startup Platform"/>
 			<meta name="robots" content="index, follow"/>
-
 			<!-- Open Graph / Facebook -->
 			<meta property="og:type" content="website"/>
+			<meta property="og:url" content="https://startup-platform.com/"/>
 			<meta property="og:title" content={ title }/>
 			<meta property="og:description" content={ description }/>
 			<meta property="og:site_name" content="Startup Platform"/>
-
+			<meta property="og:image" content="https://startup-platform.com/og-image.jpg"/>
 			<!-- Twitter -->
 			<meta property="twitter:card" content="summary_large_image"/>
+			<meta property="twitter:url" content="https://startup-platform.com/"/>
 			<meta property="twitter:title" content={ title }/>
 			<meta property="twitter:description" content={ description }/>
-
-			<!-- Minimal default JSON-LD (intentionally generic; customize per-project in real usage) -->
+			<meta property="twitter:image" content="https://startup-platform.com/twitter-image.jpg"/>
+			<!-- Structured Data for SEO -->
 			<script type="application/ld+json">
-			{
-				"@context": "https://schema.org",
-				"@type": "WebSite",
-				"name": "Startup Platform",
-				"description": "Production-ready starter with authentication and admin dashboard.",
-				"url": "http://localhost:8081"
-			}
+				{
+					"@context": "https://schema.org",
+					"@type": "SoftwareApplication",
+					"name": "Startup Platform",
+					"description": { description },
+					"url": "https://startup-platform.com",
+					"applicationCategory": "DeveloperApplication",
+					"operatingSystem": "Any",
+					"offers": {
+						"@type": "Offer",
+						"price": "0",
+						"priceCurrency": "USD"
+					},
+					"provider": {
+						"@type": "Organization",
+						"name": "Startup Platform"
+					},
+					"featureList": [
+						"Google OAuth Authentication",
+						"PostgreSQL Database Integration",
+						"Admin Dashboard",
+						"Go + HTMX + Templ Stack"
+					]
+				}
 			</script>
-
-			<!-- Core libraries -->
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
-
 			<style>
-				body {
-					background: #020817;
-					color: #e5e7eb;
+				/* Ultra-dark theme - solid uniform background */
+				.ultra-dark-bg {
+					background: #0a0a0a;
 				}
+				
 				.glass-nav {
-					background: rgba(2, 6, 23, 0.98);
-					backdrop-filter: blur(18px);
-					border-bottom: 1px solid rgba(148, 163, 253, 0.08);
+					background: rgba(0, 0, 0, 0.95);
+					backdrop-filter: blur(25px);
+					-webkit-backdrop-filter: blur(25px);
+					border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+					box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 					position: sticky;
 					top: 0;
 					z-index: 40;
 				}
 				.glass-card {
-					background: rgba(9, 9, 11, 0.9);
-					backdrop-filter: blur(22px);
-					border: 1px solid rgba(148, 163, 253, 0.14);
+					background: rgba(0, 0, 0, 0.8);
+					backdrop-filter: blur(30px);
+					border: 1px solid rgba(255, 255, 255, 0.08);
 				}
 				.glow-effect {
-					box-shadow: 0 0 22px rgba(56, 189, 248, 0.28);
+					box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 				}
 			</style>
+			<script>
+				function logout() {
+					fetch('/api/auth/logout', { method: 'POST' })
+						.then(() => {
+							window.location.reload();
+						});
+				}
+				function toggleProfileDropdown() {
+					const dropdown = document.getElementById('profile-dropdown');
+					dropdown.classList.toggle('hidden');
+				}
+				// Close dropdown when clicking outside
+				document.addEventListener('click', function(event) {
+					const dropdown = document.getElementById('profile-dropdown');
+					const button = event.target.closest('button');
+					if (!button && !dropdown.contains(event.target)) {
+						dropdown.classList.add('hidden');
+					}
+				});
+			</script>
 		</head>
-		<body class="min-h-screen">
+		<body class="ultra-dark-bg min-h-screen text-white">
 			@navigation
-			<main class="container mx-auto py-10 px-4" role="main">
+			<main class="container mx-auto py-12 px-4" role="main">
 				@content
 			</main>
 		</body>
 	</html>
+}
+
+// NavigationLoggedIn renders the logged-in navigation
+templ NavigationLoggedIn(user UserInfo) {
+	<nav class="glass-nav">
+		<div class="max-w-7xl mx-auto px-6">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
+				</div>
+				<div class="relative">
+					<button onclick="toggleProfileDropdown()" class="flex items-center justify-center w-11 h-11 rounded-full overflow-hidden hover:scale-105 transition-transform duration-200">
+						@UserAvatar(user)
+					</button>
+					<div id="profile-dropdown" class="hidden absolute right-0 top-13 w-48 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-xl shadow-2xl z-50 transform transition-all duration-200 ease-out">
+						<div class="p-2 space-y-1">
+							<a href="/profile" class="flex items-center space-x-3 px-3 py-2.5 text-sm text-white hover:bg-gray-700/80 rounded-lg transition-colors duration-200">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+								</svg>
+								<span>View Profile</span>
+							</a>
+							<button onclick="logout()" class="flex items-center space-x-3 w-full text-left px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-colors duration-200">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+								</svg>
+								<span>Sign Out</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+templ UserAvatar(user UserInfo) {
+	<div class="w-11 h-11 rounded-full overflow-hidden bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+		if user.Picture != "" {
+			<img src={ user.Picture } alt="Profile" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+		}
+		if user.Picture == "" {
+			<div class="w-full h-full flex items-center justify-center text-white font-semibold text-sm">
+				@UserInitials(user)
+			</div>
+		}
+	</div>
+}
+
+// UserInitials returns initials with fallback
+templ UserInitials(user UserInfo) {
+	if user.Name != "" {
+		{ strings.ToUpper(string([]rune(user.Name)[0:1])) }
+	} else {
+		U
+	}
+}
+
+// NavigationLoggedOut renders the logged-out navigation
+templ NavigationLoggedOut() {
+	<nav class="glass-nav">
+		<div class="max-w-7xl mx-auto px-6">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
+				</div>
+				<div class="flex items-center space-x-4">
+					<a href="/login" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-lg text-base font-semibold transition-all duration-200">Login</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 }
