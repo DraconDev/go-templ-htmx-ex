@@ -114,7 +114,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		navigation = templates.NavigationLoggedOut()
 	}
 
-	component := templates.Layout("Home", navigation, templates.HomeContent())
+	component := templates.Layout("Home", "Production-ready startup platform with Google OAuth, PostgreSQL database, and admin dashboard. Built with Go + HTMX + Templ.", navigation, templates.HomeContent())
 	component.Render(r.Context(), w)
 }
 
