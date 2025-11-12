@@ -1,40 +1,53 @@
 # 🚀 Go + HTMX + Templ Startup Platform
 
-A **minimal, production-ready startup platform** with **Google OAuth**, **PostgreSQL database**, and **admin dashboard**. Built with **Templ**, **HTMX**, and **SQLC** for high performance.
+A **production-ready startup platform** with **Google OAuth**, **PostgreSQL database**, **admin dashboard**, and **enhanced startup-focused homepage**. Built with **Templ**, **HTMX**, and **SQLC** for high performance.
 
 ## 🎯 What This Is
 
 - **🚀 Fast startup foundation** with real authentication & database
-- **📊 Simple admin dashboard** with user analytics  
+- **📊 Admin dashboard** with live user analytics  
 - **🔐 Google OAuth ready** with JWT sessions
-- **🧪 Basic test coverage** for core functionality
+- **🎨 Startup-focused homepage** with professional messaging and pricing
 - **🐳 Docker ready** for production deployment
+- **🏗️ Microservice architecture** ready to scale
 
 ## ✨ What You Get
 
 ### 🔐 **Authentication System**
 - Google OAuth 2.0 login
+- GitHub OAuth integration
 - JWT session management
 - User profile pages
-- Logout functionality
+- Session validation middleware
 
 ### 💾 **Database Integration**
 - PostgreSQL with users table
 - SQLC generated type-safe queries
 - Real user data (no mock data)
-- Basic user analytics
+- User registration tracking
+- Live analytics dashboard
 
 ### 📊 **Admin Dashboard** 
-- Total users count
-- Signups today/this week
+- Total users count from database
+- Signups today/this week tracking
 - Recent users list
-- Admin-only access
+- Admin-only access control
+- Real-time data updates
 
-### 🎨 **Clean UI**
-- Simple dark theme
-- Responsive design
-- HTMX interactions
-- Modern but minimal
+### 🎨 **Enhanced Startup Homepage**
+- Professional startup-focused messaging
+- Social proof and trust indicators
+- Clear pricing tiers (Starter Free, Growth, Scale)
+- Modern tech stack showcase
+- Problem/solution presentation
+- Multiple clear call-to-actions
+
+### 🏗️ **Technical Foundation**
+- Microservice architecture ready
+- Docker containerization
+- Health check endpoints
+- Type-safe templating with proper package organization
+- HTMX for dynamic interactions
 
 ## 🚀 Quick Start
 
@@ -75,23 +88,27 @@ cp .env.example .env
 ## 📁 Project Structure
 
 ```
-├── main.go              # Application entry point
-├── Dockerfile           # Production container
-├── sqlc.yaml           # Database query generation
+├── main.go                    # Application entry point
+├── Dockerfile                 # Production container
+├── sqlc.yaml                  # Database query generation
 ├── handlers/
-│   ├── admin.go        # Admin dashboard
-│   ├── auth.go         # Authentication
-│   └── handlers.go     # User pages
-├── db/
-│   ├── migrations/     # Database schema
-│   └── sqlc/          # Generated queries
+│   ├── admin.go              # Admin dashboard
+│   ├── auth.go               # Authentication
+│   └── handlers.go           # User pages
 ├── middleware/
-│   └── auth.go        # JWT validation
-└── templates/
-    ├── layout.templ   # Base layout
-    ├── home.templ     # Landing page
-    ├── profile.templ  # User profile
-    └── admin_dashboard.templ # Admin page
+│   └── auth.go              # JWT validation
+├── templates/
+│   ├── layouts/             # Layout templates (reorganized)
+│   │   ├── layout.templ
+│   │   └── layout_templ.go
+│   └── pages/               # Page templates (reorganized)
+│       ├── home.templ       # Enhanced startup homepage
+│       ├── profile.templ
+│       ├── login.templ
+│       └── admin_dashboard.templ
+└── db/
+    ├── migrations/          # Database schema
+    └── sqlc/               # Generated queries
 ```
 
 ## 🧪 Testing
@@ -116,28 +133,31 @@ docker run -p 8081:8081 your-app
 
 ### ✅ **What Works**
 - Google OAuth login/logout
+- GitHub OAuth integration
 - User profile pages with real data
-- Admin dashboard with database statistics
+- Admin dashboard with live database statistics
 - PostgreSQL database integration
-- Basic test coverage
+- Enhanced startup-focused homepage
+- Session validation middleware
 - Docker containerization
+- Template reorganization completed
 
-### 🔄 **What's Missing**
-- Mobile app API endpoints
-- Payment integration
-- Email notifications
-- Advanced analytics
+### 🔄 **What's Being Addressed**
+- Session timeout management (improving JWT expiry handling)
+- Enhanced error handling and logging
+- Business feature priorities (payment integration, user onboarding, etc.)
 
 ## 📈 Performance
 
 - **Navigation:** ~5-10ms with local JWT validation
-- **Admin Dashboard:** Real-time database queries
+- **Admin Dashboard:** Real-time database queries with live updates
 - **Database:** SQLC generated optimized queries
 - **UI:** HTMX for seamless updates
+- **Templates:** Type-safe with proper package organization
 
 ## 🚀 For Your Startup
 
-This gives you the foundation to build on:
+This gives you a **solid foundation to build on**:
 
 ```bash
 # Add your business features
@@ -148,8 +168,22 @@ vim handlers/business/your_feature.go
 vim db/migrations/002_your_feature.sql
 
 # Create templates
-vim templates/your_feature.templ
+vim templates/pages/your_feature.templ
 ```
+
+### **Ready for Business Features:**
+- Payment integration (Stripe/subscriptions)
+- User onboarding flows
+- Advanced analytics
+- Mobile API endpoints
+- Content management system
+
+## 🔍 Recent Updates
+
+- **Template Reorganization:** Moved to proper package structure (layouts/pages)
+- **Enhanced Homepage:** Professional startup messaging, pricing, social proof
+- **Session Management:** Improved JWT handling and validation
+- **Documentation:** Consolidated project status and next steps
 
 ## 📄 License
 
@@ -157,4 +191,4 @@ MIT License
 
 ---
 
-**Simple. Fast. Ready to build on.**
+**Simple. Fast. Ready to build your startup on.**
