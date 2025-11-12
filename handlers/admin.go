@@ -128,7 +128,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Admin Dashboard", templates.NavigationLoggedIn(userInfo), templates.AdminDashboardContent(userInfo, dashboardData))
+	component := templates.Layout("Admin Dashboard", "Administrative dashboard with user statistics, analytics, and platform management tools.", templates.NavigationLoggedIn(userInfo), templates.AdminDashboardContent(userInfo, dashboardData))
 	component.Render(r.Context(), w)
 }
 
