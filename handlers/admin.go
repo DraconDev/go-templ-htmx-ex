@@ -7,7 +7,7 @@ import (
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
 
 // AdminHandler handles admin-specific operations
@@ -64,7 +64,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	fmt.Printf("📋 ADMIN: Access granted for admin %s\n", userInfo.Email)
 
 	// Pre-load real dashboard data from database
-	var dashboardData templates.DashboardData
+	var dashboardData pages.DashboardData
 	dashboardData.SystemHealth = "operational"
 
 	if h.Queries != nil {
@@ -106,7 +106,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 				maxUsers = len(recentUsers)
 			}
 			for i, user := range recentUsers[:maxUsers] {
-				dashboardData.RecentUsers = append(dashboardData.RecentUsers, templates.RecentUser{
+				dashboardData.RecentUsers = append(dashboardData.RecentUsers, pages.RecentUser{
 					Name:  user.Name,
 					Email: user.Email,
 					Date:  user.CreatedAt.Time.Format("2006-01-02"),
@@ -128,7 +128,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Admin Dashboard", "Administrative dashboard with user statistics, analytics, and platform management tools.", templates.NavigationLoggedIn(userInfo), templates.AdminDashboardContent(userInfo, dashboardData))
+	component := layouts.Layout("Admin Dashboard", "Administrative dashboard with user statistics, analytics, and platform management tools.", layouts.NavigationLoggedIn(userInfo), pages.AdminDashboardContent(userInfo, dashboardData))
 	component.Render(r.Context(), w)
 }
 
