@@ -277,7 +277,6 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("🔐 CALLBACK: === OAuth callback COMPLETED ===\n")
 }
 
-// SetSessionHandler sets the user session from client-side JavaScript
 func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 SESSION: === Set session STARTED ===\n")
 	fmt.Printf("🔐 SESSION: Content-Type: %s\n", r.Header.Get("Content-Type"))
@@ -285,8 +284,9 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
-		Token        string `json:"token"`
-		RefreshToken string `json:"refresh_token,omitempty"`
+		Token string `json:"token"`
+		// NOTE: refresh_token should NEVER be sent from client-side JavaScript
+		// The auth service should set refresh_token cookie directly
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -299,17 +299,19 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if req.Token == "" {
-		fmt.Printf("🔐 SESSION: Missing token in request\n")
+		fmt.Printf("🔐 SESSION: Missing access token in request\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Missing token",
+			"error": "Missing access token",
 		})
 		return
 	}
 
-	fmt.Printf("🔐 SESSION: Token received, length: %d\n", len(req.Token))
+	fmt.Printf("🔐 SESSION: Access token received, length: %d\n", len(req.Token))
+	fmt.Printf("🔐 SESSION: IMPORTANT: Setting ONLY session_token cookie from access_token")
+	fmt.Printf("🔐 SESSION: Refresh token should be set by auth service directly as HTTP-only cookie")
 
-	// Set session cookie with the JWT token
+	// Set session cookie with the access token (JWT)
 	sessionCookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    req.Token,
@@ -319,30 +321,17 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		Secure:   false, // Set to true in production with HTTPS
 	}
 
-	// If refresh token provided, set it as HTTP-only cookie on our domain
-	if req.RefreshToken != "" {
-		refreshCookie := &http.Cookie{
-			Name:     "refresh_token",
-			Value:    req.RefreshToken,
-			Path:     "/",
-			MaxAge:   30 * 24 * 3600, // 30 days
-			HttpOnly: true,
-			Secure:   false, // Set to true in production with HTTPS
-		}
-		http.SetCookie(w, refreshCookie)
-		fmt.Printf("🔐 SESSION: Refresh cookie set with name: %s, value length: %d\n", refreshCookie.Name, len(refreshCookie.Value))
-	}
-
 	http.SetCookie(w, sessionCookie)
-	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", sessionCookie.Name, len(sessionCookie.Value))
+	fmt.Printf("🔐 SESSION: Session cookie set - Name: %s, Length: %d\n", sessionCookie.Name, len(sessionCookie.Value))
 
-	fmt.Printf("🔐 SESSION: Sending success response\n")
+	fmt.Printf("🔐 SESSION: SUCCESS: Session established with access token")
+	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
-		"message": "Session set successfully",
+		"message": "Session set successfully with access token",
 	})
-	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 }
 
 // GetUserHandler returns current user information
