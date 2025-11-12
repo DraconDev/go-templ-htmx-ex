@@ -10,7 +10,8 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
 
 // HealthHandler handles health check requests
