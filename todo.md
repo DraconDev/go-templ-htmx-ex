@@ -35,6 +35,7 @@
 - [ ] **Fix auth server cookie domain** - Parse client_redirect_uri domain + Domain attribute
 - [x] **✅ Added refresh test button** - Available on /profile page for immediate testing  
 - [ ] **Fix Secure attribute** - Remove "Secure" for localhost (HTTP) development
+- [ ] **Conditional cookie settings** - Secure for production (HTTPS), no Secure for localhost (HTTP)
 
 **Why this first:** Users shouldn't need to log in every day - token refresh should be automatic
 
