@@ -56,46 +56,14 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
         // TOKEN REFRESH TESTING FUNCTIONS
         // =============================================================================
         
-        // Test the complete token refresh flow with detailed logging
+        // Simple token refresh test - browser automatically handles HTTP-only cookies
         function testTokenRefresh() {
-            console.log('🔄 TOKEN REFRESH TEST: === STARTED ===');
+            console.log('🔄 TOKEN REFRESH TEST: Testing refresh token flow...');
             const resultDiv = document.getElementById('refresh-result');
             
-            // STEP 1: Analyze all current cookies
-            console.log('🔄 TOKEN REFRESH TEST: Step 1 - Analyzing current cookies...');
-            const allCookies = document.cookie.split(';');
-            const sessionCookie = allCookies.find(cookie => cookie.trim().startsWith('session_token='));
-            const refreshCookie = allCookies.find(cookie => cookie.trim().startsWith('refresh_token='));
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Refreshing token...</p>';
             
-            console.log('🔄 TOKEN REFRESH TEST: All cookies found:', allCookies.length);
-            console.log('🔄 TOKEN REFRESH TEST: session_token found:', !!sessionCookie);
-            console.log('🔄 TOKEN REFRESH TEST: refresh_token found:', !!refreshCookie);
-            
-            if (sessionCookie) {
-                const sessionValue = sessionCookie.split('=')[1] || '';
-                console.log('🔄 TOKEN REFRESH TEST: session_token length:', sessionValue.length);
-                console.log('🔄 TOKEN REFRESH TEST: session_token preview:', sessionValue.substring(0, 20) + '...');
-            }
-            
-            if (refreshCookie) {
-                const refreshValue = refreshCookie.split('=')[1] || '';
-                console.log('🔄 TOKEN REFRESH TEST: refresh_token length:', refreshValue.length);
-                console.log('🔄 TOKEN REFRESH TEST: refresh_token preview:', refreshValue.substring(0, 20) + '...');
-            }
-            
-            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Analyzing cookies and refreshing tokens...</p>';
-            
-            // STEP 2: Check if refresh_token cookie exists
-            if (!refreshCookie) {
-                console.log('❌ TOKEN REFRESH TEST: No refresh_token cookie found - user may not be logged in');
-                resultDiv.innerHTML = '<p class="text-red-600">❌ No refresh_token cookie found. User may not be logged in.</p>';
-                return;
-            }
-            
-            // STEP 3: Call the refresh endpoint
-            console.log('🔄 TOKEN REFRESH TEST: Step 3 - Calling /api/auth/refresh...');
-            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Calling refresh endpoint...</p>';
-            
+            // Browser automatically sends refresh_token cookie (HTTP-only, inaccessible to JS)
             fetch('/api/auth/refresh', {
                 method: 'POST',
                 headers: {
@@ -103,37 +71,25 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 }
             })
             .then(response => {
-                console.log('🔄 TOKEN REFRESH TEST: Step 4 - Got response from server');
                 console.log('🔄 TOKEN REFRESH TEST: Response status:', response.status);
-                console.log('🔄 TOKEN REFRESH TEST: Response headers:', response.headers);
-                
                 return response.json().then(data => {
                     console.log('🔄 TOKEN REFRESH TEST: Response data:', data);
-                    
-                    if (response.ok && data.success) {
-                        console.log('✅ TOKEN REFRESH TEST: SUCCESS - Token refreshed successfully!');
-                        console.log('🔄 TOKEN REFRESH TEST: New session token should be set in cookies');
-                        
-                        // Check if new session_token cookie was set
-                        const newSessionCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('session_token='));
-                        console.log('🔄 TOKEN REFRESH TEST: New session_token cookie set:', !!newSessionCookie);
-                        
-                        resultDiv.innerHTML = '<p class="text-green-600">✅ SUCCESS: Token refreshed!</p>' +
-                            '<p class="text-sm text-gray-600 mt-2">New session_token cookie should now be set.</p>' +
-                            '<p class="text-sm text-gray-600">Check browser console for detailed logs.</p>';
-                    } else {
-                        console.log('❌ TOKEN REFRESH TEST: FAILED - Server returned error');
-                        resultDiv.innerHTML = '<p class="text-red-600">❌ ERROR: ' + (data.error || 'Unknown error') + '</p>';
-                    }
+                    return { ok: response.ok, data: data };
                 });
             })
+            .then(result => {
+                if (result.ok && result.data.success) {
+                    console.log('✅ TOKEN REFRESH TEST: SUCCESS');
+                    resultDiv.innerHTML = '<p class="text-green-600">✅ Token refreshed successfully!</p>';
+                } else {
+                    console.log('❌ TOKEN REFRESH TEST: FAILED');
+                    resultDiv.innerHTML = '<p class="text-red-600">❌ Token refresh failed: ' + (result.data.error || 'Unknown error') + '</p>';
+                }
+            })
             .catch(error => {
-                console.log('❌ TOKEN REFRESH TEST: NETWORK ERROR');
                 console.log('❌ TOKEN REFRESH TEST: Error:', error);
-                resultDiv.innerHTML = '<p class="text-red-600">❌ NETWORK ERROR: ' + error.message + '</p>';
+                resultDiv.innerHTML = '<p class="text-red-600">❌ Network error: ' + error.message + '</p>';
             });
-            
-            console.log('🔄 TOKEN REFRESH TEST: === TEST INITIATED ===');
         }
         
         // Helper function to check current user status
