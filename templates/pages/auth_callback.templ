@@ -32,11 +32,38 @@ templ AuthCallbackContent() {
 		function setSessionAndRedirect() {
 			var params = parseFragment();
 			var accessToken = params['access_token'];
+			var refreshToken = params['refresh_token'];
+			
+			// DEBUG: Log all available tokens from URL fragment
+			console.log('🔍 DEBUG: URL Fragment Analysis:');
+			console.log('🔍 DEBUG: Full URL:', window.location.href);
+			console.log('🔍 DEBUG: Hash fragment:', window.location.hash);
+			console.log('🔍 DEBUG: Parsed params:', params);
+			console.log('🔍 DEBUG: Available keys:', Object.keys(params));
+			
+			for (var key in params) {
+				console.log('🔍 DEBUG: ' + key + ' =', params[key] ? params[key].substring(0, 50) + '...' : 'null');
+			}
+			
+			console.log('🔍 DEBUG: access_token found:', !!accessToken);
+			console.log('🔍 DEBUG: refresh_token found:', !!refreshToken);
 			
 			if (!accessToken) {
 				showError('No access token found in URL. Please try logging in again.');
 				return;
 			}
+
+			// DEBUG: Log what we're about to send
+			var requestBody = { token: accessToken };
+			if (refreshToken) {
+				requestBody.refresh_token = refreshToken;
+			}
+			console.log('🔍 DEBUG: Sending request body:', {
+				hasAccessToken: !!accessToken,
+				hasRefreshToken: !!refreshToken,
+				accessTokenLength: accessToken ? accessToken.length : 0,
+				refreshTokenLength: refreshToken ? refreshToken.length : 0
+			});
 
 			// Set session cookie via server endpoint
 			fetch('/api/auth/set-session', {
@@ -44,21 +71,37 @@ templ AuthCallbackContent() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ token: accessToken })
+				body: JSON.stringify(requestBody)
 			})
 			.then(response => {
-				if (response.ok) {
-					showSuccess('Authentication successful! Redirecting to home...');
-					setTimeout(() => {
-						window.location.href = '/';
-					}, 1000);
+				console.log('🔍 DEBUG: Set session response status:', response.status);
+				return response.text().then(text => {
+					console.log('🔍 DEBUG: Response body:', text);
+					return { ok: response.ok, status: response.status, text: text };
+				});
+			})
+			.then(result => {
+				if (result.ok) {
+					try {
+						var data = JSON.parse(result.text);
+						console.log('🔍 DEBUG: Parsed response data:', data);
+						showSuccess('Authentication successful! Redirecting to home...');
+						setTimeout(() => {
+							window.location.href = '/';
+						}, 1000);
+					} catch (e) {
+						console.log('🔍 DEBUG: Could not parse response JSON');
+						showSuccess('Authentication successful! Redirecting to home...');
+						setTimeout(() => {
+							window.location.href = '/';
+						}, 1000);
+					}
 				} else {
-					return response.json().then(data => {
-						throw new Error(data.error || 'Failed to set session');
-					});
+					throw new Error('Failed to set session: ' + result.text);
 				}
 			})
 			.catch(error => {
+				console.error('🔍 DEBUG: Error details:', error);
 				showError('Error: ' + error.message);
 			});
 		}
