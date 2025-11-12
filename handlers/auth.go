@@ -285,7 +285,8 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
-		Token string `json:"token"`
+		Token        string `json:"token"`
+		RefreshToken string `json:"refresh_token,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -309,7 +310,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Printf("🔐 SESSION: Token received, length: %d\n", len(req.Token))
 
 	// Set session cookie with the JWT token
-	cookie := &http.Cookie{
+	sessionCookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    req.Token,
 		Path:     "/",
@@ -318,8 +319,22 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		Secure:   false, // Set to true in production with HTTPS
 	}
 
-	http.SetCookie(w, cookie)
-	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", cookie.Name, len(cookie.Value))
+	// If refresh token provided, set it as HTTP-only cookie on our domain
+	if req.RefreshToken != "" {
+		refreshCookie := &http.Cookie{
+			Name:     "refresh_token",
+			Value:    req.RefreshToken,
+			Path:     "/",
+			MaxAge:   30 * 24 * 3600, // 30 days
+			HttpOnly: true,
+			Secure:   false, // Set to true in production with HTTPS
+		}
+		http.SetCookie(w, refreshCookie)
+		fmt.Printf("🔐 SESSION: Refresh cookie set with name: %s, value length: %d\n", refreshCookie.Name, len(refreshCookie.Value))
+	}
+
+	http.SetCookie(w, sessionCookie)
+	fmt.Printf("🔐 SESSION: Cookie set with name: %s, value length: %d\n", sessionCookie.Name, len(sessionCookie.Value))
 
 	fmt.Printf("🔐 SESSION: Sending success response\n")
 	w.WriteHeader(http.StatusOK)
