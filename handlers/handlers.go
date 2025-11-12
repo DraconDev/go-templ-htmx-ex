@@ -14,14 +14,6 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
 
-// UserInfo represents user authentication status
-type UserInfo struct {
-	LoggedIn bool   `json:"logged_in"`
-	Name     string `json:"name,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Picture  string `json:"picture,omitempty"`
-}
-
 // HealthHandler handles health check requests
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -30,31 +22,31 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUserFromJWT gets user info using local JWT validation (5-10ms, no API call)
-func GetUserFromJWT(r *http.Request) UserInfo {
+func GetUserFromJWT(r *http.Request) layouts.UserInfo {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	return validateJWTWithRealData(cookie.Value)
 }
 
 // validateJWTWithRealData validates JWT and returns real user data
-func validateJWTWithRealData(token string) UserInfo {
+func validateJWTWithRealData(token string) layouts.UserInfo {
 	if token == "" {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Parse JWT to get real user data
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Decode payload (the middle part)
 	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Parse user data from JWT payload
@@ -68,21 +60,21 @@ func validateJWTWithRealData(token string) UserInfo {
 	}
 
 	if err := json.Unmarshal(payload, &claims); err != nil {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Check if token is still valid (not expired)
 	if claims.Exp < time.Now().Unix() {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Check issuer to make sure it's from our auth service
 	if claims.Iss != "auth-ms" {
-		return UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Return real user data!
-	return UserInfo{
+	return layouts.UserInfo{
 		LoggedIn: true,
 		Name:     claims.Name,
 		Email:    claims.Email,
