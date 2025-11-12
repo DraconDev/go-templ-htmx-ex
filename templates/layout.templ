@@ -12,14 +12,64 @@ type UserInfo struct {
 	Picture  string `json:"picture,omitempty"`
 }
 
-// Layout with hybrid authentication approach
-templ Layout(title string, navigation templ.Component, content templ.Component) {
+// SEO-friendly Layout with authentication
+templ Layout(title string, description string, navigation templ.Component, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{ title }</title>
+			
+			<!-- SEO Meta Tags -->
+			<title>{ title } | Startup Platform</title>
+			<meta name="description" content={ description }/>
+			<meta name="keywords" content="startup platform, Go authentication, HTMX templ, PostgreSQL, SaaS template, web development"/>
+			<meta name="author" content="Startup Platform"/>
+			<meta name="robots" content="index, follow"/>
+			
+			<!-- Open Graph / Facebook -->
+			<meta property="og:type" content="website"/>
+			<meta property="og:url" content="https://startup-platform.com/"/>
+			<meta property="og:title" content={ title } />
+			<meta property="og:description" content={ description } />
+			<meta property="og:site_name" content="Startup Platform"/>
+			<meta property="og:image" content="https://startup-platform.com/og-image.jpg"/>
+
+			<!-- Twitter -->
+			<meta property="twitter:card" content="summary_large_image"/>
+			<meta property="twitter:url" content="https://startup-platform.com/"/>
+			<meta property="twitter:title" content={ title } />
+			<meta property="twitter:description" content={ description } />
+			<meta property="twitter:image" content="https://startup-platform.com/twitter-image.jpg"/>
+
+			<!-- Structured Data for SEO -->
+			<script type="application/ld+json">
+				{
+					"@context": "https://schema.org",
+					"@type": "SoftwareApplication",
+					"name": "Startup Platform",
+					"description": { description },
+					"url": "https://startup-platform.com",
+					"applicationCategory": "DeveloperApplication",
+					"operatingSystem": "Any",
+					"offers": {
+						"@type": "Offer",
+						"price": "0",
+						"priceCurrency": "USD"
+					},
+					"provider": {
+						"@type": "Organization",
+						"name": "Startup Platform"
+					},
+					"featureList": [
+						"Google OAuth Authentication",
+						"PostgreSQL Database Integration",
+						"Admin Dashboard",
+						"Go + HTMX + Templ Stack"
+					]
+				}
+			</script>
+
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
 			<style>
@@ -70,7 +120,7 @@ templ Layout(title string, navigation templ.Component, content templ.Component) 
 		</head>
 		<body class="ultra-dark-bg min-h-screen text-white">
 			@navigation
-			<main class="container mx-auto py-12 px-4">
+			<main class="container mx-auto py-12 px-4" role="main">
 				@content
 			</main>
 		</body>
