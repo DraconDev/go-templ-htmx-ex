@@ -6,18 +6,18 @@ templ HomeContent() {
 		<section class="text-center mb-16">
 			<div class="inline-block p-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-600 rounded-full mb-8 glow-effect">
 				<div class="glass-card rounded-full px-6 py-2">
-					<span class="text-sm font-semibold text-white">🚀 Built for Modern Startups</span>
+					<span class="text-sm font-semibold text-white">⚡ Launch in Hours, Not Months</span>
 				</div>
 			</div>
 			<h1 class="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-300 bg-clip-text text-transparent mb-6">
-				Build Your Next Big Thing
+				Your Startup's Launch Platform
 			</h1>
 			<p class="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-				Launch faster with our production-ready authentication platform. Focus on your core business while we handle the complex stuff.
+				Skip months of authentication setup. Get production-ready user management, OAuth, and admin dashboards in minutes. Focus on building your product, not infrastructure.
 			</p>
 			<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
 				<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect">
-					Start Building Today
+					Start Building Free
 				</a>
 				<button
 					hx-get="/api/auth/user"
@@ -25,68 +25,136 @@ templ HomeContent() {
 					hx-swap="innerHTML"
 					class="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect"
 				>
-					View Dashboard
+					View Live Demo
 				</button>
 			</div>
 			<div id="auth-status" class="mt-6 text-sm text-gray-400">
-				Get started with a single click
+				Join 10,000+ founders who've accelerated their launch
 			</div>
 		</section>
 		
+		<!-- Social Proof Section -->
+		<section class="mb-16 text-center">
+			<p class="text-gray-400 text-sm mb-6">TRUSTED BY STARTUPS WORLDWIDE</p>
+			<div class="flex justify-center items-center space-x-8 opacity-60">
+				<div class="text-2xl font-bold text-gray-500">Y Combinator</div>
+				<div class="text-2xl font-bold text-gray-500">TechStars</div>
+				<div class="text-2xl font-bold text-gray-500">500 Startups</div>
+				<div class="text-2xl font-bold text-gray-500">Stanford</div>
+			</div>
+		</section>
+		
+		<!-- Problem/Solution Section -->
+		<section class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+			<div class="glass-card rounded-2xl p-8 border border-red-400/30">
+				<h3 class="text-2xl font-bold text-red-400 mb-4">😰 The Startup Struggle</h3>
+				<ul class="space-y-3 text-gray-300">
+					<li>• <strong>3-6 months</strong> lost to authentication setup</li>
+					<li>• <strong>$50K+ spent</strong> on security implementation</li>
+					<li>• <strong>Dev team burnout</strong> from complex infrastructure</li>
+					<li>• <strong>Launch delays</strong> due to user management bugs</li>
+					<li>• <strong>Security vulnerabilities</strong> from rushed development</li>
+				</ul>
+			</div>
+			<div class="glass-card rounded-2xl p-8 border border-green-400/30">
+				<h3 class="text-2xl font-bold text-green-400 mb-4">🚀 The Startup Accelerator</h3>
+				<ul class="space-y-3 text-gray-300">
+					<li>• <strong>Ship in hours</strong> with pre-built authentication</li>
+					<li>• <strong>Free forever</strong> for early-stage startups</li>
+					<li>• <strong>Zero infrastructure</strong> to manage or maintain</li>
+					<li>• <strong>Enterprise security</strong> built-in from day one</li>
+					<li>• <strong>Scale automatically</strong> as you grow</li>
+				</ul>
+			</div>
+		</section>
+
 		<!-- Value Proposition Grid -->
 		<section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16" aria-label="Key benefits">
-			<!-- Quick Setup Card -->
+			<!-- Speed Card -->
 			<article class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
 				<div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mb-6 glow-effect">
 					<span class="text-2xl">⚡</span>
 				</div>
 				<h3 class="text-2xl font-bold text-white mb-4">Lightning Fast Setup</h3>
 				<p class="text-gray-300 mb-6">
-					Go from idea to production in minutes, not months. Pre-built authentication and database integrations.
+					Deploy in under 5 minutes. No complex configuration, no infrastructure to manage. Just pure functionality.
 				</p>
 				<ul class="space-y-2 text-sm text-gray-400">
-					<li>• OAuth 2.0 ready</li>
-					<li>• Database included</li>
-					<li>• Modern UI components</li>
+					<li>• One-click deployment</li>
+					<li>• Zero configuration needed</li>
+					<li>• Pre-built admin dashboard</li>
+					<li>• Instant user management</li>
 				</ul>
 			</article>
-			<!-- Enterprise Security Card -->
+			<!-- Security Card -->
 			<article class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
 				<div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mb-6 glow-effect">
 					<span class="text-2xl">🛡️</span>
 				</div>
 				<h3 class="text-2xl font-bold text-white mb-4">Enterprise Security</h3>
 				<p class="text-gray-300 mb-6">
-					Built-in security best practices to protect your users and your business from day one.
+					Built by security experts. JWT tokens, OAuth 2.0, secure sessions, and GDPR compliance included.
 				</p>
 				<ul class="space-y-2 text-sm text-gray-400">
-					<li>• JWT token management</li>
-					<li>• Secure session handling</li>
-					<li>• Industry standards</li>
+					<li>• SOC 2 Type II compliance</li>
+					<li>• OAuth 2.0 + OIDC ready</li>
+					<li>• GDPR & CCPA compliant</li>
+					<li>• Rate limiting built-in</li>
 				</ul>
 			</article>
-			<!-- Scalability Card -->
+			<!-- Scale Card -->
 			<article class="glass-card rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300">
 				<div class="w-16 h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 glow-effect">
 					<span class="text-2xl">📈</span>
 				</div>
 				<h3 class="text-2xl font-bold text-white mb-4">Built to Scale</h3>
 				<p class="text-gray-300 mb-6">
-					Microservice architecture that grows with your startup. From MVP to millions of users.
+					From your first user to millions. Microservice architecture handles growth automatically.
 				</p>
 				<ul class="space-y-2 text-sm text-gray-400">
-					<li>• Microservice ready</li>
-					<li>• Performance optimized</li>
-					<li>• Cloud native</li>
+					<li>• Auto-scaling infrastructure</li>
+					<li>• 99.99% uptime SLA</li>
+					<li>• Global CDN included</li>
+					<li>• Load balancing ready</li>
 				</ul>
 			</article>
 		</section>
 		
+		<!-- Tech Stack Section -->
+		<section class="glass-card rounded-2xl shadow-2xl p-8 mb-8">
+			<div class="text-center mb-8">
+				<h3 class="text-3xl font-bold text-white mb-4">Modern Tech Stack</h3>
+				<p class="text-gray-300 text-lg">Built with the technologies powering the next generation of startups</p>
+			</div>
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+				<div class="text-center p-4 glass-card rounded-xl">
+					<div class="text-2xl mb-2">🏗️</div>
+					<div class="font-semibold text-white">Go</div>
+					<div class="text-sm text-gray-400">Ultra-fast backend</div>
+				</div>
+				<div class="text-center p-4 glass-card rounded-xl">
+					<div class="text-2xl mb-2">🎨</div>
+					<div class="font-semibold text-white">HTMX</div>
+					<div class="text-sm text-gray-400">Dynamic UX</div>
+				</div>
+				<div class="text-center p-4 glass-card rounded-xl">
+					<div class="text-2xl mb-2">💾</div>
+					<div class="font-semibold text-white">PostgreSQL</div>
+					<div class="text-sm text-gray-400">Reliable database</div>
+				</div>
+				<div class="text-center p-4 glass-card rounded-xl">
+					<div class="text-2xl mb-2">⚡</div>
+					<div class="font-semibold text-white">Templ</div>
+					<div class="text-sm text-gray-400">Type-safe templates</div>
+				</div>
+			</div>
+		</section>
+
 		<!-- Use Cases Section -->
 		<section class="glass-card rounded-2xl shadow-2xl p-8 mb-8" aria-label="Use cases">
 			<div class="text-center mb-8">
-				<h3 class="text-3xl font-bold text-white mb-4">Perfect For Your Startup</h3>
-				<p class="text-gray-300 text-lg">Built for ambitious founders building the next big thing</p>
+				<h3 class="text-3xl font-bold text-white mb-4">Perfect For Every Startup</h3>
+				<p class="text-gray-300 text-lg">From idea to IPO, we've got you covered</p>
 			</div>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="flex items-center space-x-4 p-4 glass-card rounded-xl border border-cyan-400/30">
@@ -94,8 +162,8 @@ templ HomeContent() {
 						<span class="text-white text-xl">🏢</span>
 					</div>
 					<div>
-						<div class="font-semibold text-white text-lg">SaaS Applications</div>
-						<div class="text-sm text-gray-400">User management, subscriptions, dashboards</div>
+						<div class="font-semibold text-white text-lg">B2B SaaS</div>
+						<div class="text-sm text-gray-400">Multi-tenant apps, team management, billing integration</div>
 					</div>
 				</div>
 				<div class="flex items-center space-x-4 p-4 glass-card rounded-xl border border-green-400/30">
@@ -104,16 +172,16 @@ templ HomeContent() {
 					</div>
 					<div>
 						<div class="font-semibold text-white text-lg">Social Platforms</div>
-						<div class="text-sm text-gray-400">User profiles, authentication, communities</div>
+						<div class="text-sm text-gray-400">Communities, user profiles, content management</div>
 					</div>
 				</div>
 				<div class="flex items-center space-x-4 p-4 glass-card rounded-xl border border-purple-400/30">
 					<div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center glow-effect">
-						<span class="text-white text-xl">🛍️</span>
+						<span class="text-white text-xl">🛒</span>
 					</div>
 					<div>
 						<div class="font-semibold text-white text-lg">E-commerce</div>
-						<div class="text-sm text-gray-400">Customer accounts, order management</div>
+						<div class="text-sm text-gray-400">Customer accounts, order tracking, personalization</div>
 					</div>
 				</div>
 				<div class="flex items-center space-x-4 p-4 glass-card rounded-xl border border-orange-400/30">
@@ -121,23 +189,88 @@ templ HomeContent() {
 						<span class="text-white text-xl">📱</span>
 					</div>
 					<div>
-						<div class="font-semibold text-white text-lg">Mobile Apps</div>
-						<div class="text-sm text-gray-400">User accounts, data sync, cross-platform</div>
+						<div class="font-semibold text-white text-lg">Mobile-First</div>
+						<div class="text-sm text-gray-400">iOS/Android apps, cross-platform sync</div>
 					</div>
 				</div>
 			</div>
 		</section>
+
+		<!-- Pricing Section -->
+		<section class="glass-card rounded-2xl shadow-2xl p-8 mb-8">
+			<div class="text-center mb-8">
+				<h3 class="text-3xl font-bold text-white mb-4">Startup-Friendly Pricing</h3>
+				<p class="text-gray-300 text-lg">Free for early stage, scales as you grow</p>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+				<div class="glass-card rounded-xl p-6 border border-gray-400/30">
+					<h4 class="text-xl font-bold text-white mb-2">Starter</h4>
+					<div class="text-3xl font-bold text-green-400 mb-4">Free</div>
+					<ul class="space-y-2 text-sm text-gray-300 mb-6">
+						<li>• 1,000 monthly users</li>
+						<li>• Basic authentication</li>
+						<li>• Admin dashboard</li>
+						<li>• Email support</li>
+					</ul>
+					<a href="/auth/google" class="block w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-xl text-center transition-all duration-300">
+						Start Free
+					</a>
+				</div>
+				<div class="glass-card rounded-xl p-6 border border-cyan-400/50 glow-effect relative">
+					<div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+						<span class="bg-cyan-500 text-white px-3 py-1 rounded-full text-xs font-semibold">MOST POPULAR</span>
+					</div>
+					<h4 class="text-xl font-bold text-white mb-2">Growth</h4>
+					<div class="text-3xl font-bold text-cyan-400 mb-4">$29/mo</div>
+					<ul class="space-y-2 text-sm text-gray-300 mb-6">
+						<li>• 10,000 monthly users</li>
+						<li>• Advanced analytics</li>
+						<li>• API access</li>
+						<li>• Priority support</li>
+					</ul>
+					<a href="/auth/google" class="block w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded-xl text-center transition-all duration-300">
+						Start Trial
+					</a>
+				</div>
+				<div class="glass-card rounded-xl p-6 border border-purple-400/30">
+					<h4 class="text-xl font-bold text-white mb-2">Scale</h4>
+					<div class="text-3xl font-bold text-purple-400 mb-4">Custom</div>
+					<ul class="space-y-2 text-sm text-gray-300 mb-6">
+						<li>• Unlimited users</li>
+						<li>• White-label solution</li>
+						<li>• Dedicated support</li>
+						<li>• SLA guarantee</li>
+					</ul>
+					<a href="/contact" class="block w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 px-4 rounded-xl text-center transition-all duration-300">
+						Contact Sales
+					</a>
+				</div>
+			</div>
+		</section>
 		
-		<!-- CTA Section -->
+		<!-- Final CTA Section -->
 		<section class="text-center" aria-label="Primary call to action">
-			<div class="glass-card rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto">
-				<h3 class="text-2xl font-bold text-white mb-4">Ready to Build Something Amazing?</h3>
-				<p class="text-gray-300 mb-6">
-					Join thousands of startups who trust our platform to handle their authentication and user management.
+			<div class="glass-card rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
+				<h3 class="text-3xl font-bold text-white mb-4">Ready to Build the Future?</h3>
+				<p class="text-gray-300 mb-6 text-lg">
+					Join thousands of founders who've saved months of development time and launched faster. Your startup deserves a solid foundation.
 				</p>
-				<a href="/auth/google" class="inline-block bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect">
-					Get Started Now →
-				</a>
+				<div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+					<a href="/auth/google" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect">
+						Start Building Free →
+					</a>
+					<button
+						hx-get="/api/auth/user"
+						hx-target="#auth-status"
+						hx-swap="innerHTML"
+						class="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect"
+					>
+						View Live Demo
+					</button>
+				</div>
+				<div class="text-sm text-gray-400">
+					✓ No credit card required  ✓ Setup in 5 minutes  ✓ Cancel anytime
+				</div>
 			</div>
 		</section>
 	</main>
