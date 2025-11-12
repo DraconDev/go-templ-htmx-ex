@@ -5,7 +5,12 @@ import "strings"
 //go:generate templ generate
 
 // UserInfo represents user authentication status
-
+type UserInfo struct {
+	LoggedIn bool   `json:"logged_in"`
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Picture  string `json:"picture,omitempty"`
+}
 
 // Base layout: HTML shell + SEO + core CSS/JS + navigation + content.
 templ Layout(title string, description string, navigation templ.Component, content templ.Component) {

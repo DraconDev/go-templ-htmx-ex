@@ -17,6 +17,13 @@ type RecentUser struct {
 	Date  string
 }
 
+type UserInfo struct {
+	LoggedIn bool   `json:"logged_in"`
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Picture  string `json:"picture,omitempty"`
+}
+
 templ AdminDashboardContent(user UserInfo, data DashboardData) {
 	<div class="max-w-6xl mx-auto">
 		<!-- Dashboard Header -->
