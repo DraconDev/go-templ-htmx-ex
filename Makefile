@@ -30,9 +30,9 @@ deps:
 generate:
 	@echo "Generating templ components..."
 	# Generate all templ files under templates/, including:
-	# - templates/layouts/*.templ
-	# - templates/pages/*.templ
-	# - templates/components/*.templ
+	# - templates/layouts/*.templ         (layout & navigation shells)
+	# - templates/pages/*.templ           (page-level content)
+	# - templates/components/*.templ      (shared UI components)
 	templ generate -path templates
 	@echo "Templ components generated!"
 
