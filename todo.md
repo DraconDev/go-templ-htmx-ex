@@ -31,10 +31,10 @@
 ## 🎯 **Immediate Next Steps**
 
 ### **🔴 HIGH PRIORITY - Session Management** 
-- [ ] **Investigate logout issue** - Why users get logged out after 15 minutes
-- [ ] **Check auth server configuration** - Ensure refresh_token cookies are set properly  
-- [ ] **Test session persistence** - Verify token refresh mechanism works
-- [ ] **Fix cookie domain issues** - Ensure HTTP-only cookies work across domains
+- [ ] **Investigate JWT expiration issue** - Users get logged out after ~1 day when JWT expires
+- [ ] **Fix refresh token mechanism** - Ensure refresh tokens work to get new JWTs before expiry
+- [ ] **Check auth server configuration** - Verify refresh_token cookies are set properly
+- [ ] **Test token refresh flow** - Verify automatic token renewal before expiration
 
 **Why this first:** Critical for user experience - session timeouts frustrate users
 
