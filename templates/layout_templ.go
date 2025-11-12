@@ -20,7 +20,7 @@ type UserInfo struct {
 	Picture  string `json:"picture,omitempty"`
 }
 
-// SEO-friendly Layout with authentication
+// Base layout: HTML shell + SEO + core CSS/JS + navigation + content.
 func Layout(title string, description string, navigation templ.Component, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
