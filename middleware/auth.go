@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
 // UserContextKey is the key used to store user info in request context
