@@ -31,10 +31,10 @@
 ## 🎯 **Immediate Next Steps**
 
 ### **🔴 HIGH PRIORITY - Session Management** 
-- [ ] **Investigate JWT expiration issue** - Users get logged out after ~1 day when JWT expires
-- [ ] **Fix refresh token mechanism** - Ensure refresh tokens work to get new JWTs before expiry
-- [ ] **Check auth server configuration** - Verify refresh_token cookies are set properly
-- [ ] **Test token refresh flow** - Verify automatic token renewal before expiration
+- [x] **✅ Identified root cause** - Auth server sets refresh_token on wrong domain
+- [ ] **Fix auth server cookie domain** - Use Domain attribute with redirect_uri domain
+- [ ] **Update SameSite to None** - Required for cross-site cookies (already done)
+- [ ] **Test refresh token flow** - Verify both session_token and refresh_token cookies work
 
 **Why this first:** Users shouldn't need to log in every day - token refresh should be automatic
 
