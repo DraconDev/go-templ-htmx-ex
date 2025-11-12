@@ -7,6 +7,7 @@ package pages
 
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
+import "github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 
 //go:generate templ generate
 
