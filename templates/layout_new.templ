@@ -1,0 +1,155 @@
+package templates
+
+import "github.com/a-h/templ"
+
+//go:generate templ generate
+
+// Shared user info type used across templates.
+type UserInfo struct {
+	LoggedIn bool   `json:"logged_in"`
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Picture  string `json:"picture,omitempty"`
+}
+
+// Layout is the single shell responsible for:
+// - HTML document structure
+// - SEO meta tags (lightweight, customizable per project)
+// - Loading core CSS/JS
+// - Rendering navigation + page content passed from handlers
+templ Layout(title string, description string, navigation templ.Component, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+			<!-- Basic SEO Meta -->
+			<title>{ title } | Startup Platform</title>
+			<meta name="description" content={ description }/>
+			<meta name="robots" content="index, follow"/>
+
+			<!-- Social (kept generic; customize per project) -->
+			<meta property="og:type" content="website"/>
+			<meta property="og:title" content={ title }/>
+			<meta property="og:description" content={ description }/>
+			<meta property="og:site_name" content="Startup Platform"/>
+
+			<meta name="twitter:card" content="summary_large_image"/>
+			<meta name="twitter:title" content={ title }/>
+			<meta name="twitter:description" content={ description }/>
+
+			<!-- Minimal JSON-LD (safe default; override in real projects) -->
+			<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebSite",
+				"name": "Startup Platform",
+				"url": "http://localhost:8081"
+			}
+			</script>
+
+			<!-- Core libraries -->
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://cdn.tailwindcss.com"></script>
+
+			<style>
+				body {
+					background: #020817;
+					color: #e5e7eb;
+					font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+				}
+				.glass-nav {
+					background: rgba(2, 6, 23, 0.98);
+					backdrop-filter: blur(18px);
+					border-bottom: 1px solid rgba(148, 163, 253, 0.16);
+					position: sticky;
+					top: 0;
+					z-index: 40;
+				}
+				.glass-card {
+					background: rgba(9, 9, 11, 0.96);
+					backdrop-filter: blur(22px);
+					border: 1px solid rgba(148, 163, 253, 0.18);
+				}
+				.glow-effect {
+					box-shadow: 0 0 26px rgba(56, 189, 248, 0.32);
+				}
+			</style>
+		</head>
+		<body class="min-h-screen">
+			@navigation
+			<main class="container mx-auto py-10 px-4" role="main">
+				@content
+			</main>
+		</body>
+	</html>
+}
+
+// NavigationLoggedOut: default public navigation.
+// Lives here so layout + nav stay co-located.
+// Projects can override by adding components/navigation.templ.
+templ NavigationLoggedOut() {
+	<nav class="glass-nav">
+		<div class="max-w-7xl mx-auto px-6">
+			<div class="flex justify-between items-center h-16">
+				<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">
+					🚀 Startup Platform
+				</a>
+				<div class="flex items-center space-x-4">
+					<a href="/login" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200">
+						Login
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+// NavigationLoggedIn: default authenticated navigation with avatar + profile/logout.
+templ NavigationLoggedIn(user UserInfo) {
+	<nav class="glass-nav">
+		<div class="max-w-7xl mx-auto px-6">
+			<div class="flex justify-between items-center h-16">
+				<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">
+					🚀 Startup Platform
+				</a>
+				<div class="flex items-center space-x-3">
+					<a href="/profile" class="text-sm text-gray-300 hover:text-cyan-400 transition-colors">
+						Profile
+					</a>
+					<button
+						onclick="logout()"
+						class="text-sm text-red-400 hover:text-red-300 transition-colors"
+						type="button"
+					>
+						Logout
+					</button>
+					@UserAvatar(user)
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+templ UserAvatar(user UserInfo) {
+	<div class="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-xs text-white font-semibold">
+		if user.Picture != "" {
+			<img src={ user.Picture } alt="Profile" class="w-full h-full object-cover"/>
+		} else {
+			{ userInitials(user.Name) }
+		}
+	</div>
+}
+
+// helper: safe initials
+func userInitials(name string) string {
+	if name == "" {
+		return "U"
+	}
+	rs := []rune(name)
+	if len(rs) == 1 {
+		return strings.ToUpper(string(rs[0:1]))
+	}
+	return strings.ToUpper(string(rs[0:1]))
+}
