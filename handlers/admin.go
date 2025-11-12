@@ -7,13 +7,13 @@ import (
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
-	templates "github.com/DraconDev/go-templ-htmx-ex/templates/pages"
+	"github.com/DraconDev/go-templ-htmx-ex/templates"
 )
 
 // AdminHandler handles admin-specific operations
 type AdminHandler struct {
-	Config   *config.Config
-	Queries  *dbSqlc.Queries // SQLC generated queries
+	Config  *config.Config
+	Queries *dbSqlc.Queries // SQLC generated queries
 }
 
 // NewAdminHandler creates a new admin handler
@@ -27,10 +27,10 @@ func NewAdminHandler(config *config.Config, queries *dbSqlc.Queries) *AdminHandl
 // AdminDashboardHandler serves the admin dashboard
 func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("📋 ADMIN: Admin dashboard requested\n")
-	
+
 	// Get user info using existing JWT validation logic
 	userInfo := GetUserFromJWT(r)
-	
+
 	if !userInfo.LoggedIn {
 		fmt.Printf("📋 ADMIN: User not logged in\n")
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -47,7 +47,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 			http.Error(w, "Access denied: Admin privileges required", http.StatusForbidden)
 			return
 		}
-		
+
 		// Check if user is admin in database
 		if !userRecord.IsAdmin.Bool || !userRecord.IsAdmin.Valid {
 			fmt.Printf("📋 ACCESS DENIED: User %s is not admin in database\n", userInfo.Email)
@@ -66,10 +66,10 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	// Pre-load real dashboard data from database
 	var dashboardData templates.DashboardData
 	dashboardData.SystemHealth = "operational"
-	
+
 	if h.Queries != nil {
 		fmt.Printf("📊 ADMIN: Loading real database data...\n")
-		
+
 		// Total users
 		totalUsers, err := h.Queries.CountUsers(r.Context())
 		if err == nil {
@@ -118,7 +118,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 		} else {
 			fmt.Printf("⚠️ ADMIN: No recent users found\n")
 		}
-		
+
 		fmt.Printf("📊 ADMIN: Dashboard data ready - Total: %d, Today: %d, ThisWeek: %d, Recent: %d\n",
 			dashboardData.TotalUsers, dashboardData.SignupsToday, dashboardData.UsersThisWeek, len(dashboardData.RecentUsers))
 	} else {
@@ -135,7 +135,7 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 // GetUsersHandler returns a list of users from the database
 func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Get all users from database using SQLC
 	ctx := r.Context()
 	users, err := h.Queries.GetAllUsers(ctx)
@@ -166,9 +166,9 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"users": users,
-			"total": len(users),
-			"active": len(users),
+			"users":    users,
+			"total":    len(users),
+			"active":   len(users),
 			"inactive": 0,
 		})
 		return
@@ -183,7 +183,7 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		if user.IsAdmin.Valid && user.IsAdmin.Bool {
 			role = "admin"
 		}
-		
+
 		userMaps[i] = map[string]interface{}{
 			"id":        user.ID,
 			"email":     user.Email,
@@ -197,9 +197,9 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"users": userMaps,
-		"total": len(userMaps),
-		"active": len(userMaps),
+		"users":    userMaps,
+		"total":    len(userMaps),
+		"active":   len(userMaps),
 		"inactive": 0,
 	})
 }
@@ -207,13 +207,13 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 // GetAnalyticsHandler returns analytics data (stub for now)
 func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Real analytics data from database
 	analytics := map[string]interface{}{
-		"total_users":      0,
-		"signups_today":   0,
+		"total_users":       0,
+		"signups_today":     0,
 		"signups_this_week": 0,
-		"system_health":    "operational",
+		"system_health":     "operational",
 	}
 
 	// Get real user counts from database if available
@@ -251,14 +251,14 @@ func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Reques
 // GetSettingsHandler returns system settings
 func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Real settings data from database
 	settings := map[string]interface{}{
-		"maintenance_mode": false,
+		"maintenance_mode":     false,
 		"registration_enabled": true,
-		"database_connected": h.Queries != nil,
-		"total_users": 0,
-		"session_timeout": 3600,
+		"database_connected":   h.Queries != nil,
+		"total_users":          0,
+		"session_timeout":      3600,
 	}
 
 	// Get real user count if database is available
@@ -277,10 +277,10 @@ func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request
 // GetLogsHandler returns recent user activity
 func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	// Get recent user activity as logs
 	logs := []map[string]interface{}{}
-	
+
 	if h.Queries != nil {
 		recentUsers, err := h.Queries.GetRecentUsers(r.Context())
 		if err != nil {
@@ -301,14 +301,15 @@ func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"logs": logs,
+		"logs":  logs,
 		"total": len(logs),
 	})
 }
+
 // GetAnalyticsHTMXHandler returns HTML fragment for HTMX updates
 func (h *AdminHandler) GetAnalyticsHTMXHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	totalUsers := 0
 	signupsThisWeek := 0
 
@@ -343,7 +344,7 @@ func (h *AdminHandler) GetAnalyticsHTMXHandler(w http.ResponseWriter, r *http.Re
 // GetAnalyticsSignupsHTMXHandler returns HTML fragment for signups count
 func (h *AdminHandler) GetAnalyticsSignupsHTMXHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Get today's signups
 	signupsToday := 0
 	if h.Queries != nil {
