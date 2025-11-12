@@ -36,7 +36,7 @@
 - [ ] **Check auth server configuration** - Verify refresh_token cookies are set properly
 - [ ] **Test token refresh flow** - Verify automatic token renewal before expiration
 
-**Why this first:** Critical for user experience - session timeouts frustrate users
+**Why this first:** Users shouldn't need to log in every day - token refresh should be automatic
 
 ### **🟡 MEDIUM PRIORITY - Business Features**
 Choose one based on your startup needs:
