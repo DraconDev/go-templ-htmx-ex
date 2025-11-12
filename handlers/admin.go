@@ -130,12 +130,16 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	component := layouts.Layout("Admin Dashboard", "Administrative dashboard with user statistics, analytics, and platform management tools.", layouts.NavigationLoggedIn(userInfo), pages.AdminDashboardContent(pages.UserInfo{
+	
+	// Convert layouts.UserInfo to pages.UserInfo for the dashboard content
+	pagesUserInfo := pages.UserInfo{
 		LoggedIn: userInfo.LoggedIn,
 		Name:     userInfo.Name,
 		Email:    userInfo.Email,
 		Picture:  userInfo.Picture,
-	}, dashboardData))
+	}
+	
+	component := layouts.Layout("Admin Dashboard", "Administrative dashboard with user statistics, analytics, and platform management tools.", layouts.NavigationLoggedIn(userInfo), pages.AdminDashboardContent(pagesUserInfo, dashboardData))
 	component.Render(r.Context(), w)
 }
 
