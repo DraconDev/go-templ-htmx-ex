@@ -68,7 +68,7 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	// Add X-Auth-Secret header for protected endpoints
 	if s.config.AuthSecret != "" {
 		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
@@ -159,7 +159,7 @@ func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 // RefreshToken refreshes a token using the refresh token
 func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error) {
 	return s.CallAuthService(fmt.Sprintf("%s/auth/refresh", s.config.AuthServiceURL), map[string]string{
-		"token": refreshToken,
+		"refresh_token": refreshToken,
 	})
 }
 
