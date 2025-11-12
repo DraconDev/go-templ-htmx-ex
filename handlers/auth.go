@@ -7,7 +7,7 @@ import (
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/templates"
+	
 )
 
 // =============================================================================
