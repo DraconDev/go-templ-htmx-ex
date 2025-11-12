@@ -132,7 +132,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Create profile content with real user data
 	navigation := templates.NavigationLoggedIn(userInfo)
-	component := templates.Layout("Profile", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
+	component := templates.Layout("Profile", "User profile page with authentication details and account management.", navigation, templates.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
 	component.Render(r.Context(), w)
 }
 
