@@ -29,6 +29,10 @@ deps:
 
 generate:
 	@echo "Generating templ components..."
+	# Generate all templ files under templates/, including:
+	# - templates/layouts/*.templ
+	# - templates/pages/*.templ
+	# - templates/components/*.templ
 	templ generate -path templates
 	@echo "Templ components generated!"
 
