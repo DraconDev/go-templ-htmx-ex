@@ -139,6 +139,6 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 // LoginHandler handles the login page
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	component := templates.Layout("Login", templates.NavigationLoggedOut(), templates.LoginContent())
+	component := templates.Layout("Login", "Secure authentication page with Google OAuth integration for user access.", templates.NavigationLoggedOut(), templates.LoginContent())
 	component.Render(r.Context(), w)
 }
