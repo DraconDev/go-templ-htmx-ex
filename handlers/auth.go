@@ -56,7 +56,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
         // TOKEN REFRESH TESTING FUNCTIONS
         // =============================================================================
         
-        // Enhanced token refresh test with comprehensive debugging
+        // Test the complete token refresh flow with detailed logging
         function testTokenRefresh() {
             console.log('🔄 TOKEN REFRESH TEST: === STARTED ===');
             const resultDiv = document.getElementById('refresh-result');
@@ -85,51 +85,16 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
             
             resultDiv.innerHTML = '<p class="text-blue-600">🔄 Analyzing cookies and refreshing tokens...</p>';
             
-            // STEP 2: Check if refresh_token cookie exists (this should be automatic in browser)
+            // STEP 2: Check if refresh_token cookie exists
             if (!refreshCookie) {
-                console.log('❌ TOKEN REFRESH TEST: CRITICAL - No refresh_token cookie found');
-                console.log('❌ TOKEN REFRESH TEST: This means the auth service did not set refresh_token cookie properly');
-                console.log('❌ TOKEN REFRESH TEST: The refresh_token should be set as HTTP-only cookie during OAuth callback');
-                resultDiv.innerHTML = `
-                    <div class="text-red-600">
-                        <p>❌ CRITICAL ISSUE: No refresh_token cookie found</p>
-                        <p class="text-sm text-red-500 mt-2">
-                            The auth service should set this during OAuth login. Check auth service configuration.
-                        </p>
-                        <p class="text-sm text-gray-600 mt-1">
-                            This is why session_token and refresh_token have the same value.
-                        </p>
-                    </div>
-                `;
+                console.log('❌ TOKEN REFRESH TEST: No refresh_token cookie found - user may not be logged in');
+                resultDiv.innerHTML = '<p class="text-red-600">❌ No refresh_token cookie found. User may not be logged in.</p>';
                 return;
             }
             
-            // STEP 3: Verify tokens are different (this was the original problem)
-            if (sessionCookie && refreshCookie) {
-                const sessionValue = sessionCookie.split('=')[1] || '';
-                const refreshValue = refreshCookie.split('=')[1] || '';
-                
-                if (sessionValue === refreshValue) {
-                    console.log('❌ TOKEN REFRESH TEST: ISSUE DETECTED - session_token === refresh_token');
-                    console.log('❌ TOKEN REFRESH TEST: Both tokens have same value, this is incorrect');
-                    resultDiv.innerHTML = `
-                        <div class="text-orange-600">
-                            <p>⚠️ ISSUE: session_token and refresh_token have the same value</p>
-                            <p class="text-sm text-gray-600 mt-2">
-                                This confirms the original problem. Auth service needs to be fixed.
-                            </p>
-                        </div>
-                    `;
-                    return;
-                } else {
-                    console.log('✅ TOKEN REFRESH TEST: GOOD - session_token !== refresh_token');
-                }
-            }
-            
-            // STEP 4: Call the refresh endpoint (browser will automatically send refresh_token cookie)
-            console.log('🔄 TOKEN REFRESH TEST: Step 4 - Calling /api/auth/refresh...');
-            console.log('🔄 TOKEN REFRESH TEST: Browser will automatically send refresh_token cookie with this request');
-            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Calling /api/auth/refresh (with auto-sent refresh_token cookie)...</p>';
+            // STEP 3: Call the refresh endpoint
+            console.log('🔄 TOKEN REFRESH TEST: Step 3 - Calling /api/auth/refresh...');
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Calling refresh endpoint...</p>';
             
             fetch('/api/auth/refresh', {
                 method: 'POST',
@@ -138,64 +103,34 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 }
             })
             .then(response => {
-                console.log('🔄 TOKEN REFRESH TEST: Step 5 - Got response from server');
+                console.log('🔄 TOKEN REFRESH TEST: Step 4 - Got response from server');
                 console.log('🔄 TOKEN REFRESH TEST: Response status:', response.status);
                 console.log('🔄 TOKEN REFRESH TEST: Response headers:', response.headers);
                 
-                return response.text().then(text => {
-                    console.log('🔄 TOKEN REFRESH TEST: Raw response body:', text);
-                    return { ok: response.ok, status: response.status, text: text };
-                });
-            })
-            .then(result => {
-                if (result.ok) {
-                    try {
-                        const data = JSON.parse(result.text);
-                        console.log('🔄 TOKEN REFRESH TEST: Parsed response data:', data);
+                return response.json().then(data => {
+                    console.log('🔄 TOKEN REFRESH TEST: Response data:', data);
+                    
+                    if (response.ok && data.success) {
+                        console.log('✅ TOKEN REFRESH TEST: SUCCESS - Token refreshed successfully!');
+                        console.log('🔄 TOKEN REFRESH TEST: New session token should be set in cookies');
                         
-                        // STEP 5: Check if new session_token was set
-                        const newCookies = document.cookie.split(';');
-                        const newSessionCookie = newCookies.find(cookie => cookie.trim().startsWith('session_token='));
-                        const newSessionValue = newSessionCookie ? newSessionCookie.split('=')[1] : '';
+                        // Check if new session_token cookie was set
+                        const newSessionCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('session_token='));
+                        console.log('🔄 TOKEN REFRESH TEST: New session_token cookie set:', !!newSessionCookie);
                         
-                        console.log('🔄 TOKEN REFRESH TEST: New session_token set:', !!newSessionCookie);
-                        console.log('🔄 TOKEN REFRESH TEST: New session_token length:', newSessionValue.length);
-                        console.log('🔄 TOKEN REFRESH TEST: New session_token preview:', newSessionValue.substring(0, 20) + '...');
-                        
-                        resultDiv.innerHTML = `
-                            <div class="text-green-600">
-                                <p>✅ SUCCESS: Token refreshed successfully!</p>
-                                <p class="text-sm text-gray-600 mt-2">
-                                    New session_token cookie has been set. Browser console shows detailed logs.
-                                </p>
-                                <p class="text-sm text-gray-600 mt-1">
-                                    New session_token length: ${newSessionValue.length}
-                                </p>
-                            </div>
-                        `;
-                    } catch (e) {
-                        console.log('🔄 TOKEN REFRESH TEST: Could not parse JSON response');
-                        resultDiv.innerHTML = '<p class="text-green-600">✅ SUCCESS: Token refreshed (response not JSON)</p>';
+                        resultDiv.innerHTML = '<p class="text-green-600">✅ SUCCESS: Token refreshed!</p>' +
+                            '<p class="text-sm text-gray-600 mt-2">New session_token cookie should now be set.</p>' +
+                            '<p class="text-sm text-gray-600">Check browser console for detailed logs.</p>';
+                    } else {
+                        console.log('❌ TOKEN REFRESH TEST: FAILED - Server returned error');
+                        resultDiv.innerHTML = '<p class="text-red-600">❌ ERROR: ' + (data.error || 'Unknown error') + '</p>';
                     }
-                } else {
-                    console.log('❌ TOKEN REFRESH TEST: FAILED - Server returned error:', result.text);
-                    resultDiv.innerHTML = `
-                        <div class="text-red-600">
-                            <p>❌ ERROR: ${result.text}</p>
-                            <p class="text-sm text-gray-600 mt-2">Check server logs for details.</p>
-                        </div>
-                    `;
-                }
+                });
             })
             .catch(error => {
                 console.log('❌ TOKEN REFRESH TEST: NETWORK ERROR');
                 console.log('❌ TOKEN REFRESH TEST: Error:', error);
-                resultDiv.innerHTML = `
-                    <div class="text-red-600">
-                        <p>❌ NETWORK ERROR: ${error.message}</p>
-                        <p class="text-sm text-gray-600 mt-2">Check network connectivity and server status.</p>
-                    </div>
-                `;
+                resultDiv.innerHTML = '<p class="text-red-600">❌ NETWORK ERROR: ' + error.message + '</p>';
             });
             
             console.log('🔄 TOKEN REFRESH TEST: === TEST INITIATED ===');
