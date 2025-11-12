@@ -32,9 +32,9 @@
 
 ### **🔴 HIGH PRIORITY - Session Management** 
 - [x] **✅ Identified root cause** - Auth server sets refresh_token on wrong domain
-- [ ] **Fix auth server cookie domain** - Use Domain attribute with redirect_uri domain
-- [ ] **Update SameSite to None** - Required for cross-site cookies (already done)
-- [ ] **Test refresh token flow** - Verify both session_token and refresh_token cookies work
+- [ ] **Fix auth server domain parsing** - Use client_redirect_uri host as Domain attribute
+- [x] **✅ Added refresh test button** - Available on /profile page for immediate testing
+- [ ] **Test refresh flow** - Button will work once auth server fix is implemented
 
 **Why this first:** Users shouldn't need to log in every day - token refresh should be automatic
 
