@@ -217,8 +217,12 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 	fmt.Printf("🔐 GITHUB LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
 
 	// OAuth endpoints are public - just redirect
-	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
+	// authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
+	// 	h.Config.AuthServiceURL, h.Config.RedirectURL)
+
+		authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
+
 
 	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
