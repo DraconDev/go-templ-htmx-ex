@@ -8,6 +8,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 	
 )
 
@@ -269,7 +270,7 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 
 	// STEP 2: Render callback page with JavaScript to extract JWT from URL fragment
 	// The fragment (#access_token=...) is not sent to server, so JS must handle it
-	component := templates.Layout("Authenticating", "Authentication processing page for OAuth callback and session establishment.", templates.NavigationLoggedOut(), templates.AuthCallbackContent())
+	component := layouts.Layout("Authenticating", "Authentication processing page for OAuth callback and session establishment.", layouts.NavigationLoggedOut(), pages.AuthCallbackContent())
 
 	fmt.Printf("🔐 CALLBACK: About to render component...\n")
 	component.Render(r.Context(), w)
@@ -432,20 +433,20 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUserInfo returns current user information for server-side rendering
-func (h *AuthHandler) GetUserInfo(r *http.Request) templates.UserInfo {
+func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	// Get session token from cookie
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
 	// Get user info from auth microservice
 	userResp, err := h.AuthService.ValidateUser(cookie.Value)
 	if err != nil {
-		return templates.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}
 	}
 
-	return templates.UserInfo{
+	return layouts.UserInfo{
 		LoggedIn: userResp.Success,
 		Name:     userResp.Name,
 		Email:    userResp.Email,
