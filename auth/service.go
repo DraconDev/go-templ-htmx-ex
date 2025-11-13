@@ -156,6 +156,34 @@ func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 	return s.ValidateSession(token)
 }
 
+// ParseJWTFromIDToken extracts user information from the id_token JWT
+func (s *Service) ParseJWTFromIDToken(idToken string) (*models.JWTClaims, error) {
+	fmt.Printf("🔄 AUTHSVC: Parsing JWT from id_token...\n")
+	
+	// Split JWT into parts
+	parts := strings.Split(idToken, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid JWT format: expected 3 parts, got %d", len(parts))
+	}
+	
+	// Decode the payload (middle part)
+	payload, err := jwtBase64URLDecode(parts[1])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JWT payload: %v", err)
+	}
+	
+	// Parse user data from JWT payload
+	var claims models.JWTClaims
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return nil, fmt.Errorf("failed to parse JWT claims: %v", err)
+	}
+	
+	fmt.Printf("🔄 AUTHSVC: JWT claims extracted - Subject: %s, Name: %s, Email: %s\n", 
+		claims.Subject, claims.Name, claims.Email)
+	
+	return &claims, nil
+}
+
 // RefreshToken refreshes a token using the refresh token
 func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error) {
 	return s.CallAuthService(fmt.Sprintf("%s/auth/refresh", s.config.AuthServiceURL), map[string]string{
