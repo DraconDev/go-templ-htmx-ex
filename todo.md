@@ -62,17 +62,20 @@
 **Status:** 100% COMPLETE - Users can now log in with Google/GitHub and stay logged in indefinitely with automatic token refresh!</search>
 </search_and_replace>
 
-### **🟢 READY FOR BUSINESS FEATURES**
+### **🎯 BUSINESS FEATURES PRIORITIZED** (Based on User Feedback)
 
-Platform is production-ready! Choose based on your startup needs:
+**Confirmed Immediate Priorities:**
+- [ ] **💰 Payment Integration** - Revenue generation (Stripe/subscriptions) - CRITICAL
+- [ ] **🏠 SaaS-Ready Homepage** - Make main page more conversion-optimized 
+- [ ] **📊 Analytics Dashboard** - User behavior tracking and insights
+- [ ] **🔧 Basic Admin Tools** - Enhance existing admin panel
 
-- [ ] **Payment Integration** - Revenue generation (Stripe/subscriptions)
-- [ ] **User Onboarding** - Welcome flows and tutorials
-- [ ] **Advanced Admin Panel** - User management tools
-- [ ] **API Endpoints** - Mobile app support
-- [ ] **Analytics Dashboard** - User behavior tracking
-- [ ] **Email Notifications** - Welcome emails, password reset
-- [ ] **Social Features** - User profiles, activity feeds
+**Confirmed to Skip:**
+- [x] ~~**User Onboarding**~~ - Already have personal profiles
+- [x] ~~**Advanced Admin Panel**~~ - Current one is sufficient
+- [x] ~~**API Endpoints**~~ - No mobile app needed
+- [x] ~~**Email Notifications**~~ - Have email server, unclear if needed
+- [x] ~~**Social Features**~~ - Personal profiles sufficient
 
 ### **🟢 LOW PRIORITY - Technical Improvements**
 
