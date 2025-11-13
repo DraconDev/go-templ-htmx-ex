@@ -234,14 +234,14 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}, fmt.Errorf("auth service error: %v", errMsg)
 	}
 	
-	// Extract session and refresh tokens
-	var sessionToken, refreshToken string
-	var hasSession, hasRefresh bool
+	// Extract id token and refresh token
+	var idToken, refreshToken string
+	var hasIdToken, hasRefresh bool
 	
-	if sessionInterface, exists := respData["session_token"]; exists {
-		if sessionStr, ok := sessionInterface.(string); ok {
-			sessionToken = sessionStr
-			hasSession = true
+	if idTokenInterface, exists := respData["id_token"]; exists {
+		if idTokenStr, ok := idTokenInterface.(string); ok {
+			idToken = idTokenStr
+			hasIdToken = true
 		}
 	}
 	
@@ -252,22 +252,22 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}
 	}
 	
-	fmt.Printf("🔄 AUTHSVC: Token extraction - Session: %t (%d chars), Refresh: %t (%d chars)\n", 
-		hasSession, len(sessionToken), hasRefresh, len(refreshToken))
+	fmt.Printf("🔄 AUTHSVC: Token extraction - IdToken: %t (%d chars), Refresh: %t (%d chars)\n", 
+		hasIdToken, len(idToken), hasRefresh, len(refreshToken))
 	
-	if !hasSession || !hasRefresh || sessionToken == "" || refreshToken == "" {
+	if !hasIdToken || !hasRefresh || idToken == "" || refreshToken == "" {
 		return &models.TokenExchangeResponse{
 			Success: false,
-			Error:   fmt.Sprintf("Missing tokens - Session: %t, Refresh: %t", hasSession, hasRefresh),
+			Error:   fmt.Sprintf("Missing tokens - IdToken: %t, Refresh: %t", hasIdToken, hasRefresh),
 		}, fmt.Errorf("missing tokens in auth service response")
 	}
 	
-	fmt.Printf("🔄 AUTHSVC: Successfully extracted tokens - Session: %d chars, Refresh: %d chars\n", 
-		len(sessionToken), len(refreshToken))
+	fmt.Printf("🔄 AUTHSVC: Successfully extracted tokens - IdToken: %d chars, Refresh: %d chars\n", 
+		len(idToken), len(refreshToken))
 	
 	return &models.TokenExchangeResponse{
 		Success:      true,
-		SessionToken: sessionToken,
+		IdToken:      idToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
