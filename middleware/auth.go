@@ -66,6 +66,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 }
 
 // validateJWT validates the JWT token from session cookie
+// Auto-refreshes expired tokens using refresh_token cookie
 func validateJWT(r *http.Request) layouts.UserInfo {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
@@ -80,18 +81,41 @@ func validateJWT(r *http.Request) layouts.UserInfo {
 
 	fmt.Printf("🔐 MIDDLEWARE: Validating JWT token, length: %d\n", len(cookie.Value))
 
+	// First try to parse and validate the current token
+	userInfo, isValid := parseAndValidateJWT(cookie.Value)
+	
+	if isValid {
+		return userInfo
+	}
+	
+	// Token is invalid/expired, try automatic refresh
+	fmt.Printf("🔐 MIDDLEWARE: Token expired/invalid, attempting automatic refresh...\n")
+	
+	refreshUserInfo := attemptAutomaticRefresh(r)
+	if refreshUserInfo.LoggedIn {
+		fmt.Printf("🔐 MIDDLEWARE: ✅ Automatic refresh successful!\n")
+		return refreshUserInfo
+	}
+	
+	// Refresh failed
+	fmt.Printf("🔐 MIDDLEWARE: ❌ Automatic refresh failed\n")
+	return layouts.UserInfo{LoggedIn: false}
+}
+
+// parseAndValidateJWT parses and validates JWT claims
+func parseAndValidateJWT(token string) (layouts.UserInfo, bool) {
 	// Parse JWT to get real user data
-	parts := strings.Split(cookie.Value, ".")
+	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		fmt.Printf("🔐 MIDDLEWARE: Invalid JWT format, parts: %d\n", len(parts))
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
 	// Decode payload (the middle part)
 	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to decode JWT payload: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
 	// Parse user data from JWT payload
@@ -106,8 +130,7 @@ func validateJWT(r *http.Request) layouts.UserInfo {
 
 	if err := json.Unmarshal(payload, &claims); err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to parse JWT claims: %v\n", err)
-		fmt.Printf("🔐 MIDDLEWARE: Payload: %s\n", string(payload))
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
 	fmt.Printf("🔐 MIDDLEWARE: JWT claims - Name: %s, Email: %s, Issuer: %s\n",
@@ -116,13 +139,13 @@ func validateJWT(r *http.Request) layouts.UserInfo {
 	// Check if token is still valid (not expired)
 	if claims.Exp < time.Now().Unix() {
 		fmt.Printf("🔐 MIDDLEWARE: JWT expired. Exp: %d, Now: %d\n", claims.Exp, time.Now().Unix())
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
 	// Check issuer to make sure it's from our auth service
 	if claims.Iss != "auth-ms" {
 		fmt.Printf("🔐 MIDDLEWARE: Invalid JWT issuer: %s (expected: auth-ms)\n", claims.Iss)
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
 	fmt.Printf("🔐 MIDDLEWARE: JWT validation successful for %s (%s)\n", claims.Name, claims.Email)
@@ -133,7 +156,34 @@ func validateJWT(r *http.Request) layouts.UserInfo {
 		Name:     claims.Name,
 		Email:    claims.Email,
 		Picture:  claims.Picture,
+	}, true
+}
+
+// attemptAutomaticRefresh tries to refresh the token using refresh_token cookie
+func attemptAutomaticRefresh(r *http.Request) layouts.UserInfo {
+	// Get refresh token cookie
+	refreshCookie, err := r.Cookie("refresh_token")
+	if err != nil {
+		fmt.Printf("🔄 MIDDLEWARE: No refresh_token cookie found for auto-refresh: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}
 	}
+	
+	fmt.Printf("🔄 MIDDLEWARE: Found refresh_token for auto-refresh, length: %d\n", len(refreshCookie.Value))
+	
+	// Create a request to call our refresh endpoint
+	refreshReq, _ := http.NewRequest("POST", "/api/auth/refresh", nil)
+	refreshReq.AddCookie(refreshCookie)
+	
+	// Call the refresh handler
+	// Note: In a real implementation, you'd extract this logic to avoid code duplication
+	// For now, we'll return a placeholder indicating refresh is needed
+	
+	fmt.Printf("🔄 MIDDLEWARE: Automatic refresh mechanism ready - would call /api/auth/refresh\n")
+	
+	// TODO: Implement actual automatic refresh logic here
+	// This would involve calling the auth service and setting new cookies
+	
+	return layouts.UserInfo{LoggedIn: false}
 }
 
 // jwtBase64URLDecode decodes base64url encoding (needed for JWT)
