@@ -75,12 +75,52 @@ func validateJWTWithRealData(token string) layouts.UserInfo {
 		return layouts.UserInfo{LoggedIn: false}
 	}
 
-	// Return real user data!
+	// Check if we have real user data (not placeholder)
+	if claims.Name != "User" && claims.Email != "" {
+		fmt.Printf("🔧 HANDLERS: Using real user data from JWT: %s, %s\n", claims.Name, claims.Email)
+		return layouts.UserInfo{
+			LoggedIn: true,
+			Name:     claims.Name,
+			Email:    claims.Email,
+			Picture:  claims.Picture,
+		}
+	}
+
+	// If JWT has placeholder data, try to get user info from auth service API
+	fmt.Printf("🔧 HANDLERS: JWT has placeholder data, calling auth service for real user info...\n")
+	
+	// Create auth service to get real user info
+	cfg := config.LoadConfig()
+	authService := auth.NewService(cfg)
+	userResp, err := authService.GetUserInfo(token)
+	
+	if err != nil {
+		fmt.Printf("🔧 HANDLERS: Failed to get user info from auth service: %v\n", err)
+		// Return logged in state with helpful placeholder
+		return layouts.UserInfo{
+			LoggedIn: true,
+			Name:     "OAuth User",
+			Email:    "Getting user data from auth service...",
+			Picture:  "",
+		}
+	}
+	
+	if userResp.Success {
+		fmt.Printf("🔧 HANDLERS: Got real user info from auth service: %s, %s\n", userResp.Name, userResp.Email)
+		return layouts.UserInfo{
+			LoggedIn: true,
+			Name:     userResp.Name,
+			Email:    userResp.Email,
+			Picture:  userResp.Picture,
+		}
+	}
+	
+	// Fallback: return logged in state
 	return layouts.UserInfo{
 		LoggedIn: true,
-		Name:     claims.Name,
-		Email:    claims.Email,
-		Picture:  claims.Picture,
+		Name:     "OAuth User",
+		Email:    "Auth service will provide real data",
+		Picture:  "",
 	}
 }
 
