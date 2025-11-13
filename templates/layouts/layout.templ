@@ -103,6 +103,36 @@ templ Layout(title string, description string, navigation templ.Component, conte
 					const dropdown = document.getElementById('profile-dropdown');
 					dropdown.classList.toggle('hidden');
 				}
+				
+				// Automatic Token Refresh - Production Ready
+				function startTokenRefresh() {
+					// Check every 5 minutes if user is logged in and needs refresh
+					setInterval(() => {
+						const cookies = document.cookie.split(';');
+						const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('session_token='));
+						
+						if (sessionCookie) {
+							// User is logged in, refresh token to keep session alive
+							fetch('/api/auth/refresh', { method: 'POST' })
+								.then(response => {
+									if (response.ok) {
+										console.log('🔄 Auto-refresh: Token refreshed successfully');
+									} else {
+										console.log('⚠️ Auto-refresh: Failed, user may need to login again');
+									}
+								})
+								.catch(error => {
+									console.log('🔄 Auto-refresh: Network error (will retry):', error.message);
+								});
+						}
+					}, 5 * 60 * 1000); // 5 minutes
+				}
+				
+				// Initialize auto-refresh when page loads (if user is logged in)
+				document.addEventListener('DOMContentLoaded', function() {
+					startTokenRefresh();
+				});
+				
 				// Close dropdown when clicking outside
 				document.addEventListener('click', function(event) {
 					const dropdown = document.getElementById('profile-dropdown');
