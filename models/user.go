@@ -24,11 +24,11 @@ type AuthResponse struct {
 
 // TokenExchangeResponse represents the response from exchanging auth code for tokens
 type TokenExchangeResponse struct {
-	Success       bool   `json:"success"`
-	Message       string `json:"message"`
-	SessionToken  string `json:"session_token"`
-	RefreshToken  string `json:"refresh_token"`
-	Error         string `json:"error,omitempty"`
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
+	IdToken      string `json:"id_token"`      // The JWT (instead of session_token)
+	RefreshToken string `json:"refresh_token"` // The refresh code
+	Error        string `json:"error,omitempty"`
 }
 
 // ExchangeCodeRequest represents a request to exchange authorization code for tokens
