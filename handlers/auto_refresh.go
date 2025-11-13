@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
-	"github.com/DraconDev/go-templ-htmx-ex/config"
 )
 
 // AutoRefreshMiddleware provides automatic token refresh functionality
