@@ -89,6 +89,8 @@ func main() {
 	// OAuth login routes
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/discord", authHandler.DiscordLoginHandler).Methods("GET")
+	router.HandleFunc("/auth/microsoft", authHandler.MicrosoftLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
 
 	// Test routes
