@@ -24,12 +24,25 @@ templ ProfileContent(name, email, picture string) {
 				<!-- User Info Section -->
 				<section class="flex items-center mb-8" aria-label="User information">
 					<div class="relative">
-						<div class={ fmt.Sprintf("w-24 h-24 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl %s", getProfileAvatarGradient(name)) }>
+						<div class="w-24 h-24 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl bg-gradient-to-br from-cyan-400 to-purple-500">
 							if picture != "" {
 								<img src={ picture } alt="Profile" class="w-full h-full object-cover"/>
 							} else {
 								<div class="w-full h-full flex items-center justify-center text-white font-bold text-2xl tracking-wide">
-									{ getProfileInitials(name) }
+									if name != "" {
+										{ func() string {
+											words := strings.Split(name, " ")
+											if len(words) >= 2 {
+												return strings.ToUpper(words[0][:1] + words[1][:1])
+											}
+											if len(name) >= 2 {
+												return strings.ToUpper(name[:2])
+											}
+											return strings.ToUpper(name[:1])
+										}() }
+									} else {
+										U
+									}
 								</div>
 							}
 						</div>
@@ -116,6 +129,7 @@ templ ProfileContent(name, email, picture string) {
 			</div>
 		</section>
 	</main>
+}
 // Helper functions for avatar display
 func getProfileAvatarGradient(name string) string {
 	if name == "" {
@@ -165,4 +179,4 @@ func getProfileInitials(name string) string {
 	
 	return initials
 }
-}
+
