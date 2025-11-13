@@ -190,8 +190,8 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 	// Assuming the auth service sends both session and refresh tokens in the response
 	return &models.TokenExchangeResponse{
 		Success:      true,
-		SessionToken: authResp.Token, // This should be the session token
-		RefreshToken: authResp.Email, // Temporarily use email field for refresh token - need to fix this
+		SessionToken: authResp.Token,
+		RefreshToken: authResp.RefreshToken,
 	}, nil
 }
 
