@@ -224,6 +224,42 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
+// DiscordLoginHandler handles Discord OAuth login
+// Flow: User clicks "Login with Discord" -> Redirect to our auth service ->
+//
+//	Auth service handles Discord OAuth -> Returns to our callback with JWT
+func (h *AuthHandler) DiscordLoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 DISCORD LOGIN: Starting Discord OAuth flow\n")
+	fmt.Printf("🔐 DISCORD LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 DISCORD LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+
+	// Redirect to our auth microservice with redirect_uri parameter
+	// The auth service will handle the actual Discord OAuth flow
+	authURL := fmt.Sprintf("%s/auth/discord?redirect_uri=%s/auth/callback",
+		h.Config.AuthServiceURL, h.Config.RedirectURL)
+
+	fmt.Printf("🔐 DISCORD LOGIN: Redirecting to: %s\n", authURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
+// MicrosoftLoginHandler handles Microsoft OAuth login
+// Flow: User clicks "Login with Microsoft" -> Redirect to our auth service ->
+//
+//	Auth service handles Microsoft OAuth -> Returns to our callback with JWT
+func (h *AuthHandler) MicrosoftLoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔐 MICROSOFT LOGIN: Starting Microsoft OAuth flow\n")
+	fmt.Printf("🔐 MICROSOFT LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 MICROSOFT LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+
+	// Redirect to our auth microservice with redirect_uri parameter
+	// The auth service will handle the actual Microsoft OAuth flow
+	authURL := fmt.Sprintf("%s/auth/microsoft?redirect_uri=%s/auth/callback",
+		h.Config.AuthServiceURL, h.Config.RedirectURL)
+
+	fmt.Printf("🔐 MICROSOFT LOGIN: Redirecting to: %s\n", authURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
 // AuthCallbackHandler handles the OAuth callback
 // Flow: Google redirects here with JWT in URL fragment (#access_token=...)
 //
