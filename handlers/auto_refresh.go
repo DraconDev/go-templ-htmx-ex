@@ -80,36 +80,3 @@ func attemptAutoTokenRefresh(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-// CheckIfTokenNeedsRefresh checks if a token expires within the specified timeframe
-func CheckIfTokenNeedsRefresh(token string) bool {
-	if token == "" {
-		return true
-	}
-
-	// Parse JWT to get expiration
-	parts := strings.Split(token, ".")
-	if len(parts) != 3 {
-		return true
-	}
-
-	// Decode payload
-	payload, err := base64.URLEncoding.DecodeString(parts[1])
-	if err != nil {
-		return true
-	}
-
-	// Parse expiration
-	var claims struct {
-		Exp int64 `json:"exp"`
-	}
-	
-	if err := json.Unmarshal(payload, &claims); err != nil {
-		return true
-	}
-
-	// Check if token expires within next 5 minutes
-	now := time.Now().Unix()
-	refreshThreshold := now + (5 * 60) // 5 minutes
-
-	return claims.Exp < refreshThreshold
-}
