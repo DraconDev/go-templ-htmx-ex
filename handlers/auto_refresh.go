@@ -24,7 +24,7 @@ func AutoRefreshMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Check if token needs refresh (expires within 5 minutes)
-		if middleware.CheckIfTokenNeedsRefresh(cookie.Value) {
+		if CheckIfTokenNeedsRefresh(cookie.Value) {
 			fmt.Printf("🔄 AUTO-REFRESH: Token expiring soon, attempting refresh...\n")
 			
 			// Automatically refresh the token
