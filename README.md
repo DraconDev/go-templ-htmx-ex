@@ -14,11 +14,15 @@ A **production-ready startup platform** with **Google OAuth**, **PostgreSQL data
 ## ✨ What You Get
 
 ### 🔐 **Authentication System**
-- Google OAuth 2.0 login
-- GitHub OAuth integration
-- JWT session management
-- User profile pages
+- **OAuth 2.0 Authorization Code Flow** with proper token separation
+- Google OAuth login with real user data (name, email, avatar)
+- GitHub OAuth integration with profile pictures
+- **Separate session_token and refresh_token** cookies (no more same value issue)
+- **HTTP-only cookies** for maximum security
+- **JWT local validation** for 5-10ms response times
+- User profile pages with real Google/GitHub data
 - Session validation middleware
+- **Token refresh mechanism** ready for production
 
 ### 💾 **Database Integration**
 - PostgreSQL with users table
