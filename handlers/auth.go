@@ -159,6 +159,8 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 <div class="space-x-4">
                     <a href="/auth/google" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Login with Google</a>
                     <a href="/auth/github" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Login with GitHub</a>
+                    <a href="/auth/discord" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Login with Discord</a>
+                    <a href="/auth/microsoft" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login with Microsoft</a>
                 </div>
             </div>
             
