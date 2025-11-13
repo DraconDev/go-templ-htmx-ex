@@ -161,45 +161,38 @@ func parseAndValidateJWT(token string) (layouts.UserInfo, bool) {
 	}, true
 }
 
-// attemptAutomaticRefresh tries to refresh the token using refresh_token cookie
-// Returns refreshed user info and indicates if refresh happened
-func attemptAutomaticRefresh(r *http.Request) (layouts.UserInfo, bool) {
-	// Get refresh token cookie
-	refreshCookie, err := r.Cookie("refresh_token")
+// CheckIfTokenNeedsRefresh checks if the session token is expired and needs refresh
+func CheckIfTokenNeedsRefresh(token string) bool {
+	if token == "" {
+		return true
+	}
+	
+	// Parse JWT to get expiration
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return true
+	}
+	
+	// Decode payload (the middle part)
+	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
-		fmt.Printf("🔄 MIDDLEWARE: No refresh_token cookie found for auto-refresh: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, false
+		return true
 	}
 	
-	fmt.Printf("🔄 MIDDLEWARE: Found refresh_token for auto-refresh, length: %d\n", len(refreshCookie.Value))
-	
-	// Call auth service directly for refresh
-	fmt.Printf("🔄 MIDDLEWARE: Calling auth service for automatic token refresh...\n")
-	
-	cfg := config.LoadConfig()
-	authService := auth.NewService(cfg)
-	refreshResp, err := authService.RefreshToken(refreshCookie.Value)
-	
-	if err != nil {
-		fmt.Printf("🔄 MIDDLEWARE: ❌ Auto-refresh failed: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, false
+	// Parse expiration from JWT payload
+	var claims struct {
+		Exp int64 `json:"exp"`
 	}
 	
-	if !refreshResp.Success || refreshResp.Token == "" {
-		fmt.Printf("🔄 MIDDLEWARE: ❌ Auto-refresh failed: auth service returned failure\n")
-		return layouts.UserInfo{LoggedIn: false}, false
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return true
 	}
 	
-	fmt.Printf("🔄 MIDDLEWARE: ✅ Auto-refresh successful! New token: %d chars\n", len(refreshResp.Token))
-	fmt.Printf("🔄 MIDDLEWARE: User after refresh: %s (%s)\n", refreshResp.Name, refreshResp.Email)
+	// Check if token expires within next 5 minutes (to refresh proactively)
+	now := time.Now().Unix()
+	expiryThreshold := now + (5 * 60) // 5 minutes from now
 	
-	// Return the refreshed user info and indicate refresh happened
-	return layouts.UserInfo{
-		LoggedIn: true,
-		Name:     refreshResp.Name,
-		Email:    refreshResp.Email,
-		Picture:  refreshResp.Picture,
-	}, true
+	return claims.Exp < expiryThreshold
 }
 
 // jwtBase64URLDecode decodes base64url encoding (needed for JWT)
