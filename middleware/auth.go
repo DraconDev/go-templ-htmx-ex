@@ -162,12 +162,13 @@ func parseAndValidateJWT(token string) (layouts.UserInfo, bool) {
 }
 
 // attemptAutomaticRefresh tries to refresh the token using refresh_token cookie
-func attemptAutomaticRefresh(r *http.Request) layouts.UserInfo {
+// Returns refreshed user info and indicates if refresh happened
+func attemptAutomaticRefresh(r *http.Request) (layouts.UserInfo, bool) {
 	// Get refresh token cookie
 	refreshCookie, err := r.Cookie("refresh_token")
 	if err != nil {
 		fmt.Printf("🔄 MIDDLEWARE: No refresh_token cookie found for auto-refresh: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 	
 	fmt.Printf("🔄 MIDDLEWARE: Found refresh_token for auto-refresh, length: %d\n", len(refreshCookie.Value))
@@ -181,29 +182,24 @@ func attemptAutomaticRefresh(r *http.Request) layouts.UserInfo {
 	
 	if err != nil {
 		fmt.Printf("🔄 MIDDLEWARE: ❌ Auto-refresh failed: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 	
 	if !refreshResp.Success || refreshResp.Token == "" {
 		fmt.Printf("🔄 MIDDLEWARE: ❌ Auto-refresh failed: auth service returned failure\n")
-		return layouts.UserInfo{LoggedIn: false}
+		return layouts.UserInfo{LoggedIn: false}, false
 	}
 	
 	fmt.Printf("🔄 MIDDLEWARE: ✅ Auto-refresh successful! New token: %d chars\n", len(refreshResp.Token))
 	fmt.Printf("🔄 MIDDLEWARE: User after refresh: %s (%s)\n", refreshResp.Name, refreshResp.Email)
 	
-	// Update the session token in the response
-	// Note: In middleware context, we can't directly modify cookies
-	// In a real implementation, this would be handled by the response writer
-	fmt.Printf("🔄 MIDDLEWARE: New session_token ready for setting in response\n")
-	
-	// Return the refreshed user info
+	// Return the refreshed user info and indicate refresh happened
 	return layouts.UserInfo{
 		LoggedIn: true,
 		Name:     refreshResp.Name,
 		Email:    refreshResp.Email,
 		Picture:  refreshResp.Picture,
-	}
+	}, true
 }
 
 // jwtBase64URLDecode decodes base64url encoding (needed for JWT)
