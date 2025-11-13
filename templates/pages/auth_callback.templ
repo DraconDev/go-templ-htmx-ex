@@ -79,23 +79,32 @@ templ AuthCallbackContent() {
 
 		// Function to set session and redirect
 		function setSessionAndRedirect() {
+			console.log('🔐 CALLBACK: === CALLBACK FUNCTION STARTED ===');
+			
 			var params = parseParameters();
+			console.log('🔐 CALLBACK: Parsed parameters:', params);
 			
 			// Update message with provider name
 			var providerName = getProviderName();
 			var messageElement = document.getElementById('auth-message');
 			messageElement.textContent = 'Please wait while we authenticate you with ' + providerName + '.';
+			console.log('🔐 CALLBACK: Provider detected:', providerName);
 			
 			// Check for OAuth code in URL
 			var code = params['code'];
+			console.log('🔐 CALLBACK: Code from params:', code);
+			
 			if (!code) {
+				console.error('🔐 CALLBACK: No authorization code found in URL params');
 				showError('No authorization code found in URL. Please try logging in again.');
 				return;
 			}
 			
 			console.log('🔐 CALLBACK: Authorization code received, length:', code.length);
-			console.log('🔐 CALLBACK: Provider detected:', providerName);
+			console.log('🔐 CALLBACK: Code preview:', code.substring(0, 20) + '...');
 
+			console.log('🔐 CALLBACK: === ABOUT TO MAKE FETCH CALL ===');
+			
 			// Exchange code for tokens via server endpoint
 			fetch('/api/auth/exchange-code', {
 				method: 'POST',
@@ -107,13 +116,17 @@ templ AuthCallbackContent() {
 				})
 			})
 			.then(response => {
+				console.log('🔐 CALLBACK: === FETCH RESPONSE RECEIVED ===');
 				console.log('🔐 CALLBACK: Exchange code response status:', response.status);
+				console.log('🔐 CALLBACK: Response ok:', response.ok);
 				return response.json().then(data => {
 					console.log('🔐 CALLBACK: Exchange code response data:', data);
 					return { ok: response.ok, data: data };
 				});
 			})
 			.then(result => {
+				console.log('🔐 CALLBACK: === PROCESSING FETCH RESULT ===');
+				console.log('🔐 CALLBACK: Result:', result);
 				if (result.ok && result.data.success) {
 					console.log('🔐 CALLBACK: Successfully exchanged code for tokens');
 					showSuccess('Authentication successful! Redirecting to home...');
@@ -121,13 +134,19 @@ templ AuthCallbackContent() {
 						window.location.href = '/';
 					}, 1500);
 				} else {
+					console.error('🔐 CALLBACK: Fetch failed or unsuccessful:', result);
 					throw new Error(result.data.error || 'Failed to exchange authorization code');
 				}
 			})
 			.catch(error => {
+				console.error('🔐 CALLBACK: === FETCH ERROR ===');
 				console.error('🔐 CALLBACK: Error details:', error);
+				console.error('🔐 CALLBACK: Error message:', error.message);
+				console.error('🔐 CALLBACK: Error stack:', error.stack);
 				showError('Error: ' + error.message);
 			});
+				
+			console.log('🔐 CALLBACK: === FETCH CALL INITIATED (async) ===');
 		}
 
 		function showError(message) {
