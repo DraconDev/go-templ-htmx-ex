@@ -326,6 +326,39 @@ func (c *PublicKeyCache) ValidateJWTLocal(token string) (*models.AuthResponse, e
 	}, nil
 }
 
+// ParseJWTFromIDToken extracts user information from the id_token JWT
+func (s *Service) ParseJWTFromIDToken(idToken string) (*models.JWTClaims, error) {
+	fmt.Printf("🔄 AUTHSVC: Parsing JWT from id_token...\n")
+	
+	// Split JWT into parts
+	parts := strings.Split(idToken, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid JWT format: expected 3 parts, got %d", len(parts))
+	}
+	
+	// Decode the header and payload
+	headerBytes, err := base64URLDecode(parts[0])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JWT header: %v", err)
+	}
+	
+	payloadBytes, err := base64URLDecode(parts[1])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JWT payload: %v", err)
+	}
+	
+	// Parse the payload to extract claims
+	var claims models.JWTClaims
+	if err := json.Unmarshal(payloadBytes, &claims); err != nil {
+		return nil, fmt.Errorf("failed to parse JWT claims: %v", err)
+	}
+	
+	fmt.Printf("🔄 AUTHSVC: JWT claims extracted - Subject: %s, Name: %s, Email: %s\n", 
+		claims.Subject, claims.Name, claims.Email)
+	
+	return &claims, nil
+}
+
 // base64URLDecode decodes base64url encoding
 func base64URLDecode(data string) ([]byte, error) {
 	// Add padding if needed
