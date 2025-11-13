@@ -473,13 +473,13 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
-	fmt.Printf("🔄 CODE: Session token length: %d\n", len(tokensResp.SessionToken))
+	fmt.Printf("🔄 CODE: Id token length: %d\n", len(tokensResp.IdToken))
 	fmt.Printf("🔄 CODE: Refresh token length: %d\n", len(tokensResp.RefreshToken))
 
-	// Set session token cookie
+	// Set session token cookie with the id_token (JWT)
 	sessionCookie := &http.Cookie{
 		Name:     "session_token",
-		Value:    tokensResp.SessionToken,
+		Value:    tokensResp.IdToken,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
