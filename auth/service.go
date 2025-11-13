@@ -167,31 +167,91 @@ func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error
 func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
 	fmt.Printf("🔄 AUTHSVC: Exchanging code for tokens...\n")
 	
-	// Call the auth service
-	authResp, err := s.CallAuthService(fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), map[string]string{
-		"code": code,
-	})
+	// Call the auth service directly and parse the response manually
+	fmt.Printf("🔄 AUTHSVC: Calling auth service endpoint: %s/auth/token\n", s.config.AuthServiceURL)
 	
+	client := &http.Client{Timeout: 10 * time.Second}
+	
+	// Create request
+	jsonData := map[string]string{"code": code}
+	reqData, err := json.Marshal(jsonData)
 	if err != nil {
 		return &models.TokenExchangeResponse{
 			Success: false,
-			Error:   err.Error(),
+			Error:   "Failed to marshal request data",
 		}, err
 	}
 	
-	if !authResp.Success {
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	if err != nil {
 		return &models.TokenExchangeResponse{
 			Success: false,
-			Error:   authResp.Error,
-		}, fmt.Errorf(authResp.Error)
+			Error:   "Failed to create request",
+		}, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	
+	// Add auth secret if configured
+	if s.config.AuthSecret != "" {
+		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
 	}
 	
-	// Convert AuthResponse to TokenExchangeResponse
-	// Assuming the auth service sends both session and refresh tokens in the response
+	resp, err := client.Do(req)
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to call auth service: " + err.Error(),
+		}, err
+	}
+	defer resp.Body.Close()
+	
+	// Read response
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to read response body",
+		}, err
+	}
+	
+	fmt.Printf("🔄 AUTHSVC: Response status: %s\n", resp.Status)
+	fmt.Printf("🔄 AUTHSVC: Response body: %s\n", string(bodyBytes))
+	
+	// Parse the response directly as a map to extract tokens
+	var respData map[string]interface{}
+	if err := json.Unmarshal(bodyBytes, &respData); err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to parse response: " + err.Error(),
+		}, fmt.Errorf("failed to parse auth service response: %v", err)
+	}
+	
+	// Check if we have an error in the response
+	if errMsg, hasError := respData["error"]; hasError {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   fmt.Sprintf("%v", errMsg),
+		}, fmt.Errorf("auth service error: %v", errMsg)
+	}
+	
+	// Extract session and refresh tokens
+	sessionToken, hasSession := respData["session_token"].(string)
+	refreshToken, hasRefresh := respData["refresh_token"].(string)
+	
+	if !hasSession || !hasRefresh || sessionToken == "" || refreshToken == "" {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Missing session_token or refresh_token in response",
+		}, fmt.Errorf("missing tokens in auth service response")
+	}
+	
+	fmt.Printf("🔄 AUTHSVC: Successfully extracted tokens - Session: %d chars, Refresh: %d chars\n", 
+		len(sessionToken), len(refreshToken))
+	
 	return &models.TokenExchangeResponse{
 		Success:      true,
-		SessionToken: authResp.Token,
-		RefreshToken: authResp.RefreshToken,
+		SessionToken: sessionToken,
+		RefreshToken: refreshToken,
 	}, nil
 }
 
