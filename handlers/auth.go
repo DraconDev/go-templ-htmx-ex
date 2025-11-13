@@ -177,9 +177,9 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
             <!-- Instructions -->
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h3 class="text-lg font-semibold text-yellow-800 mb-2">🔍 Testing Instructions</h3>
-                <ol class="text-sm text-yellow-700 space-y-1">
+                <ol class="text-sm text-sm text-yellow-700 space-y-1">
                     <li>1. Open browser console (F12) to see detailed logs</li>
-                    <li>2. First login with Google or GitHub</li>
+                    <li>2. First login with Google, GitHub, Discord, or Microsoft</li>
                     <li>3. Then click "Test Token Refresh" to see the flow</li>
                     <li>4. Check console logs for every step of the process</li>
                 </ol>
