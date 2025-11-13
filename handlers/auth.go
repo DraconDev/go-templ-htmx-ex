@@ -426,6 +426,96 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// ExchangeCodeHandler exchanges OAuth authorization code for tokens
+func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔄 CODE: === Exchange authorization code STARTED ===\n")
+	fmt.Printf("🔄 CODE: Request URL: %s\n", r.URL.String())
+	
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		Code string `json:"code"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Printf("🔄 CODE: Failed to decode request: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Invalid request body",
+		})
+		return
+	}
+
+	if req.Code == "" {
+		fmt.Printf("🔄 CODE: Missing authorization code\n")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Missing authorization code",
+		})
+		return
+	}
+
+	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.Code))
+
+	// Exchange code for tokens via auth service
+	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
+	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.Code)
+	if err != nil {
+		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if !tokensResp.Success {
+		fmt.Printf("❌ CODE: Token exchange failed: %s\n", tokensResp.Error)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": tokensResp.Error,
+		})
+		return
+	}
+
+	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
+	fmt.Printf("🔄 CODE: Session token length: %d\n", len(tokensResp.SessionToken))
+	fmt.Printf("🔄 CODE: Refresh token length: %d\n", len(tokensResp.RefreshToken))
+
+	// Set session token cookie
+	sessionCookie := &http.Cookie{
+		Name:     "session_token",
+		Value:    tokensResp.SessionToken,
+		Path:     "/",
+		MaxAge:   3600, // 1 hour
+		HttpOnly: true,
+		Secure:   false, // Set to true in production with HTTPS
+	}
+
+	// Set refresh token cookie
+	refreshCookie := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    tokensResp.RefreshToken,
+		Path:     "/",
+		MaxAge:   30 * 24 * 3600, // 30 days
+		HttpOnly: true,
+		Secure:   false, // Set to true in production with HTTPS
+	}
+
+	// Set both cookies
+	http.SetCookie(w, sessionCookie)
+	http.SetCookie(w, refreshCookie)
+
+	fmt.Printf("✅ CODE: Both cookies set successfully")
+	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Tokens exchanged successfully",
+	})
+}
+
 // GetUserInfo returns current user information for server-side rendering
 func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	// Get session token from cookie
