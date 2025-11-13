@@ -488,10 +488,19 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.Code))
+	fmt.Printf("🔄 CODE: Code preview: %s...\n", func() string { if len(req.Code) > 20 { return req.Code[:20] } else { return req.Code } }())
+
+	// Handle Discord codes with "discord_" prefix
+	actualCode := req.Code
+	if strings.HasPrefix(req.Code, "discord_") {
+		fmt.Printf("🔄 CODE: Detected Discord code format, stripping 'discord_' prefix...\n")
+		actualCode = strings.TrimPrefix(req.Code, "discord_")
+		fmt.Printf("🔄 CODE: Stripped code length: %d\n", len(actualCode))
+	}
 
 	// Exchange code for tokens via auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
-	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.Code)
+	tokensResp, err := h.AuthService.ExchangeCodeForTokens(actualCode)
 	if err != nil {
 		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
