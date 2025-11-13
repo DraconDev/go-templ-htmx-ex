@@ -9,7 +9,6 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -47,7 +46,7 @@ func ProfileContent(name, email, picture string) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(picture)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 29, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 28, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -63,158 +62,107 @@ func ProfileContent(name, email, picture string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if name != "" {
-				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(func() string {
-					words := strings.Split(name, " ")
-					if len(words) >= 2 {
-						return strings.ToUpper(words[0][:1] + words[1][:1])
-					}
-					if len(name) >= 2 {
-						return strings.ToUpper(name[:2])
-					}
-					return strings.ToUpper(name[:1])
-				}())
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 42, Col: 13}
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var3 string
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(name[:1]))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 32, Col: 43}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "U")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "U")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-gray-800 flex items-center justify-center\"><svg class=\"w-4 h-4 text-white\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z\" clip-rule=\"evenodd\"></path></svg></div></div><div class=\"ml-6\"><h2 class=\"text-3xl font-bold text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-gray-800 flex items-center justify-center\"><svg class=\"w-4 h-4 text-white\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z\" clip-rule=\"evenodd\"></path></svg></div></div><div class=\"ml-6\"><h2 class=\"text-3xl font-bold text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 56, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 46, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h2><p class=\"text-lg text-gray-300\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h2><p class=\"text-lg text-gray-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 57, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 47, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</p><div class=\"flex items-center mt-2\"><div class=\"w-2 h-2 bg-green-400 rounded-full mr-2\"></div><span class=\"text-sm text-green-400 font-medium\">Active Session</span></div></div></section><!-- Account Information Card --><section class=\"glass-card rounded-2xl p-6 border border-gray-400/30\" aria-label=\"Account information\"><h3 class=\"text-xl font-bold text-white mb-6 flex items-center\"><div class=\"w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center mr-3 glow-effect\"><span class=\"text-white text-sm\">📋</span></div>Account Information</h3><div class=\"grid grid-cols-1 md:grid-cols-2 gap-6\"><div class=\"space-y-4\"><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Full Name</span> <span class=\"font-semibold text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p><div class=\"flex items-center mt-2\"><div class=\"w-2 h-2 bg-green-400 rounded-full mr-2\"></div><span class=\"text-sm text-green-400 font-medium\">Active Session</span></div></div></section><!-- Account Information Card --><section class=\"glass-card rounded-2xl p-6 border border-gray-400/30\" aria-label=\"Account information\"><h3 class=\"text-xl font-bold text-white mb-6 flex items-center\"><div class=\"w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center mr-3 glow-effect\"><span class=\"text-white text-sm\">📋</span></div>Account Information</h3><div class=\"grid grid-cols-1 md:grid-cols-2 gap-6\"><div class=\"space-y-4\"><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Full Name</span> <span class=\"font-semibold text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 77, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 67, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span></div></div><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Email Address</span> <span class=\"font-semibold text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div></div><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Email Address</span> <span class=\"font-semibold text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 83, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/profile.templ`, Line: 73, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div></div></div><div class=\"space-y-4\"><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Profile Picture</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span></div></div></div><div class=\"space-y-4\"><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Profile Picture</span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if picture != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"text-green-400 font-semibold flex items-center\"><div class=\"w-2 h-2 bg-green-500 rounded-full mr-2\"></div>Available</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"text-green-400 font-semibold flex items-center\"><div class=\"w-2 h-2 bg-green-500 rounded-full mr-2\"></div>Available</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"text-gray-400 font-semibold\">Not set</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-gray-400 font-semibold\">Not set</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Authentication</span> <span class=\"text-cyan-400 font-semibold flex items-center\"><div class=\"w-2 h-2 bg-cyan-500 rounded-full mr-2\"></div>OAuth 2.0</span></div></div></div></div></section><!-- Action Buttons --><section class=\"mt-8 flex flex-col sm:flex-row gap-4\" aria-label=\"Profile actions\"><button hx-post=\"/api/auth/logout\" hx-swap=\"none\" class=\"flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect\">Logout</button> <a href=\"/\" class=\"flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect inline-block\">Back to Home</a></section></div></section></main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div><div class=\"glass-card rounded-xl p-4 shadow-lg border border-gray-500/30\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 font-medium\">Authentication</span> <span class=\"text-cyan-400 font-semibold flex items-center\"><div class=\"w-2 h-2 bg-cyan-500 rounded-full mr-2\"></div>OAuth 2.0</span></div></div></div></div></section><!-- Action Buttons --><section class=\"mt-8 flex flex-col sm:flex-row gap-4\" aria-label=\"Profile actions\"><button hx-post=\"/api/auth/logout\" hx-swap=\"none\" class=\"flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect\">Logout</button> <a href=\"/\" class=\"flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect inline-block\">Back to Home</a></section></div></section></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		return nil
 	})
-}
-
-// Helper functions for avatar display
-func getProfileAvatarGradient(name string) string {
-	if name == "" {
-		return "bg-gradient-to-br from-gray-600 to-gray-800"
-	}
-
-	// Generate consistent color based on name hash
-	hash := 0
-	for _, char := range name {
-		hash += int(char)
-	}
-
-	gradients := []string{
-		"bg-gradient-to-br from-blue-500 to-blue-700",
-		"bg-gradient-to-br from-purple-500 to-purple-700",
-		"bg-gradient-to-br from-green-500 to-green-700",
-		"bg-gradient-to-br from-red-500 to-red-700",
-		"bg-gradient-to-br from-yellow-500 to-yellow-700",
-		"bg-gradient-to-br from-pink-500 to-pink-700",
-		"bg-gradient-to-br from-indigo-500 to-indigo-700",
-		"bg-gradient-to-br from-cyan-500 to-cyan-700",
-		"bg-gradient-to-br from-orange-500 to-orange-700",
-		"bg-gradient-to-br from-teal-500 to-teal-700",
-	}
-
-	return gradients[hash%len(gradients)]
-}
-
-func getProfileInitials(name string) string {
-	if name == "" {
-		return "U"
-	}
-
-	words := strings.Fields(name)
-	var initials string
-
-	if len(words) >= 2 {
-		initials = strings.ToUpper(string([]rune(words[0])[0:1]) + string([]rune(words[1])[0:1]))
-	} else {
-		// Single word - take first 2 characters
-		if len(name) >= 2 {
-			initials = strings.ToUpper(string([]rune(name)[0:2]))
-		} else {
-			initials = strings.ToUpper(string([]rune(name)[0:1]))
-		}
-	}
-
-	return initials
 }
 
 var _ = templruntime.GeneratedTemplate
