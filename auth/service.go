@@ -166,12 +166,12 @@ func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error
 // ExchangeCodeForTokens exchanges OAuth authorization code for session and refresh tokens
 func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
 	fmt.Printf("🔄 AUTHSVC: Exchanging code for tokens...\n")
-	
+
 	// Call the auth service directly and parse the response manually
 	fmt.Printf("🔄 AUTHSVC: Calling auth service endpoint: %s/auth/token\n", s.config.AuthServiceURL)
-	
+
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Create request
 	jsonData := map[string]string{"code": code}
 	reqData, err := json.Marshal(jsonData)
@@ -181,7 +181,7 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   "Failed to marshal request data",
 		}, err
 	}
-	
+
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
 	if err != nil {
 		return &models.TokenExchangeResponse{
@@ -190,12 +190,12 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	// Add auth secret if configured
 	if s.config.AuthSecret != "" {
 		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
 	}
-	
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return &models.TokenExchangeResponse{
@@ -204,7 +204,7 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}, err
 	}
 	defer resp.Body.Close()
-	
+
 	// Read response
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -213,10 +213,10 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   "Failed to read response body",
 		}, err
 	}
-	
+
 	fmt.Printf("🔄 AUTHSVC: Response status: %s\n", resp.Status)
 	fmt.Printf("🔄 AUTHSVC: Response body: %s\n", string(bodyBytes))
-	
+
 	// Parse the response directly as a map to extract tokens
 	var respData map[string]interface{}
 	if err := json.Unmarshal(bodyBytes, &respData); err != nil {
@@ -225,7 +225,7 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   "Failed to parse response: " + err.Error(),
 		}, fmt.Errorf("failed to parse auth service response: %v", err)
 	}
-	
+
 	// Check if we have an error in the response
 	if errMsg, hasError := respData["error"]; hasError {
 		return &models.TokenExchangeResponse{
@@ -233,38 +233,38 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   fmt.Sprintf("%v", errMsg),
 		}, fmt.Errorf("auth service error: %v", errMsg)
 	}
-	
+
 	// Extract id token and refresh token
 	var idToken, refreshToken string
 	var hasIdToken, hasRefresh bool
-	
+
 	if idTokenInterface, exists := respData["id_token"]; exists {
 		if idTokenStr, ok := idTokenInterface.(string); ok {
 			idToken = idTokenStr
 			hasIdToken = true
 		}
 	}
-	
+
 	if refreshInterface, exists := respData["refresh_token"]; exists {
 		if refreshStr, ok := refreshInterface.(string); ok {
 			refreshToken = refreshStr
 			hasRefresh = true
 		}
 	}
-	
-	fmt.Printf("🔄 AUTHSVC: Token extraction - IdToken: %t (%d chars), Refresh: %t (%d chars)\n", 
+
+	fmt.Printf("🔄 AUTHSVC: Token extraction - IdToken: %t (%d chars), Refresh: %t (%d chars)\n",
 		hasIdToken, len(idToken), hasRefresh, len(refreshToken))
-	
+
 	if !hasIdToken || !hasRefresh || idToken == "" || refreshToken == "" {
 		return &models.TokenExchangeResponse{
 			Success: false,
 			Error:   fmt.Sprintf("Missing tokens - IdToken: %t, Refresh: %t", hasIdToken, hasRefresh),
 		}, fmt.Errorf("missing tokens in auth service response")
 	}
-	
-	fmt.Printf("🔄 AUTHSVC: Successfully extracted tokens - IdToken: %d chars, Refresh: %d chars\n", 
+
+	fmt.Printf("🔄 AUTHSVC: Successfully extracted tokens - IdToken: %d chars, Refresh: %d chars\n",
 		len(idToken), len(refreshToken))
-	
+
 	return &models.TokenExchangeResponse{
 		Success:      true,
 		IdToken:      idToken,
@@ -324,39 +324,6 @@ func (c *PublicKeyCache) ValidateJWTLocal(token string) (*models.AuthResponse, e
 		Picture: "",
 		UserID:  "",
 	}, nil
-}
-
-// ParseJWTFromIDToken extracts user information from the id_token JWT
-func (s *Service) ParseJWTFromIDToken(idToken string) (*models.JWTClaims, error) {
-	fmt.Printf("🔄 AUTHSVC: Parsing JWT from id_token...\n")
-	
-	// Split JWT into parts
-	parts := strings.Split(idToken, ".")
-	if len(parts) != 3 {
-		return nil, fmt.Errorf("invalid JWT format: expected 3 parts, got %d", len(parts))
-	}
-	
-	// Decode the header and payload
-	headerBytes, err := base64URLDecode(parts[0])
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode JWT header: %v", err)
-	}
-	
-	payloadBytes, err := base64URLDecode(parts[1])
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode JWT payload: %v", err)
-	}
-	
-	// Parse the payload to extract claims
-	var claims models.JWTClaims
-	if err := json.Unmarshal(payloadBytes, &claims); err != nil {
-		return nil, fmt.Errorf("failed to parse JWT claims: %v", err)
-	}
-	
-	fmt.Printf("🔄 AUTHSVC: JWT claims extracted - Subject: %s, Name: %s, Email: %s\n", 
-		claims.Subject, claims.Name, claims.Email)
-	
-	return &claims, nil
 }
 
 // base64URLDecode decodes base64url encoding
