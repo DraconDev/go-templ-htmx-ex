@@ -52,7 +52,7 @@ templ AuthCallbackContent() {
 
 		// Function to set session and redirect
 		function setSessionAndRedirect() {
-			var params = parseFragment();
+			var params = parseParameters();
 			
 			// Check for OAuth code in URL
 			var code = params['code'];
