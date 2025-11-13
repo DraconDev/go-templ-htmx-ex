@@ -190,25 +190,78 @@ templ NavigationLoggedIn(user UserInfo) {
 }
 
 templ UserAvatar(user UserInfo) {
-	<div class="w-11 h-11 rounded-full overflow-hidden bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+	<div class={ "w-11 h-11 rounded-full overflow-hidden shadow-lg ring-2 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:scale-105", fmt.Sprintf("bg-gradient-to-br %s", getAvatarGradient(user.Name)) }>
 		if user.Picture != "" {
-			<img src={ user.Picture } alt="Profile" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+			<img
+				src={ user.Picture }
+				alt="Profile"
+				class="w-full h-full object-cover"
+				onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'; this.parentElement.classList.remove('bg-gradient-to-br'); this.parentElement.classList.add('bg-gradient-to-br','from-gray-600','to-gray-800');"
+			/>
 		}
-		if user.Picture == "" {
-			<div class="w-full h-full flex items-center justify-center text-white font-semibold text-sm">
-				@UserInitials(user)
-			</div>
-		}
+		<div class="w-full h-full flex items-center justify-center text-white font-bold text-sm tracking-wide">
+			@UserInitials(user)
+		</div>
 	</div>
 }
 
-// UserInitials returns initials with fallback
+// UserInitials returns formatted initials with fallback
 templ UserInitials(user UserInfo) {
 	if user.Name != "" {
-		{ strings.ToUpper(string([]rune(user.Name)[0:1])) }
+		@getUserInitials(user.Name)
 	} else {
-		U
+		<span class="text-lg">U</span>
 	}
+}
+
+// Helper function to get avatar gradient colors based on user name
+func getAvatarGradient(name string) string {
+	if name == "" {
+		return "from-gray-600 to-gray-800"
+	}
+	
+	// Generate consistent color based on name hash
+	hash := 0
+	for _, char := range name {
+		hash += int(char)
+	}
+	
+	gradients := []string{
+		"from-blue-500 to-blue-700",
+		"from-purple-500 to-purple-700",
+		"from-green-500 to-green-700",
+		"from-red-500 to-red-700",
+		"from-yellow-500 to-yellow-700",
+		"from-pink-500 to-pink-700",
+		"from-indigo-500 to-indigo-700",
+		"from-cyan-500 to-cyan-700",
+		"from-orange-500 to-orange-700",
+		"from-teal-500 to-teal-700",
+	}
+	
+	return gradients[hash % len(gradients)]
+}
+
+// Helper function to get formatted initials
+func getUserInitials(name string) templ.Component {
+	words := strings.Fields(name)
+	var initials string
+	
+	if len(words) >= 2 {
+		initials = strings.ToUpper(string([]rune(words[0])[0:1]) + string([]rune(words[1])[0:1]))
+	} else {
+		// Single word - take first 2 characters
+		if len(name) >= 2 {
+			initials = strings.ToUpper(string([]rune(name)[0:2]))
+		} else {
+			initials = strings.ToUpper(string([]rune(name)[0:1]))
+		}
+	}
+	
+	return templ.ComponentFunc(func(w http.ResponseWriter, r *http.Request) error {
+		fmt.Fprintf(w, `<span class="text-lg">%s</span>`, initials)
+		return nil
+	})
 }
 
 // NavigationLoggedOut renders the logged-out navigation
