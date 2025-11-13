@@ -93,8 +93,8 @@ func validateJWT(r *http.Request) layouts.UserInfo {
 	// Token is invalid/expired, try automatic refresh
 	fmt.Printf("🔐 MIDDLEWARE: Token expired/invalid, attempting automatic refresh...\n")
 	
-	refreshUserInfo := attemptAutomaticRefresh(r)
-	if refreshUserInfo.LoggedIn {
+	refreshUserInfo, refreshSuccess := attemptAutomaticRefresh(r)
+	if refreshSuccess {
 		fmt.Printf("🔐 MIDDLEWARE: ✅ Automatic refresh successful!\n")
 		return refreshUserInfo
 	}
