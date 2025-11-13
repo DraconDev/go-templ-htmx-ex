@@ -470,17 +470,12 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
+// ExchangeCodeHandler exchanges OAuth authorization code for tokens
+func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔄 CODE: === Exchange authorization code STARTED ===\n")
+	fmt.Printf("🔄 CODE: Request URL: %s\n", r.URL.String())
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
-	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
-	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
-	"strings"
-)
+	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
 		Code string `json:"code"`
