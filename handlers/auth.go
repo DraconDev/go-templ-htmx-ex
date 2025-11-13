@@ -500,31 +500,24 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.Code))
-	fmt.Printf("🔄 CODE: Code starts with: %s\n", func() string { if len(req.Code) >= 20 { return req.Code[:20] } else { return req.Code } }())
 
 	// Exchange code for tokens via auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
-	fmt.Printf("🔄 CODE: AuthService URL: %s\n", h.AuthService.ExchangeCodeForTokens.__debug__)
-
 	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.Code)
 	if err != nil {
 		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
-		fmt.Printf("❌ CODE: Error type: %T\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": err.Error(),
-			"error_type": fmt.Sprintf("%T", err),
 		})
 		return
 	}
 
 	if !tokensResp.Success {
 		fmt.Printf("❌ CODE: Token exchange failed: %s\n", tokensResp.Error)
-		fmt.Printf("❌ CODE: Response: %+v\n", tokensResp)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": tokensResp.Error,
-			"success": tokensResp.Success,
 		})
 		return
 	}
