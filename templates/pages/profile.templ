@@ -101,63 +101,13 @@ templ ProfileContent(name, email, picture string) {
 					>
 						Logout
 					</button>
-					<button
-						id="refresh-token-btn"
-						onclick="testTokenRefresh()"
-						class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect"
-					>
-						Test Token Refresh
-					</button>
-					<button
-						hx-get="/"
-						hx-swap="none"
-						class="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect"
+					<a
+						href="/"
+						class="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-300 transform hover:scale-105 shadow-lg glow-effect inline-block"
 					>
 						Back to Home
-					</button>
+					</a>
 				</section>
-				
-				<!-- Token Refresh Status -->
-				<section class="mt-6">
-					<div id="refresh-status" class="hidden text-sm"></div>
-				</section>
-				
-				<script>
-					function testTokenRefresh() {
-						console.log('🔄 TOKEN REFRESH TEST: Starting refresh test...');
-						const statusDiv = document.getElementById('refresh-status');
-						statusDiv.className = 'text-sm text-blue-600 bg-blue-900/50 border border-blue-400/50 px-4 py-3 rounded mb-4';
-						statusDiv.innerHTML = '<p>🔄 Testing token refresh...</p>';
-						statusDiv.classList.remove('hidden');
-						
-						fetch('/api/auth/refresh', {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-							}
-						})
-						.then(response => {
-							console.log('🔄 TOKEN REFRESH TEST: Response status:', response.status);
-							return response.json().then(data => {
-								console.log('🔄 TOKEN REFRESH TEST: Response data:', data);
-								if (response.ok && data.success) {
-									statusDiv.className = 'text-sm text-green-600 bg-green-900/50 border border-green-400/50 px-4 py-3 rounded mb-4';
-									statusDiv.innerHTML = '<p>✅ SUCCESS: Token refreshed! Check console for details.</p>';
-								} else {
-									statusDiv.className = 'text-sm text-red-600 bg-red-900/50 border border-red-400/50 px-4 py-3 rounded mb-4';
-									statusDiv.innerHTML = '<p>❌ ERROR: ' + (data.error || 'Unknown error') + '</p>';
-								}
-							});
-						})
-						.catch(error => {
-							console.log('❌ TOKEN REFRESH TEST: NETWORK ERROR:', error);
-							statusDiv.className = 'text-sm text-red-600 bg-red-900/50 border border-red-400/50 px-4 py-3 rounded mb-4';
-							statusDiv.innerHTML = '<p>❌ NETWORK ERROR: ' + error.message + '</p>';
-						});
-						
-						console.log('🔄 TOKEN REFRESH TEST: Test initiated');
-					}
-				</script>
 			</div>
 		</section>
 	</main>
