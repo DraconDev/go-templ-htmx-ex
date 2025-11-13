@@ -287,7 +287,7 @@ func UserInitials(user UserInfo) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if user.Name != "" {
-			templ_7745c5c3_Err = getUserInitials(user.Name).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = getFormattedInitials(user.Name).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -330,7 +330,7 @@ func getAvatarGradient(name string) string {
 }
 
 // Helper function to get formatted initials
-func getUserInitials(name string) templ.Component {
+func getFormattedInitials(name string) string {
 	words := strings.Fields(name)
 	var initials string
 
@@ -345,10 +345,7 @@ func getUserInitials(name string) templ.Component {
 		}
 	}
 
-	return templ.ComponentFunc(func(w http.ResponseWriter, r *http.Request) error {
-		fmt.Fprintf(w, `<span class="text-lg">%s</span>`, initials)
-		return nil
-	})
+	return initials
 }
 
 // NavigationLoggedOut renders the logged-out navigation

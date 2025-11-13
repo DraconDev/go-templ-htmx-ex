@@ -212,7 +212,7 @@ templ UserAvatar(user UserInfo) {
 // UserInitials returns formatted initials with fallback
 templ UserInitials(user UserInfo) {
 	if user.Name != "" {
-		@getUserInitials(user.Name)
+		@getFormattedInitials(user.Name)
 	} else {
 		<span class="text-lg">U</span>
 	}
@@ -247,7 +247,7 @@ func getAvatarGradient(name string) string {
 }
 
 // Helper function to get formatted initials
-func getUserInitials(name string) templ.Component {
+func getFormattedInitials(name string) string {
 	words := strings.Fields(name)
 	var initials string
 	
@@ -262,10 +262,7 @@ func getUserInitials(name string) templ.Component {
 		}
 	}
 	
-	return templ.ComponentFunc(func(w http.ResponseWriter, r *http.Request) error {
-		fmt.Fprintf(w, `<span class="text-lg">%s</span>`, initials)
-		return nil
-	})
+	return initials
 }
 
 // NavigationLoggedOut renders the logged-out navigation
