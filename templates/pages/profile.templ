@@ -1,5 +1,12 @@
 package pages
 
+import (
+	"fmt"
+	"strings"
+)
+
+//go:generate templ generate
+
 templ ProfileContent(name, email, picture string) {
 	<main class="max-w-3xl mx-auto" role="main">
 		<!-- Profile Header Card -->
