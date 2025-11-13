@@ -32,60 +32,47 @@ templ AuthCallbackContent() {
 		function setSessionAndRedirect() {
 			var params = parseFragment();
 			
-			// Check for JSON response in URL fragment
-			var authResponse = params['auth_response'];
-			if (!authResponse) {
-				showError('No authentication response found in URL fragment. Please try logging in again.');
+			// Check for OAuth code in URL
+			var code = params['code'];
+			if (!code) {
+				showError('No authorization code found in URL. Please try logging in again.');
 				return;
 			}
 			
-			try {
-				var tokens = JSON.parse(authResponse);
-				var sessionToken = tokens.session_token;
-				var refreshToken = tokens.refresh_token;
-				
-				console.log('🔐 CALLBACK: Parsed tokens from JSON:');
-				console.log('🔐 CALLBACK: session_token length:', sessionToken ? sessionToken.length : 'null');
-				console.log('🔐 CALLBACK: refresh_token length:', refreshToken ? refreshToken.length : 'null');
-				
-				if (!sessionToken || !refreshToken) {
-					showError('Invalid authentication response. Missing session_token or refresh_token.');
-					return;
-				}
+			console.log('🔐 CALLBACK: Authorization code received, length:', code.length);
 
-				// Set both session and refresh cookies via server endpoint
-				fetch('/api/auth/set-session', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ 
-						session_token: sessionToken,
-						refresh_token: refreshToken 
-					})
+			// Exchange code for tokens via server endpoint
+			fetch('/api/auth/exchange-code', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ 
+					code: code
 				})
-				.then(response => {
-					console.log('🔐 CALLBACK: Set session response status:', response.status);
-					if (response.ok) {
-						showSuccess('Authentication successful! Redirecting to home...');
-						setTimeout(() => {
-							window.location.href = '/';
-						}, 2000);
-					} else {
-						return response.json().then(data => {
-							throw new Error(data.error || 'Failed to set session');
-						});
-					}
-				})
-				.catch(error => {
-					console.error('🔐 CALLBACK: Error details:', error);
-					showError('Error: ' + error.message);
+			})
+			.then(response => {
+				console.log('🔐 CALLBACK: Exchange code response status:', response.status);
+				return response.json().then(data => {
+					console.log('🔐 CALLBACK: Exchange code response data:', data);
+					return { ok: response.ok, data: data };
 				});
-				
-			} catch (e) {
-				console.error('🔐 CALLBACK: Failed to parse auth response:', e);
-				showError('Failed to parse authentication response. Please try logging in again.');
-			}
+			})
+			.then(result => {
+				if (result.ok && result.data.success) {
+					console.log('🔐 CALLBACK: Successfully exchanged code for tokens');
+					showSuccess('Authentication successful! Redirecting to home...');
+					setTimeout(() => {
+						window.location.href = '/';
+					}, 1500);
+				} else {
+					throw new Error(result.data.error || 'Failed to exchange authorization code');
+				}
+			})
+			.catch(error => {
+				console.error('🔐 CALLBACK: Error details:', error);
+				showError('Error: ' + error.message);
+			});
 		}
 
 		function showError(message) {
