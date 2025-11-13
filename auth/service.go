@@ -235,13 +235,30 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 	}
 	
 	// Extract session and refresh tokens
-	sessionToken, hasSession := respData["session_token"].(string)
-	refreshToken, hasRefresh := respData["refresh_token"].(string)
+	var sessionToken, refreshToken string
+	var hasSession, hasRefresh bool
+	
+	if sessionInterface, exists := respData["session_token"]; exists {
+		if sessionStr, ok := sessionInterface.(string); ok {
+			sessionToken = sessionStr
+			hasSession = true
+		}
+	}
+	
+	if refreshInterface, exists := respData["refresh_token"]; exists {
+		if refreshStr, ok := refreshInterface.(string); ok {
+			refreshToken = refreshStr
+			hasRefresh = true
+		}
+	}
+	
+	fmt.Printf("🔄 AUTHSVC: Token extraction - Session: %t (%d chars), Refresh: %t (%d chars)\n", 
+		hasSession, len(sessionToken), hasRefresh, len(refreshToken))
 	
 	if !hasSession || !hasRefresh || sessionToken == "" || refreshToken == "" {
 		return &models.TokenExchangeResponse{
 			Success: false,
-			Error:   "Missing session_token or refresh_token in response",
+			Error:   fmt.Sprintf("Missing tokens - Session: %t, Refresh: %t", hasSession, hasRefresh),
 		}, fmt.Errorf("missing tokens in auth service response")
 	}
 	
