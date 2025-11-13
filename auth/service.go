@@ -163,6 +163,13 @@ func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error
 	})
 }
 
+// ExchangeCodeForTokens exchanges OAuth authorization code for session and refresh tokens
+func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
+	return s.CallAuthService(fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), map[string]string{
+		"code": code,
+	})
+}
+
 // =============================================================================
 // JWT LOCAL VALIDATION - FOR OPTIMIZED UI
 // =============================================================================
