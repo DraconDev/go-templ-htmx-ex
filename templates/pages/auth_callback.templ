@@ -14,17 +14,39 @@ templ AuthCallbackContent() {
 		</div>
 	</div>
 	<script>
-		// Function to parse URL fragment
-		function parseFragment() {
+		// Function to parse URL parameters (query string)
+		function parseParameters() {
+			var search = window.location.search.substring(1); // Remove ?
 			var fragment = window.location.hash.substring(1); // Remove #
 			var params = {};
-			if (fragment) {
-				var pairs = fragment.split('&');
+			
+			console.log('🔍 PARSE: Full URL:', window.location.href);
+			console.log('🔍 PARSE: Search params:', search);
+			console.log('🔍 PARSE: Hash fragment:', fragment);
+			
+			// Parse query parameters first (OAuth code comes here)
+			if (search) {
+				var pairs = search.split('&');
 				for (var i = 0; i < pairs.length; i++) {
 					var pair = pairs[i].split('=');
-					params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+					if (pair.length === 2) {
+						params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+					}
 				}
 			}
+			
+			// Also parse hash fragment (for backward compatibility)
+			if (fragment) {
+				var hashPairs = fragment.split('&');
+				for (var j = 0; j < hashPairs.length; j++) {
+					var hashPair = hashPairs[j].split('=');
+					if (hashPair.length === 2) {
+						params[decodeURIComponent(hashPair[0])] = decodeURIComponent(hashPair[1]);
+					}
+				}
+			}
+			
+			console.log('🔍 PARSE: All parsed parameters:', params);
 			return params;
 		}
 
