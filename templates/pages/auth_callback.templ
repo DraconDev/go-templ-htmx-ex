@@ -21,24 +21,24 @@ templ AuthCallbackContent() {
 			
 			if (code) {
 				if (code.startsWith('discord_')) {
-					return 'Discord';
+					return 'discord';
 				} else if (code.startsWith('gh_') || code.startsWith('github_')) {
-					return 'GitHub';
+					return 'github';
 				} else if (code.startsWith('google_') || code.includes('.')) {
-					return 'Google';
+					return 'google';
 				} else if (code.startsWith('ms_') || code.startsWith('microsoft_')) {
-					return 'Microsoft';
+					return 'microsoft';
 				}
 			}
 			
 			// Fallback: check URL path
 			var path = window.location.pathname;
-			if (path.includes('discord')) return 'Discord';
-			if (path.includes('github')) return 'GitHub';
-			if (path.includes('google')) return 'Google';
-			if (path.includes('microsoft')) return 'Microsoft';
+			if (path.includes('discord')) return 'discord';
+			if (path.includes('github')) return 'github';
+			if (path.includes('google')) return 'google';
+			if (path.includes('microsoft')) return 'microsoft';
 			
-			return 'your provider';
+			return 'unknown';
 		}
 		
 		// Function to parse URL parameters (query string)
@@ -81,8 +81,11 @@ templ AuthCallbackContent() {
 		function setSessionAndRedirect() {
 			var params = parseParameters();
 			
+			// Get provider information
+			var provider = getProviderName();
+			
 			// Update message with provider name
-			var providerName = getProviderName();
+			var providerName = provider.charAt(0).toUpperCase() + provider.slice(1);
 			var messageElement = document.getElementById('auth-message');
 			messageElement.textContent = 'Please wait while we authenticate you with ' + providerName + '.';
 			
@@ -94,7 +97,7 @@ templ AuthCallbackContent() {
 			}
 			
 			console.log('🔐 CALLBACK: Authorization code received, length:', code.length);
-			console.log('🔐 CALLBACK: Provider detected:', providerName);
+			console.log('🔐 CALLBACK: Provider detected:', provider);
 
 			// Exchange code for tokens via server endpoint
 			fetch('/api/auth/exchange-code', {
@@ -103,6 +106,7 @@ templ AuthCallbackContent() {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
+					provider: provider,
 					code: code
 				})
 			})
