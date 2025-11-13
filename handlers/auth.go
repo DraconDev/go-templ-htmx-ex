@@ -207,7 +207,7 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 	// authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
 	// 	h.Config.AuthServiceURL, h.Config.RedirectURL)
 
-			authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s",
+	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
 
 	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
@@ -223,9 +223,8 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 	// authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
 	// 	h.Config.AuthServiceURL, h.Config.RedirectURL)
 
-		authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s",
+	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
-
 
 	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
@@ -261,8 +260,9 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
-		Token        string `json:"token"`
-		RefreshToken string `json:"refresh_token"`
+		Token string `json:"token"`
+		// NOTE: refresh_token should NEVER be sent from client-side JavaScript
+		// The auth service should set refresh_token cookie directly
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -274,21 +274,20 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if req.Token == "" || req.RefreshToken == "" {
-		fmt.Printf("🔐 SESSION: Missing tokens - session: %s, refresh: %s\n", 
-			func() string { if req.Token == "" { return "missing" } else { return "present" } }(),
-			func() string { if req.RefreshToken == "" { return "missing" } else { return "present" } }())
+	if req.Token == "" {
+		fmt.Printf("🔐 SESSION: Missing access token in request\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Missing session_token or refresh_token",
+			"error": "Missing access token",
 		})
 		return
 	}
 
-	fmt.Printf("🔐 SESSION: Session token received, length: %d\n", len(req.Token))
-	fmt.Printf("🔐 SESSION: Refresh token received, length: %d\n", len(req.RefreshToken))
+	fmt.Printf("🔐 SESSION: Access token received, length: %d\n", len(req.Token))
+	fmt.Printf("🔐 SESSION: IMPORTANT: Setting ONLY session_token cookie from access_token")
+	fmt.Printf("🔐 SESSION: Refresh token should be set by auth service directly as HTTP-only cookie")
 
-	// Set session cookie with the session token (JWT)
+	// Set session cookie with the access token (JWT)
 	sessionCookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    req.Token,
@@ -298,31 +297,16 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		Secure:   false, // Set to true in production with HTTPS
 	}
 
-	// Set refresh token cookie (HTTP-only)
-	refreshCookie := &http.Cookie{
-		Name:     "refresh_token",
-		Value:    req.RefreshToken,
-		Path:     "/",
-		MaxAge:   30 * 24 * 3600, // 30 days
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	}
-
-	// Set both cookies
 	http.SetCookie(w, sessionCookie)
-	http.SetCookie(w, refreshCookie)
-	
-	fmt.Printf("🔐 SESSION: Both cookies set successfully:")
-	fmt.Printf("🔐 SESSION: - session_token cookie, Length: %d\n", len(sessionCookie.Value))
-	fmt.Printf("🔐 SESSION: - refresh_token cookie, Length: %d\n", len(refreshCookie.Value))
+	fmt.Printf("🔐 SESSION: Session cookie set - Name: %s, Length: %d\n", sessionCookie.Name, len(sessionCookie.Value))
 
-	fmt.Printf("🔐 SESSION: SUCCESS: Both session and refresh tokens established")
+	fmt.Printf("🔐 SESSION: SUCCESS: Session established with access token")
 	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
-		"message": "Session and refresh tokens set successfully",
+		"message": "Session set successfully with access token",
 	})
 }
 
