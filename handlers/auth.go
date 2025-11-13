@@ -306,9 +306,21 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if req.SessionToken == "" || req.RefreshToken == "" {
-		fmt.Printf("🔐 SESSION: Missing tokens - session: %s, refresh: %s\n", 
-			func() string { if req.SessionToken == "" { return "missing" } else { return "present" } }(),
-			func() string { if req.RefreshToken == "" { return "missing" } else { return "present" } }())
+		fmt.Printf("🔐 SESSION: Missing tokens - session: %s, refresh: %s\n",
+			func() string {
+				if req.SessionToken == "" {
+					return "missing"
+				} else {
+					return "present"
+				}
+			}(),
+			func() string {
+				if req.RefreshToken == "" {
+					return "missing"
+				} else {
+					return "present"
+				}
+			}())
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Missing session_token or refresh_token",
@@ -342,7 +354,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	// Set both cookies
 	http.SetCookie(w, sessionCookie)
 	http.SetCookie(w, refreshCookie)
-	
+
 	fmt.Printf("🔐 SESSION: Both cookies set successfully:")
 	fmt.Printf("🔐 SESSION: - session_token cookie, Length: %d\n", len(sessionCookie.Value))
 	fmt.Printf("🔐 SESSION: - refresh_token cookie, Length: %d\n", len(refreshCookie.Value))
@@ -462,7 +474,7 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔄 CODE: === Exchange authorization code STARTED ===\n")
 	fmt.Printf("🔄 CODE: Request URL: %s\n", r.URL.String())
-	
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
@@ -488,19 +500,10 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.Code))
-	fmt.Printf("🔄 CODE: Code preview: %s...\n", func() string { if len(req.Code) > 20 { return req.Code[:20] } else { return req.Code } }())
-
-	// Handle Discord codes with "discord_" prefix
-	actualCode := req.Code
-	if strings.HasPrefix(req.Code, "discord_") {
-		fmt.Printf("🔄 CODE: Detected Discord code format, stripping 'discord_' prefix...\n")
-		actualCode = strings.TrimPrefix(req.Code, "discord_")
-		fmt.Printf("🔄 CODE: Stripped code length: %d\n", len(actualCode))
-	}
 
 	// Exchange code for tokens via auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
-	tokensResp, err := h.AuthService.ExchangeCodeForTokens(actualCode)
+	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.Code)
 	if err != nil {
 		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
