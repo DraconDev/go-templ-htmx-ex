@@ -21,7 +21,16 @@ type AuthResponse struct {
 	Error   string `json:"error,omitempty"`
 }
 
-// SetSessionRequest represents a request to set a session token
-type SetSessionRequest struct {
-	Token string `json:"token"`
+// TokenExchangeResponse represents the response from exchanging auth code for tokens
+type TokenExchangeResponse struct {
+	Success       bool   `json:"success"`
+	Message       string `json:"message"`
+	SessionToken  string `json:"session_token"`
+	RefreshToken  string `json:"refresh_token"`
+	Error         string `json:"error,omitempty"`
+}
+
+// ExchangeCodeRequest represents a request to exchange authorization code for tokens
+type ExchangeCodeRequest struct {
+	Code string `json:"code"`
 }
