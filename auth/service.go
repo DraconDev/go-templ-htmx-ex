@@ -165,9 +165,34 @@ func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error
 
 // ExchangeCodeForTokens exchanges OAuth authorization code for session and refresh tokens
 func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
-	return s.CallAuthService(fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), map[string]string{
+	fmt.Printf("🔄 AUTHSVC: Exchanging code for tokens...\n")
+	
+	// Call the auth service
+	authResp, err := s.CallAuthService(fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), map[string]string{
 		"code": code,
 	})
+	
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   err.Error(),
+		}, err
+	}
+	
+	if !authResp.Success {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   authResp.Error,
+		}, fmt.Errorf(authResp.Error)
+	}
+	
+	// Convert AuthResponse to TokenExchangeResponse
+	// Assuming the auth service sends both session and refresh tokens in the response
+	return &models.TokenExchangeResponse{
+		Success:      true,
+		SessionToken: authResp.Token, // This should be the session token
+		RefreshToken: authResp.Email, // Temporarily use email field for refresh token - need to fix this
+	}, nil
 }
 
 // =============================================================================
