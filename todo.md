@@ -129,13 +129,18 @@ Authentication system is complete and working perfectly! Users can:
 - ✅ Stay logged in indefinitely with token refresh
 - ✅ Access secure, HTTP-only protected areas
 
-### **Next Steps - Choose Your Business Priority:**
+### **Next Steps - CONFIRMED BUSINESS PRIORITIES:**
 
-1. **💰 Payment Integration** - Stripe subscriptions for SaaS model
-2. **👋 User Onboarding** - Welcome flows and product tours
-3. **📊 Advanced Analytics** - User behavior tracking and insights
-4. **📱 API Endpoints** - Mobile app support
-5. **🔧 Admin Tools** - User management and moderation
+1. **💰 Payment Integration** - Stripe subscriptions for SaaS model (CRITICAL but big task)
+2. **🏠 SaaS-Ready Homepage** - Make main page more conversion-optimized (User onboarding)
+3. **📊 Analytics Dashboard** - User behavior tracking and insights  
+4. **🔧 Basic Admin Tools** - Enhance existing admin panel
+
+### **Confirmed to Skip:**
+- ~~**📱 Mobile App API**~~ - No mobile app needed
+- ~~**👥 Social Features**~~ - Personal profiles sufficient
+- ~~**📧 Email Notifications**~~ - Have email server, unclear if needed
+- ~~**🔧 Advanced Admin Panel**~~ - Current one big enough
 
 ### **Technical Foundation Status:**
 
