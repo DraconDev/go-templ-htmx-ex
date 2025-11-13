@@ -204,10 +204,7 @@ func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request)
 
 	// STEP 1: Redirect to our auth microservice with redirect_uri parameter
 	// The auth service will handle the actual Google OAuth flow
-	// authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
-	// 	h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s",
+	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
 		h.Config.AuthServiceURL, h.Config.RedirectURL)
 
 	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
