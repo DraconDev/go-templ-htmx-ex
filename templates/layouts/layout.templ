@@ -2,7 +2,6 @@ package layouts
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 )
 
@@ -212,7 +211,7 @@ templ UserAvatar(user UserInfo) {
 // UserInitials returns formatted initials with fallback
 templ UserInitials(user UserInfo) {
 	if user.Name != "" {
-		@getFormattedInitials(user.Name)
+		<span class="text-lg">{ getFormattedInitials(user.Name) }</span>
 	} else {
 		<span class="text-lg">U</span>
 	}
