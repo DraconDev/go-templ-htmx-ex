@@ -184,6 +184,21 @@ func (s *Service) ParseJWTFromIDToken(idToken string) (*models.JWTClaims, error)
 	return &claims, nil
 }
 
+// jwtBase64URLDecode decodes base64url encoding (needed for JWT)
+func jwtBase64URLDecode(data string) ([]byte, error) {
+	// Add padding if needed
+	switch len(data) % 4 {
+	case 2:
+		data += "=="
+	case 3:
+		data += "="
+	case 1:
+		return nil, fmt.Errorf("invalid base64url length")
+	}
+
+	return base64.URLEncoding.DecodeString(data)
+}
+
 // RefreshToken refreshes a token using the refresh token
 func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error) {
 	return s.CallAuthService(fmt.Sprintf("%s/auth/refresh", s.config.AuthServiceURL), map[string]string{
