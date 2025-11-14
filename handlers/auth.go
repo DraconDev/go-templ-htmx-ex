@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
@@ -552,7 +553,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("🔄 CODE: Auth response: %+v\n", tokensResp)
 
 	// Generate session ID for server session (in real app, this would come from auth service)
-	sessionID := fmt.Sprintf("sess_%d_%s", time.Now().UnixNano(), tokensResp.UserID)
+	sessionID := fmt.Sprintf("sess_%d_%x", time.Now().UnixNano(), time.Now().Unix())
 
 	// Set session_id cookie for server sessions
 	sessionCookie := &http.Cookie{
