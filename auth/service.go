@@ -205,7 +205,7 @@ func (s *Service) CreateSession(code string) (interface{}, error) {
 	fmt.Printf("🔄 AUTHSVC: Testing /session/create endpoint...\n")
 
 	// Call the session creation endpoint
-	fmt.Printf("🔄 AUTHSVC: Calling session create endpoint: %s/session/create\n", s.config.AuthServiceURL)
+	fmt.Printf("🔄 AUTHSVC: Calling session create endpoint: %s/auth/session/create\n", s.config.AuthServiceURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
