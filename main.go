@@ -81,40 +81,82 @@ func main() {
 	// Add authentication middleware to all routes
 	router.Use(middleware.AuthMiddleware)
 
-	// Define routes using clean handlers from handlers/handlers.go
+	// =============================================================================
+	// PUBLIC ROUTES - No authentication required
+	// =============================================================================
+
+	// Homepage - Main landing page with platform showcase
 	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
+
+	// Health check - API health monitoring endpoint
 	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
+
+	// Login page - OAuth provider selection UI
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 
-	// OAuth login routes
+	// =============================================================================
+	// OAUTH AUTHENTICATION FLOW
+	// =============================================================================
+
+	// Step 1: Redirect to OAuth providers
+	// These routes redirect users to Google, GitHub, Discord, or Microsoft for authentication
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/discord", authHandler.DiscordLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/microsoft", authHandler.MicrosoftLoginHandler).Methods("GET")
+
+	// Step 2: OAuth callback handler
+	// This route receives the OAuth callback, processes tokens, and creates server sessions
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
 
-	// Test routes
+	// =============================================================================
+	// DEVELOPMENT & TESTING ROUTES
+	// =============================================================================
+
+	// Test authentication page - Development tool for testing OAuth flows
 	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
 
-	// User profile page
+	// Test session creation - Development endpoint for testing server session creation
+	router.HandleFunc("/api/auth/test-session-create", authHandler.TestCreateSessionHandler).Methods("POST")
+
+	// =============================================================================
+	// PROTECTED USER ROUTES - Authentication required
+	// =============================================================================
+
+	// User profile page - Display user information and account details
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
-	// Admin dashboard
+	// =============================================================================
+	// ADMIN ROUTES - Admin authentication required
+	// =============================================================================
+
+	// Admin dashboard - Main admin interface for platform management
 	router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
 
-	// Admin API routes
-	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")
-	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET")
-	router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")
-	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")
+	// Admin API endpoints - Management operations for administrators
+	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")    // List all users
+	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET") // Platform analytics
+	router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")   // System settings
+	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")          // System logs
 
-	// Session management
+	// =============================================================================
+	// SESSION MANAGEMENT API - Authentication required
+	// =============================================================================
+
+	// Validate session - Check if current session is valid and get user info
 	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
+
+	// Logout user - Destroy current session and clear cookies
 	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
+
+	// Get current user - Retrieve authenticated user information
 	router.HandleFunc("/api/auth/user", authHandler.GetUserHandler).Methods("GET")
+
+	// Set session - Create new server session with provided session ID
 	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
+
+	// Exchange OAuth code - Convert OAuth authorization code to server session
 	router.HandleFunc("/api/auth/exchange-code", authHandler.ExchangeCodeHandler).Methods("POST")
-	router.HandleFunc("/api/auth/test-session-create", authHandler.TestCreateSessionHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
