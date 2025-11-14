@@ -143,7 +143,7 @@ docker run -p 8081:8081 your-app
 - **✅ OAuth 2.0 Authorization Code Flow** with proper token separation
 - **✅ Google OAuth** with real user data (Dracon, dracsharp@gmail.com, profile picture)
 - **✅ GitHub OAuth** with profile pictures and usernames (DraconDev, github.com/6221294)
-- **✅ Separate session_token and refresh_token** - No more same value issue!
+- **✅ Single session_id cookie** - No more token complexity!
 - **✅ HTTP-only cookie security** for all tokens
 - **✅ Server session validation** - 5-10ms response times
 - **✅ User profile pages** with real Google/GitHub data display
