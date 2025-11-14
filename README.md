@@ -208,15 +208,17 @@ vim templates/pages/your_feature.templ
 
 ## 🔍 Recent Updates
 
-- **✅ Server Session Migration:** Complete migration from JWT to Redis-backed server sessions
+- **✅ Complete JWT to Server Session Migration:** Full migration to Redis-backed sessions
+- **✅ Clear session_id Terminology:** Consistent naming across all components
+- **✅ Improved API Clarity:** Changed "code" parameter to "auth_code" for better understanding
+- **✅ Simplified Authentication Requests:** Minimal parameters (auth_code only)
 - **✅ Real User Data:** Google OAuth now displays real names, emails, and profile pictures
 - **🛡️ Security Enhancement:** HTTP-only cookies for session tokens
 - **⚡ Performance Optimization:** Server session validation with 15-second cache for 5-10ms response times
 - **✅ Session Management:** Instant session validation and immediate logout capability
 - **Template Reorganization:** Moved to proper package structure (layouts/pages)
 - **Enhanced Homepage:** Professional startup messaging, pricing, social proof
-- **Session Management:** Complete server session handling and validation system
-- **Documentation:** Consolidated project status and next steps
+- **✅ Documentation:** Complete project documentation and migration status
 
 ## 📄 License
 
