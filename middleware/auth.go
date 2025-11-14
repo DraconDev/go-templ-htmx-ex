@@ -105,28 +105,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// requiresAuthentication checks if a route requires authentication
-func requiresAuthentication(path string) bool {
-	// Protected routes that require authentication
-	protectedPaths := []string{
-		"/profile",        // User profile page
-		"/admin",          // Admin dashboard
-	}
-	
-	// Check exact matches first
-	for _, route := range protectedPaths {
-		if path == route {
-			return true
-		}
-	}
-	
-	// Check if path starts with protected prefixes
-	if len(path) >= 11 && path[:11] == "/api/admin/" {
-		return true // All admin API routes are protected
-	}
-	
-	return false
-}
+
 
 // validateSession validates server session from session_id cookie with 15-second caching
 func validateSession(r *http.Request) layouts.UserInfo {
