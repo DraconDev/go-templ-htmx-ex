@@ -156,49 +156,6 @@ func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 	return s.ValidateSession(token)
 }
 
-// ParseJWTFromIDToken extracts user information from the id_token JWT
-func (s *Service) ParseJWTFromIDToken(idToken string) (*models.JWTClaims, error) {
-	fmt.Printf("🔄 AUTHSVC: Parsing JWT from id_token...\n")
-
-	// Split JWT into parts
-	parts := strings.Split(idToken, ".")
-	if len(parts) != 3 {
-		return nil, fmt.Errorf("invalid JWT format: expected 3 parts, got %d", len(parts))
-	}
-
-	// Decode the payload (middle part)
-	payload, err := jwtBase64URLDecode(parts[1])
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode JWT payload: %v", err)
-	}
-
-	// Parse user data from JWT payload
-	var claims models.JWTClaims
-	if err := json.Unmarshal(payload, &claims); err != nil {
-		return nil, fmt.Errorf("failed to parse JWT claims: %v", err)
-	}
-
-	fmt.Printf("🔄 AUTHSVC: JWT claims extracted - Subject: %s, Name: %s, Email: %s\n",
-		claims.Subject, claims.Name, claims.Email)
-
-	return &claims, nil
-}
-
-// jwtBase64URLDecode decodes base64url encoding (needed for JWT)
-func jwtBase64URLDecode(data string) ([]byte, error) {
-	// Add padding if needed
-	switch len(data) % 4 {
-	case 2:
-		data += "=="
-	case 3:
-		data += "="
-	case 1:
-		return nil, fmt.Errorf("invalid base64url length")
-	}
-
-	return base64.URLEncoding.DecodeString(data)
-}
-
 // CreateSession exchanges OAuth authorization code for session creation
 // This is a test function to see what /session/create returns
 func (s *Service) CreateSession(code string) (interface{}, error) {
