@@ -21,8 +21,8 @@ A **production-ready startup platform** with **Google OAuth**, **PostgreSQL data
 - **HTTP-only cookies** for maximum security
 - **Server session validation** for 5-10ms response times
 - **Session Management** - Users never get logged out:
-  - ✅ **Frontend**: 25-minute proactive refresh via JavaScript
-  - ✅ **Backend**: 5-minute reactive refresh via middleware
+  - ✅ **Instant session validation** via Redis cache
+  - ✅ **Immediate logout capability** when sessions are revoked
   - ✅ **Failover protection**: Both systems backup each other
 - User profile pages with real Google/GitHub data
 - Session validation middleware
