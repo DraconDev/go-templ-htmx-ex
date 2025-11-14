@@ -292,8 +292,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
-		SessionToken string `json:"session_token"`
-		RefreshToken string `json:"refresh_token"`
+		SessionID string `json:"session_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -305,67 +304,40 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if req.SessionToken == "" || req.RefreshToken == "" {
-		fmt.Printf("🔐 SESSION: Missing tokens - session: %s, refresh: %s\n",
-			func() string {
-				if req.SessionToken == "" {
-					return "missing"
-				} else {
-					return "present"
-				}
-			}(),
-			func() string {
-				if req.RefreshToken == "" {
-					return "missing"
-				} else {
-					return "present"
-				}
-			}())
+	if req.SessionID == "" {
+		fmt.Printf("🔐 SESSION: Missing session_id\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Missing session_token or refresh_token",
+			"error": "Missing session_id",
 		})
 		return
 	}
 
-	fmt.Printf("🔐 SESSION: Session token received, length: %d\n", len(req.SessionToken))
-	fmt.Printf("🔐 SESSION: Refresh token received, length: %d\n", len(req.RefreshToken))
+	fmt.Printf("🔐 SESSION: Session ID received, length: %d\n", len(req.SessionID))
 
-	// Set session cookie with the session token (JWT)
+	// Set session_id cookie (replaces session_token)
 	sessionCookie := &http.Cookie{
-		Name:     "session_token",
-		Value:    req.SessionToken,
+		Name:     "session_id",
+		Value:    req.SessionID,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
 
-	// Set refresh token cookie (HTTP-only)
-	refreshCookie := &http.Cookie{
-		Name:     "refresh_token",
-		Value:    req.RefreshToken,
-		Path:     "/",
-		MaxAge:   30 * 24 * 3600, // 30 days
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	}
-
-	// Set both cookies
+	// Set session_id cookie
 	http.SetCookie(w, sessionCookie)
-	http.SetCookie(w, refreshCookie)
 
-	fmt.Printf("🔐 SESSION: Both cookies set successfully:")
-	fmt.Printf("🔐 SESSION: - session_token cookie, Length: %d\n", len(sessionCookie.Value))
-	fmt.Printf("🔐 SESSION: - refresh_token cookie, Length: %d\n", len(refreshCookie.Value))
+	fmt.Printf("🔐 SESSION: Session ID cookie set successfully:")
+	fmt.Printf("🔐 SESSION: - session_id cookie, Length: %d\n", len(sessionCookie.Value))
 
-	fmt.Printf("🔐 SESSION: SUCCESS: Both session and refresh tokens established")
+	fmt.Printf("🔐 SESSION: SUCCESS: Server session established")
 	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
-		"message": "Session and refresh tokens set successfully",
+		"message": "Server session established successfully",
 	})
 }
 
