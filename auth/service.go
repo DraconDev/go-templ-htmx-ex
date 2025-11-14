@@ -438,12 +438,11 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 	fmt.Printf("🔄 AUTHSVC: Successfully extracted session token - SessionToken: %d chars\n",
 		len(sessionToken))
 
-	// For server sessions, we return the session token as both IdToken and RefreshToken
+	// For server sessions, we return the session token as IdToken
 	// This maintains compatibility with the TokenExchangeResponse structure
 	return &models.TokenExchangeResponse{
-		Success:      true,
-		IdToken:      sessionToken,
-		RefreshToken: sessionToken,
+		Success:  true,
+		IdToken:  sessionToken,
 	}, nil
 }
 
