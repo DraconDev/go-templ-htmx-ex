@@ -51,8 +51,8 @@ func TestAdminDashboardUnauthorized(t *testing.T) {
 	// Create test request with non-admin user token
 	req := httptest.NewRequest("GET", "/admin", nil)
 	req.AddCookie(&http.Cookie{
-		Name:  "session_token",
-		Value: "regular-user-jwt-token",
+		Name:  "session_id",
+		Value: "regular-user-session-id",
 	})
 
 	// Create response recorder
