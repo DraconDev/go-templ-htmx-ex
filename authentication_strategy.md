@@ -129,7 +129,22 @@ Current Challenge: How to validate membership status dynamically?
 - **TTL support** - Automatic session expiration
 - **Auth service owns it** - Redis is part of the auth microservice, not the app
 
-#### **4. Avoids Monolithic Thinking** ⚠️
+#### **4. The Clunky Security Card Problem** 🃏
+```go
+// JWTs: "Here's a token with potentially out-of-date info"
+app → Validate JWT with public key ✓ (stateless)
+// But then...
+app → "Wait, is this membership info current?"
+app → Call auth service anyway ❌ (back to stateful!)
+
+// Result: Pointless complexity
+// - JWT is just a "clunky security card"
+// - Contains potentially out-of-date info
+// - Still need to call auth service for current data
+// - Gained NOTHING from the stateless approach!
+```
+
+#### **5. Avoids Monolithic Thinking** ⚠️
 ```go
 // JWT Problem: Creates false statelessness
 app → Validate JWT with public key ✓ (stateless)
