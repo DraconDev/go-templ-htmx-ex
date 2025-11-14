@@ -199,6 +199,61 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 	return base64.URLEncoding.DecodeString(data)
 }
 
+// CreateSession exchanges OAuth authorization code for session creation
+// This is a test function to see what /session/create returns
+func (s *Service) CreateSession(code string) (interface{}, error) {
+	fmt.Printf("🔄 AUTHSVC: Testing /session/create endpoint...\n")
+
+	// Call the session creation endpoint
+	fmt.Printf("🔄 AUTHSVC: Calling session create endpoint: %s/session/create\n", s.config.AuthServiceURL)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	// Create request with the code
+	jsonData := map[string]string{"code": code}
+	reqData, err := json.Marshal(jsonData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/session/create", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Add auth secret if configured
+	if s.config.AuthSecret != "" {
+		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
+	}
+
+	fmt.Printf("🔄 AUTHSVC: Sending request...\n")
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	fmt.Printf("🔄 AUTHSVC: Response status: %s\n", resp.Status)
+
+	// Read response
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("🔄 AUTHSVC: Response body: %s\n", string(bodyBytes))
+
+	// Parse response as JSON
+	var response map[string]interface{}
+	if err := json.Unmarshal(bodyBytes, &response); err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("🔄 AUTHSVC: Parsed response: %+v\n", response)
+	return response, nil
+}
+
 // RefreshToken refreshes a token using the refresh token
 func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error) {
 	fmt.Printf("🔄 AUTHSVC: Refreshing token with refresh_token length: %d\n", len(refreshToken))
