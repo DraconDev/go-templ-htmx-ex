@@ -112,7 +112,7 @@ templ Layout(title string, description string, navigation templ.Component, conte
 					// Check every 25 minutes (just before 1-hour token expires)
 					setInterval(() => {
 						const cookies = document.cookie.split(';');
-						const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('session_token='));
+						const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('session_id='));
 						
 						if (sessionCookie) {
 							// User is logged in, refresh token proactively
