@@ -134,7 +134,7 @@ func TestAdminDashboardMiddlewareIntegration(t *testing.T) {
 
 			if scenario.hasCookie {
 				req.AddCookie(&http.Cookie{
-					Name:  "session_token",
+					Name:  "session_id",
 					Value: scenario.tokenValue,
 				})
 			}
