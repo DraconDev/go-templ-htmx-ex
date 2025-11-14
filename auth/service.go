@@ -360,8 +360,8 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 
 	// Create request with all required fields including context
 	jsonData := map[string]string{
-		"code":    code,
-		"context": "server-session", // Required field for server session authentication
+		"auth_code": code,
+		"context":   "server-session", // Required field for server session authentication
 	}
 	reqData, err := json.Marshal(jsonData)
 	if err != nil {
