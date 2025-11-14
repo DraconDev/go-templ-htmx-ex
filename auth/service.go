@@ -159,28 +159,28 @@ func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 // ParseJWTFromIDToken extracts user information from the id_token JWT
 func (s *Service) ParseJWTFromIDToken(idToken string) (*models.JWTClaims, error) {
 	fmt.Printf("🔄 AUTHSVC: Parsing JWT from id_token...\n")
-	
+
 	// Split JWT into parts
 	parts := strings.Split(idToken, ".")
 	if len(parts) != 3 {
 		return nil, fmt.Errorf("invalid JWT format: expected 3 parts, got %d", len(parts))
 	}
-	
+
 	// Decode the payload (middle part)
 	payload, err := jwtBase64URLDecode(parts[1])
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode JWT payload: %v", err)
 	}
-	
+
 	// Parse user data from JWT payload
 	var claims models.JWTClaims
 	if err := json.Unmarshal(payload, &claims); err != nil {
 		return nil, fmt.Errorf("failed to parse JWT claims: %v", err)
 	}
-	
-	fmt.Printf("🔄 AUTHSVC: JWT claims extracted - Subject: %s, Name: %s, Email: %s\n", 
+
+	fmt.Printf("🔄 AUTHSVC: JWT claims extracted - Subject: %s, Name: %s, Email: %s\n",
 		claims.Subject, claims.Name, claims.Email)
-	
+
 	return &claims, nil
 }
 
@@ -202,7 +202,7 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 // RefreshToken refreshes a token using the refresh token
 func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error) {
 	fmt.Printf("🔄 AUTHSVC: Refreshing token with refresh_token length: %d\n", len(refreshToken))
-	
+
 	// Special handling for refresh endpoint - it returns tokens, not user info
 	return s.CallRefreshAuthService(fmt.Sprintf("%s/auth/refresh", s.config.AuthServiceURL), map[string]string{
 		"refresh_token": refreshToken,
@@ -212,67 +212,67 @@ func (s *Service) RefreshToken(refreshToken string) (*models.AuthResponse, error
 // CallRefreshAuthService handles the special response format from refresh endpoint
 func (s *Service) CallRefreshAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
 	fmt.Printf("🔄 AUTHSVC: Calling refresh endpoint: %s\n", endpoint)
-	
+
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Create JSON data
 	jsonData, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	fmt.Printf("🔄 AUTHSVC: Refresh request data: %s\n", string(jsonData))
-	
+
 	// Add auth secret to params if not present
 	if _, exists := params["secret"]; !exists && s.config.AuthSecret != "" {
 		params["secret"] = s.config.AuthSecret
 	}
-	
+
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	// Add X-Auth-Secret header for protected endpoints
 	if s.config.AuthSecret != "" {
 		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
 	}
-	
+
 	fmt.Printf("🔄 AUTHSVC: Sending refresh request...\n")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	fmt.Printf("🔄 AUTHSVC: Refresh response status: %s\n", resp.Status)
-	
+
 	// Read the response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	fmt.Printf("🔄 AUTHSVC: Refresh response body: %s\n", string(bodyBytes))
-	
+
 	// Parse the refresh response (has id_token and refresh_token fields)
 	var refreshResp struct {
 		IdToken      string `json:"id_token"`
 		RefreshToken string `json:"refresh_token"`
 	}
-	
+
 	if err := json.Unmarshal(bodyBytes, &refreshResp); err != nil {
 		return nil, fmt.Errorf("failed to parse refresh response: %v", err)
 	}
-	
+
 	if refreshResp.IdToken == "" {
 		return nil, fmt.Errorf("no id_token in refresh response")
 	}
-	
-	fmt.Printf("🔄 AUTHSVC: Successfully got new tokens - id_token: %d chars, refresh_token: %d chars\n", 
+
+	fmt.Printf("🔄 AUTHSVC: Successfully got new tokens - id_token: %d chars, refresh_token: %d chars\n",
 		len(refreshResp.IdToken), len(refreshResp.RefreshToken))
-	
+
 	// Parse the new id_token to extract user info
 	claims, err := s.ParseJWTFromIDToken(refreshResp.IdToken)
 	if err != nil {
@@ -283,7 +283,7 @@ func (s *Service) CallRefreshAuthService(endpoint string, params map[string]stri
 			Token:   refreshResp.IdToken,
 		}, nil
 	}
-	
+
 	return &models.AuthResponse{
 		Success: true,
 		Token:   refreshResp.IdToken,
@@ -312,8 +312,8 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   "Failed to marshal request data",
 		}, err
 	}
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/session/create", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
 	if err != nil {
 		return &models.TokenExchangeResponse{
 			Success: false,
