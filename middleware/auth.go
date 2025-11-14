@@ -84,10 +84,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Always validate session and add to context (for UI purposes)
-		userInfo := validateSession(r)
-		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
-
 		// Check if this route requires authentication
 		var requiresAuth bool
 		if r.URL.Path[:5] == "/api/" {
@@ -95,6 +91,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		} else {
 			requiresAuth = protectedPaths[r.URL.Path]
 		}
+
+		// Only validate session if route requires auth or might need user info
+		var userInfo layouts.UserInfo
+		if requiresAuth || isUserInfoNeeded(r.URL.Path) {
+			userInfo = validateSession(r)
+		}
+		
+		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
 		// If route requires auth but user is not logged in, redirect
 		if requiresAuth && !userInfo.LoggedIn {
@@ -108,13 +112,31 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			// For web routes, redirect to home
-			http.Redirect(w, r, "/", http.StatusFound)
+			// For web routes, redirect to login
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// isUserInfoNeeded determines if we need to validate session for UI purposes
+func isUserInfoNeeded(path string) bool {
+	// Routes that need user info for navigation/branding
+	userInfoRoutes := []string{
+		"/",           // Homepage - shows login/logout button
+		"/login",      // Login page - shows different content
+		"/profile",    // Profile page - needs user info
+		"/admin",      // Admin page - needs user info for UI
+	}
+	
+	for _, route := range userInfoRoutes {
+		if path == route || len(path) >= len(route) && path[:len(route)] == route {
+			return true
+		}
+	}
+	return false
 }
 
 // validateSession validates server session from session_id cookie with 15-second caching
