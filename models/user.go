@@ -22,13 +22,12 @@ type AuthResponse struct {
 	Error        string `json:"error,omitempty"`
 }
 
-// TokenExchangeResponse represents the response from exchanging auth code for tokens
+// TokenExchangeResponse represents the response from exchanging auth code for session
 type TokenExchangeResponse struct {
-	Success      bool   `json:"success"`
-	Message      string `json:"message"`
-	IdToken      string `json:"id_token"`      // The JWT (instead of session_token)
-	RefreshToken string `json:"refresh_token"` // The refresh code
-	Error        string `json:"error,omitempty"`
+	Success     bool   `json:"success"`
+	Message     string `json:"message"`
+	IdToken     string `json:"id_token"` // Server session token
+	Error       string `json:"error,omitempty"`
 }
 
 // JWTClaims represents the standard OpenID Connect claims in a JWT
