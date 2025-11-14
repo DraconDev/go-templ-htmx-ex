@@ -104,7 +104,7 @@ cp .env.example .env
 │   ├── auth.go               # Authentication
 │   └── handlers.go           # User pages
 ├── middleware/
-│   └── auth.go              # JWT validation
+│   └── auth.go              # Session validation
 ├── templates/
 │   ├── layouts/             # Layout templates (reorganized)
 │   │   ├── layout.templ
