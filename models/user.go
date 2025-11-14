@@ -22,5 +22,5 @@ type TokenExchangeResponse struct {
 
 // ExchangeCodeRequest represents a request to exchange authorization code for tokens
 type ExchangeCodeRequest struct {
-	Code string `json:"code"`
+	AuthCode string `json:"auth_code"`
 }
