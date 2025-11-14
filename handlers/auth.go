@@ -184,7 +184,7 @@ func (h *AuthHandler) DiscordLoginHandler(w http.ResponseWriter, r *http.Request
 // MicrosoftLoginHandler handles Microsoft OAuth login
 // Flow: User clicks "Login with Microsoft" -> Redirect to our auth service ->
 //
-//	Auth service handles Microsoft OAuth -> Returns to our callback with JWT
+//	Auth service handles Microsoft OAuth -> Returns to our callback with session token
 func (h *AuthHandler) MicrosoftLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 MICROSOFT LOGIN: Starting Microsoft OAuth flow\n")
 	fmt.Printf("🔐 MICROSOFT LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
@@ -200,7 +200,7 @@ func (h *AuthHandler) MicrosoftLoginHandler(w http.ResponseWriter, r *http.Reque
 }
 
 // AuthCallbackHandler handles the OAuth callback
-// Flow: Google redirects here with JWT in URL fragment (#access_token=...)
+// Flow: OAuth provider redirects here with authorization code in URL
 //
 //	Client-side JS extracts token and calls /api/auth/set-session
 func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
