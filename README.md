@@ -6,7 +6,7 @@ A **production-ready startup platform** with **Google OAuth**, **PostgreSQL data
 
 - **🚀 Fast startup foundation** with real authentication & database
 - **📊 Admin dashboard** with live user analytics  
-- **🔐 Google OAuth ready** with JWT sessions
+- **🔐 Google OAuth ready** with server sessions
 - **🎨 Startup-focused homepage** with professional messaging and pricing
 - **🐳 Docker ready** for production deployment
 - **🏗️ Microservice architecture** ready to scale
