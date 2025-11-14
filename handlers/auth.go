@@ -470,6 +470,56 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// TestCreateSessionHandler tests the session creation endpoint
+func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🧪 TEST: Testing /auth/session/create endpoint...\n")
+	
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		Code string `json:"code"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Printf("🧪 TEST: Failed to decode request: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Invalid request body",
+		})
+		return
+	}
+
+	if req.Code == "" {
+		fmt.Printf("🧪 TEST: Missing authorization code\n")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Missing authorization code",
+		})
+		return
+	}
+
+	fmt.Printf("🧪 TEST: Authorization code received: %s\n", req.Code)
+
+	// Test the new CreateSession function
+	response, err := h.AuthService.CreateSession(req.Code)
+	if err != nil {
+		fmt.Printf("🧪 TEST: CreateSession failed: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	fmt.Printf("🧪 TEST: Session creation response: %+v\n", response)
+	
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"response": response,
+	})
+}
+
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
 func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔄 CODE: === Exchange authorization code STARTED ===\n")
