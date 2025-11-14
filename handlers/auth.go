@@ -382,7 +382,7 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 // TestCreateSessionHandler tests the session creation endpoint
 func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🧪 TEST: Testing /auth/session/create endpoint...\n")
-	
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
@@ -421,10 +421,10 @@ func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	fmt.Printf("🧪 TEST: Session creation response: %+v\n", response)
-	
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true,
+		"success":  true,
 		"response": response,
 	})
 }
@@ -468,7 +468,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		fmt.Printf("❌ CODE: Error type: %T\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": err.Error(),
+			"error":      err.Error(),
 			"error_type": fmt.Sprintf("%T", err),
 		})
 		return
@@ -479,20 +479,10 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		fmt.Printf("❌ CODE: Response: %+v\n", tokensResp)
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": tokensResp.Error,
+			"error":   tokensResp.Error,
 			"success": tokensResp.Success,
 		})
 		return
-	}
-	
-	fmt.Printf("🔐 CODE: Session token length: %d\n", len(tokensResp.IdToken))
-	fmt.Printf("🔐 CODE: Refresh token length: %d\n", len(tokensResp.RefreshToken))
-	
-	// Log the first few characters of the session token for debugging
-	if len(tokensResp.IdToken) > 20 {
-		fmt.Printf("🔐 CODE: Session token preview: %s...\n", tokensResp.IdToken[:20])
-	} else {
-		fmt.Printf("🔐 CODE: Session token: %s\n", tokensResp.IdToken)
 	}
 
 	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
@@ -545,4 +535,3 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 		Picture:  userResp.Picture,
 	}
 }
-
