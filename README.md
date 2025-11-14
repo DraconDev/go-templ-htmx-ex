@@ -208,11 +208,11 @@ vim templates/pages/your_feature.templ
 
 ## 🔍 Recent Updates
 
-- **🔐 OAuth 2.0 Token Separation:** Fixed refresh token issue - session_token and refresh_token now have different values
+- **✅ Server Session Migration:** Complete migration from JWT to Redis-backed server sessions
 - **✅ Real User Data:** Google OAuth now displays real names, emails, and profile pictures
-- **🛡️ Security Enhancement:** HTTP-only cookies for all authentication tokens
-- **⚡ Performance Optimization:** Server session validation for 5-10ms response times
-- **🧪 Token Refresh Testing:** Added test button on profile page for refresh mechanism
+- **🛡️ Security Enhancement:** HTTP-only cookies for session tokens
+- **⚡ Performance Optimization:** Server session validation with 15-second cache for 5-10ms response times
+- **✅ Session Management:** Instant session validation and immediate logout capability
 - **Template Reorganization:** Moved to proper package structure (layouts/pages)
 - **Enhanced Homepage:** Professional startup messaging, pricing, social proof
 - **Session Management:** Complete server session handling and validation system
