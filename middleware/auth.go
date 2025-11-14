@@ -149,6 +149,7 @@ func validateSession(r *http.Request) layouts.UserInfo {
 	userInfo, err := validateSessionWithAuthService(cookie.Value)
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Auth service validation failed: %v\n", err)
+		// Return unauthenticated instead of crashing
 		return layouts.UserInfo{LoggedIn: false}
 	}
 
@@ -192,7 +193,8 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to call auth service: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, err
+		// Don't fail the request if auth service is unavailable
+		return layouts.UserInfo{LoggedIn: false}, nil
 	}
 	defer resp.Body.Close()
 	
@@ -202,10 +204,10 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 	var respData map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, err
+		return layouts.UserInfo{LoggedIn: false}, nil
 	}
 	
-	fmt.Printf("🔐 MIDHSVC: Auth service response: %v\n", respData)
+	fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
 	
 	// Check if session is valid
 	if valid, ok := respData["valid"].(bool); ok && valid {
@@ -229,7 +231,7 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 	}
 	
 	fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
-	return layouts.UserInfo{LoggedIn: false}, fmt.Errorf("invalid session")
+	return layouts.UserInfo{LoggedIn: false}, nil
 }
 
 // GetUserFromContext gets user info from request context
