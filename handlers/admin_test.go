@@ -21,8 +21,8 @@ func TestAdminDashboardAccess(t *testing.T) {
 	
 	// Set session token cookie for admin user (simulating real authentication)
 	req.AddCookie(&http.Cookie{
-		Name:  "session_token",
-		Value: "admin-jwt-token",
+		Name:  "session_id",
+		Value: "admin-session-token",
 	})
 	
 	// Create response recorder
