@@ -17,7 +17,7 @@ A **production-ready startup platform** with **Google OAuth**, **PostgreSQL data
 - **OAuth 2.0 Authorization Code Flow** with proper token separation
 - Google OAuth login with real user data (name, email, avatar)
 - GitHub OAuth integration with profile pictures
-- **Separate session_token and refresh_token** cookies - NO MORE same value issue!
+- **Single session_id cookie** for Redis-backed sessions
 - **HTTP-only cookies** for maximum security
 - **Server session validation** for 5-10ms response times
 - **Session Management** - Users never get logged out:
