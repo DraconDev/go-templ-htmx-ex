@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
@@ -160,14 +162,77 @@ func validateSession(r *http.Request) layouts.UserInfo {
 func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
 	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
 	
-	// Note: In a real implementation, this would call the auth microservice
-	// Since we don't have the auth service instance here, we'll use a placeholder
+	// Create HTTP client with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
 	
-	fmt.Printf("🔐 MIDDLEWARE: Session validation API call would go here\n")
+	// Prepare request to auth service
+	reqBody := map[string]string{"session_token": sessionID}
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, err
+	}
 	
-	// Placeholder: Return invalid session for now
-	// This would be implemented to call the auth service and return user info
-	return layouts.UserInfo{LoggedIn: false}, fmt.Errorf("session validation API not implemented")
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/validate", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, err
+	}
+	
+	req.Header.Set("Content-Type", "application/json")
+	
+	// Add auth secret if configured
+	if config.Current.AuthSecret != "" {
+		req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
+	}
+	
+	fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
+	
+	// Send request to auth service
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to call auth service: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, err
+	}
+	defer resp.Body.Close()
+	
+	fmt.Printf("🔐 MIDDLEWARE: Auth service response status: %s\n", resp.Status)
+	
+	// Parse response
+	var respData map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, err
+	}
+	
+	fmt.Printf("🔐 MIDHSVC: Auth service response: %v\n", respData)
+	
+	// Check if session is valid
+	if valid, ok := respData["valid"].(bool); ok && valid {
+		// Session is valid - extract user info
+		userInfo := layouts.UserInfo{
+			LoggedIn: true,
+		}
+		
+		if name, ok := respData["name"].(string); ok {
+			userInfo.Name = name
+		}
+		if email, ok := respData["email"].(string); ok {
+			userInfo.Email = email
+		}
+		if picture, ok := respData["picture"].(string); ok {
+			userInfo.Picture = picture
+		}
+		if userID, ok := respData["user_id"].(string); ok {
+			userInfo.UserID = userID
+		}
+		
+		fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
+		return userInfo, nil
+	}
+	
+	fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
+	return layouts.UserInfo{LoggedIn: false}, fmt.Errorf("invalid session")
 }
 
 // GetUserFromContext gets user info from request context
