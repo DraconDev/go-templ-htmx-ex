@@ -117,7 +117,7 @@ func (s *Service) GetUserInfo(token string) (*models.AuthResponse, error) {
 
 // Logout logs out a user (通知auth service)
 func (s *Service) Logout(token string) error {
-	// Since this is a JWT-based system, we can just log it
+	// Since this is a server session system, we can just log it
 	// In a more complex system, you might want to blacklist the token
 	log.Printf("User logged out with token: %s", token)
 	return nil
