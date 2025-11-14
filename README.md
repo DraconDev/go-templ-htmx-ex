@@ -151,7 +151,7 @@ docker run -p 8081:8081 your-app
 - **✅ Admin dashboard** with live database statistics
 - **✅ PostgreSQL database integration** with real user tracking
 - **✅ Enhanced startup-focused homepage** with professional messaging
-- **✅ Session validation middleware** with real-time JWT parsing
+- **✅ Session validation middleware** with real-time session checking
 - **✅ Docker containerization** for production deployment
 - **✅ Template reorganization** completed with layouts/pages structure
 
