@@ -204,8 +204,8 @@ func jwtBase64URLDecode(data string) ([]byte, error) {
 func (s *Service) CreateSession(code string) (interface{}, error) {
 	fmt.Printf("🔄 AUTHSVC: Testing /session/create endpoint...\n")
 
-	// Call the session creation endpoint
-	fmt.Printf("🔄 AUTHSVC: Calling session create endpoint: %s/auth/session/create\n", s.config.AuthServiceURL)
+	// Call the authentication endpoint (handles both creation and refreshing)
+	fmt.Printf("🔄 AUTHSVC: Calling authenticate endpoint: %s/auth/authenticate\n", s.config.AuthServiceURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
@@ -216,7 +216,7 @@ func (s *Service) CreateSession(code string) (interface{}, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/create", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/authenticate", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
 	if err != nil {
 		return nil, err
 	}
