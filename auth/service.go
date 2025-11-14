@@ -349,12 +349,12 @@ func (s *Service) CallRefreshAuthService(endpoint string, params map[string]stri
 	}, nil
 }
 
-// ExchangeCodeForTokens exchanges OAuth authorization code for session and refresh tokens
+// ExchangeCodeForTokens exchanges OAuth authorization code for server session
 func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
-	fmt.Printf("🔄 AUTHSVC: Exchanging code for tokens...\n")
+	fmt.Printf("🔄 AUTHSVC: Exchanging code for session...\n")
 
 	// Call the auth service directly and parse the response manually
-	fmt.Printf("🔄 AUTHSVC: Calling auth service endpoint: %s/auth/token\n", s.config.AuthServiceURL)
+	fmt.Printf("🔄 AUTHSVC: Calling auth service endpoint: %s/auth/session/authenticate\n", s.config.AuthServiceURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
@@ -367,8 +367,7 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   "Failed to marshal request data",
 		}, err
 	}
-	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/validate", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/authenticate", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
 	if err != nil {
 		return &models.TokenExchangeResponse{
 			Success: false,
@@ -376,11 +375,6 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-
-	// Add auth secret if configured
-	if s.config.AuthSecret != "" {
-		req.Header.Set("X-Auth-Secret", s.config.AuthSecret)
-	}
 
 	resp, err := client.Do(req)
 	if err != nil {
