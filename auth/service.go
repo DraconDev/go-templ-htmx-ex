@@ -399,6 +399,15 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 
 	fmt.Printf("🔄 AUTHSVC: Response status: %s\n", resp.Status)
 	fmt.Printf("🔄 AUTHSVC: Response body: %s\n", string(bodyBytes))
+	
+	// Log the full response for debugging server session format
+	fmt.Printf("🔄 AUTHSVC: Full response details:\n")
+	fmt.Printf("🔄 AUTHSVC: Status Code: %d\n", resp.StatusCode)
+	fmt.Printf("🔄 AUTHSVC: Content-Type: %s\n", resp.Header.Get("Content-Type"))
+	fmt.Printf("🔄 AUTHSVC: Body Length: %d\n", len(bodyBytes))
+	if len(bodyBytes) > 0 {
+		fmt.Printf("🔄 AUTHSVC: Body Preview: %s\n", func() string { if len(string(bodyBytes)) > 100 { return string(bodyBytes)[:100] + "..." } else { return string(bodyBytes) } }())
+	}
 
 	// Parse the response directly as a map to extract tokens
 	var respData map[string]interface{}
