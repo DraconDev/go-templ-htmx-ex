@@ -53,69 +53,6 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // =============================================================================
-        // TOKEN REFRESH TESTING FUNCTIONS
-        // =============================================================================
-        
-        // Simple token refresh test - browser automatically handles HTTP-only cookies
-        function testTokenRefresh() {
-            console.log('🔄 TOKEN REFRESH TEST: Testing refresh token flow...');
-            const resultDiv = document.getElementById('refresh-result');
-            
-            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Refreshing token...</p>';
-            
-            // Browser automatically sends refresh_token cookie (HTTP-only, inaccessible to JS)
-            fetch('/api/auth/refresh', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => {
-                console.log('🔄 TOKEN REFRESH TEST: Response status:', response.status);
-                return response.json().then(data => {
-                    console.log('🔄 TOKEN REFRESH TEST: Response data:', data);
-                    return { ok: response.ok, data: data };
-                });
-            })
-            .then(result => {
-                if (result.ok && result.data.success) {
-                    console.log('✅ TOKEN REFRESH TEST: SUCCESS');
-                    resultDiv.innerHTML = '<p class="text-green-600">✅ Token refreshed successfully!</p>';
-                } else {
-                    console.log('❌ TOKEN REFRESH TEST: FAILED');
-                    resultDiv.innerHTML = '<p class="text-red-600">❌ Token refresh failed: ' + (result.data.error || 'Unknown error') + '</p>';
-                }
-            })
-            .catch(error => {
-                console.log('❌ TOKEN REFRESH TEST: Error:', error);
-                resultDiv.innerHTML = '<p class="text-red-600">❌ Network error: ' + error.message + '</p>';
-            });
-        }
-        
-        // Helper function to check current user status
-        function checkUserStatus() {
-            console.log('👤 USER STATUS CHECK: === STARTED ===');
-            const resultDiv = document.getElementById('user-result');
-            
-            fetch('/api/auth/user')
-            .then(response => response.json())
-            .then(data => {
-                console.log('👤 USER STATUS CHECK: Response:', data);
-                
-                if (data.logged_in) {
-                    resultDiv.innerHTML = '<p class="text-green-600">✅ Logged in as: ' + data.name + '</p>' +
-                        '<p class="text-sm text-gray-600">Email: ' + data.email + '</p>';
-                } else {
-                    resultDiv.innerHTML = '<p class="text-red-600">❌ Not logged in</p>';
-                }
-            })
-            .catch(error => {
-                console.log('👤 USER STATUS CHECK: Error:', error);
-                resultDiv.innerHTML = '<p class="text-red-600">❌ Error: ' + error.message + '</p>';
-            });
-        }
-        
         // Log when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🧪 AUTH TEST PAGE: Loaded - Check browser console for detailed testing logs');
@@ -127,19 +64,6 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
         <h1 class="text-3xl font-bold text-center mb-8">Authentication Test Page</h1>
         
         <div class="max-w-2xl mx-auto space-y-6">
-            <!-- Test Token Refresh -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold mb-4">Test Token Refresh</h2>
-                <p class="text-gray-600 mb-4">This button will test the complete token refresh flow with detailed console logging.</p>
-                <button
-                    onclick="testTokenRefresh()"
-                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    Test Token Refresh
-                </button>
-                <div id="refresh-result" class="mt-4 p-3 bg-gray-100 rounded"></div>
-            </div>
-            
             <!-- Check Current User -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">Check Current User</h2>
@@ -165,24 +89,13 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
                 </div>
             </div>
             
-            <!-- Callback Test -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold mb-4">Test Callback</h2>
-                <p class="text-gray-600 mb-4">Test the callback page that processes JWT tokens from URL fragments.</p>
-                <a href="/auth/callback#access_token=test-jwt-token&token_type=Bearer"
-                   class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                    Test Callback with Fake Token
-                </a>
-            </div>
-            
             <!-- Instructions -->
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h3 class="text-lg font-semibold text-yellow-800 mb-2">🔍 Testing Instructions</h3>
                 <ol class="text-sm text-sm text-yellow-700 space-y-1">
                     <li>1. Open browser console (F12) to see detailed logs</li>
-                    <li>2. First login with Google, GitHub, Discord, or Microsoft</li>
-                    <li>3. Then click "Test Token Refresh" to see the flow</li>
-                    <li>4. Check console logs for every step of the process</li>
+                    <li>2. Login with Google, GitHub, Discord, or Microsoft</li>
+                    <li>3. Check console logs for every step of the process</li>
                 </ol>
             </div>
         </div>
