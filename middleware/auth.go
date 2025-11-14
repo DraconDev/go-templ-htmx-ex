@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
