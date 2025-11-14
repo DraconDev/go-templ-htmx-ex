@@ -32,8 +32,8 @@ func TestAdminDashboardAccess(t *testing.T) {
 	handler.AdminDashboardHandler(rr, req)
 	
 	// We expect this to either:
-	// 1. Return OK if JWT validation succeeds
-	// 2. Return error if JWT validation fails
+	// 1. Return OK if session validation succeeds
+	// 2. Return error if session validation fails
 	// 3. Return redirect if user is not authenticated
 	
 	// Since we're testing without real JWT validation, this will likely redirect
