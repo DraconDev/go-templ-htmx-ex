@@ -155,32 +155,8 @@ func validateSession(r *http.Request) layouts.UserInfo {
 func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
 	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
 	
-	// Make HTTP request to auth microservice
-	// Since we don't have the auth service instance here, we'll call the API directly
-	client := &http.Client{Timeout: 5 * time.Second}
-	
-	// Prepare request to validate session
-	req, err := http.NewRequest("POST", "http://localhost:8081/api/auth/validate-session", nil)
-	if err != nil {
-		return layouts.UserInfo{LoggedIn: false}, fmt.Errorf("failed to create request: %v", err)
-	}
-	
-	// Add session ID in request body
-	type SessionRequest struct {
-		SessionID string `json:"session_id"`
-	}
-	
-	sessionReq := SessionRequest{SessionID: sessionID}
-	reqData, err := json.Marshal(sessionReq)
-	if err != nil {
-		return layouts.UserInfo{LoggedIn: false}, fmt.Errorf("failed to marshal request: %v", err)
-	}
-	
-	req.Header.Set("Content-Type", "application/json")
-	req.Body = http.NoBody
-	
-	// Note: In a real implementation, this would forward the session cookie
-	// For now, we'll use a placeholder implementation
+	// Note: In a real implementation, this would call the auth microservice
+	// Since we don't have the auth service instance here, we'll use a placeholder
 	
 	fmt.Printf("🔐 MIDDLEWARE: Session validation API call would go here\n")
 	
