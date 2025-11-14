@@ -110,78 +110,117 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// validateSession validates server session from session_id cookie with 15-second caching
+func validateSession(r *http.Request) layouts.UserInfo {
+// Get session_id cookie for server sessions
+cookie, err := r.Cookie("session_id")
+if err != nil {
+	fmt.Printf("🔐 MIDDLEWARE: No session cookie found: %v\n", err)
+	return layouts.UserInfo{LoggedIn: false}
+}
 
-	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
+if cookie.Value == "" {
+	fmt.Printf("🔐 MIDDLEWARE: Empty session ID\n")
+	return layouts.UserInfo{LoggedIn: false}
+}
 
-	// Create HTTP client with timeout
-	client := &http.Client{Timeout: 10 * time.Second}
+fmt.Printf("🔐 MIDDLEWARE: Validating session, ID length: %d\n", len(cookie.Value))
 
-	// Prepare request to auth service
-	reqBody := map[string]string{"session_token": sessionID}
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, err
-	}
+// Check cache first (15-second TTL)
+if cached, found := sessionCache.Get(cookie.Value); found {
+	fmt.Printf("🔐 MIDDLEWARE: Cache hit for session %s\n", cookie.Value[:8]+"...")
+	return cached
+}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/validate", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
-	if err != nil {
-		fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, err
-	}
+fmt.Printf("🔐 MIDDLEWARE: Cache miss - calling auth service for session %s\n", cookie.Value[:8]+"...")
 
-	req.Header.Set("Content-Type", "application/json")
+// Cache miss - call auth service to validate session
+userInfo, err := validateSessionWithAuthService(cookie.Value)
+if err != nil {
+	fmt.Printf("🔐 MIDDLEWARE: Auth service validation failed: %v\n", err)
+	// Return unauthenticated instead of crashing
+	return layouts.UserInfo{LoggedIn: false}
+}
 
-	// Add auth secret if configured
-	if config.Current.AuthSecret != "" {
-		req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
-	}
+// Cache result for 15 seconds
+sessionCache.Set(cookie.Value, userInfo)
 
-	fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
+return userInfo
+}
 
-	// Send request to auth service
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Printf("🔐 MIDDLEWARE: Failed to call auth service: %v\n", err)
-		// Don't fail the request if auth service is unavailable
-		return layouts.UserInfo{LoggedIn: false}, nil
-	}
-	defer resp.Body.Close()
+// validateSessionWithAuthService validates session by calling auth microservice
+func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
+fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
 
-	fmt.Printf("🔐 MIDDLEWARE: Auth service response status: %s\n", resp.Status)
+// Create HTTP client with timeout
+client := &http.Client{Timeout: 10 * time.Second}
 
-	// Parse response
-	var respData map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
-		fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
-		return layouts.UserInfo{LoggedIn: false}, nil
-	}
+// Prepare request to auth service
+reqBody := map[string]string{"session_token": sessionID}
+jsonData, err := json.Marshal(reqBody)
+if err != nil {
+	fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
+	return layouts.UserInfo{LoggedIn: false}, err
+}
 
-	fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
+req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/validate", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
+if err != nil {
+	fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
+	return layouts.UserInfo{LoggedIn: false}, err
+}
 
-	// Check if session is valid
-	if valid, ok := respData["valid"].(bool); ok && valid {
-		// Session is valid - extract user info
-		userInfo := layouts.UserInfo{
-			LoggedIn: true,
-		}
+req.Header.Set("Content-Type", "application/json")
 
-		if name, ok := respData["name"].(string); ok {
-			userInfo.Name = name
-		}
-		if email, ok := respData["email"].(string); ok {
-			userInfo.Email = email
-		}
-		if picture, ok := respData["picture"].(string); ok {
-			userInfo.Picture = picture
-		}
+// Add auth secret if configured
+if config.Current.AuthSecret != "" {
+	req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
+}
 
-		fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
-		return userInfo, nil
-	}
+fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
 
-	fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
+// Send request to auth service
+resp, err := client.Do(req)
+if err != nil {
+	fmt.Printf("🔐 MIDDLEWARE: Failed to call auth service: %v\n", err)
+	// Don't fail the request if auth service is unavailable
 	return layouts.UserInfo{LoggedIn: false}, nil
+}
+defer resp.Body.Close()
+
+fmt.Printf("🔐 MIDDLEWARE: Auth service response status: %s\n", resp.Status)
+
+// Parse response
+var respData map[string]interface{}
+if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
+	fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
+	return layouts.UserInfo{LoggedIn: false}, nil
+}
+
+fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
+
+// Check if session is valid
+if valid, ok := respData["valid"].(bool); ok && valid {
+	// Session is valid - extract user info
+	userInfo := layouts.UserInfo{
+		LoggedIn: true,
+	}
+
+	if name, ok := respData["name"].(string); ok {
+		userInfo.Name = name
+	}
+	if email, ok := respData["email"].(string); ok {
+		userInfo.Email = email
+	}
+	if picture, ok := respData["picture"].(string); ok {
+		userInfo.Picture = picture
+	}
+
+	fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
+	return userInfo, nil
+}
+
+fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
+return layouts.UserInfo{LoggedIn: false}, nil
 }
 
 // GetUserFromContext gets user info from request context
