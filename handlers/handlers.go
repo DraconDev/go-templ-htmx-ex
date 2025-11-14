@@ -1,21 +1,15 @@
 package handlers
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/a-h/templ"
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
-	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
-
 // HealthHandler handles health check requests
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
