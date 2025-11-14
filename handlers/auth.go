@@ -135,7 +135,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
 // GoogleLoginHandler handles Google OAuth login
 // Flow: User clicks "Login with Google" -> Redirect to our auth service ->
 //
-//	Auth service handles Google OAuth -> Returns to our callback with JWT
+//	Auth service handles Google OAuth -> Returns to our callback with session token
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
 	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
