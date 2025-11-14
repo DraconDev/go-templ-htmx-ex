@@ -215,7 +215,7 @@ vim templates/pages/your_feature.templ
 - **🧪 Token Refresh Testing:** Added test button on profile page for refresh mechanism
 - **Template Reorganization:** Moved to proper package structure (layouts/pages)
 - **Enhanced Homepage:** Professional startup messaging, pricing, social proof
-- **Session Management:** Complete JWT handling and validation system
+- **Session Management:** Complete server session handling and validation system
 - **Documentation:** Consolidated project status and next steps
 
 ## 📄 License
