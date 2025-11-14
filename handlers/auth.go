@@ -484,6 +484,16 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		})
 		return
 	}
+	
+	fmt.Printf("🔐 CODE: Session token length: %d\n", len(tokensResp.IdToken))
+	fmt.Printf("🔐 CODE: Refresh token length: %d\n", len(tokensResp.RefreshToken))
+	
+	// Log the first few characters of the session token for debugging
+	if len(tokensResp.IdToken) > 20 {
+		fmt.Printf("🔐 CODE: Session token preview: %s...\n", tokensResp.IdToken[:20])
+	} else {
+		fmt.Printf("🔐 CODE: Session token: %s\n", tokensResp.IdToken)
+	}
 
 	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
 	fmt.Printf("🔄 CODE: Auth response: %+v\n", tokensResp)
