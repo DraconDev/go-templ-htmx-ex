@@ -42,9 +42,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 // ProfileHandler handles the user profile page
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
-	// Use local JWT validation for consistency (5-10ms everywhere)
-	userInfo := GetUserFromJWT(r)
+	// Get user info from middleware context
+	userInfo := middleware.GetUserFromContext(r)
 	if !userInfo.LoggedIn {
 		// Redirect to home if not logged in
 		http.Redirect(w, r, "/", http.StatusFound)
