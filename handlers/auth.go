@@ -364,7 +364,7 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Clear session cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
+		Name:     "session_id",
 		Value:    "",
 		Path:     "/",
 		MaxAge:   -1,
