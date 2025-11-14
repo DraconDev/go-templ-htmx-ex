@@ -53,6 +53,29 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Helper function to check current user status
+        function checkUserStatus() {
+            console.log('👤 USER STATUS CHECK: === STARTED ===');
+            const resultDiv = document.getElementById('user-result');
+            
+            fetch('/api/auth/user')
+            .then(response => response.json())
+            .then(data => {
+                console.log('👤 USER STATUS CHECK: Response:', data);
+                
+                if (data.logged_in) {
+                    resultDiv.innerHTML = '<p class="text-green-600">✅ Logged in as: ' + data.name + '</p>' +
+                        '<p class="text-sm text-gray-600">Email: ' + data.email + '</p>';
+                } else {
+                    resultDiv.innerHTML = '<p class="text-red-600">❌ Not logged in</p>';
+                }
+            })
+            .catch(error => {
+                console.log('👤 USER STATUS CHECK: Error:', error);
+                resultDiv.innerHTML = '<p class="text-red-600">❌ Error: ' + error.message + '</p>';
+            });
+        }
+        
         // Log when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🧪 AUTH TEST PAGE: Loaded - Check browser console for detailed testing logs');
