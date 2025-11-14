@@ -312,8 +312,8 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 			Error:   "Failed to marshal request data",
 		}, err
 	}
-	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/session/create", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/session/create", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/token", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
 	if err != nil {
 		return &models.TokenExchangeResponse{
 			Success: false,
