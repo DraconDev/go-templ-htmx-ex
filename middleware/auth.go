@@ -111,9 +111,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 }
 
 
-
-// validateSessionWithAuthService validates session by calling auth microservice
-func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
 	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
 
 	// Create HTTP client with timeout
