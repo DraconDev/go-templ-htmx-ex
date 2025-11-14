@@ -20,7 +20,7 @@ A **production-ready startup platform** with **Google OAuth**, **PostgreSQL data
 - **Separate session_token and refresh_token** cookies - NO MORE same value issue!
 - **HTTP-only cookies** for maximum security
 - **Server session validation** for 5-10ms response times
-- **Dual Automatic Token Refresh** - Users never get logged out:
+- **Session Management** - Users never get logged out:
   - ✅ **Frontend**: 25-minute proactive refresh via JavaScript
   - ✅ **Backend**: 5-minute reactive refresh via middleware
   - ✅ **Failover protection**: Both systems backup each other
