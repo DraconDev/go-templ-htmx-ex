@@ -414,41 +414,36 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}, fmt.Errorf("auth service error: %v", errMsg)
 	}
 
-	// Extract id token and refresh token
-	var idToken, refreshToken string
-	var hasIdToken, hasRefresh bool
+	// Extract session token for server session management
+	var sessionToken string
+	var hasSessionToken bool
 
-	if idTokenInterface, exists := respData["id_token"]; exists {
-		if idTokenStr, ok := idTokenInterface.(string); ok {
-			idToken = idTokenStr
-			hasIdToken = true
+	if sessionInterface, exists := respData["session_token"]; exists {
+		if sessionStr, ok := sessionInterface.(string); ok {
+			sessionToken = sessionStr
+			hasSessionToken = true
 		}
 	}
 
-	if refreshInterface, exists := respData["refresh_token"]; exists {
-		if refreshStr, ok := refreshInterface.(string); ok {
-			refreshToken = refreshStr
-			hasRefresh = true
-		}
-	}
+	fmt.Printf("🔄 AUTHSVC: Session extraction - SessionToken: %t (%d chars)\n",
+		hasSessionToken, len(sessionToken))
 
-	fmt.Printf("🔄 AUTHSVC: Token extraction - IdToken: %t (%d chars), Refresh: %t (%d chars)\n",
-		hasIdToken, len(idToken), hasRefresh, len(refreshToken))
-
-	if !hasIdToken || !hasRefresh || idToken == "" || refreshToken == "" {
+	if !hasSessionToken || sessionToken == "" {
 		return &models.TokenExchangeResponse{
 			Success: false,
-			Error:   fmt.Sprintf("Missing tokens - IdToken: %t, Refresh: %t", hasIdToken, hasRefresh),
-		}, fmt.Errorf("missing tokens in auth service response")
+			Error:   fmt.Sprintf("Missing session token - SessionToken: %t", hasSessionToken),
+		}, fmt.Errorf("missing session token in auth service response")
 	}
 
-	fmt.Printf("🔄 AUTHSVC: Successfully extracted tokens - IdToken: %d chars, Refresh: %d chars\n",
-		len(idToken), len(refreshToken))
+	fmt.Printf("🔄 AUTHSVC: Successfully extracted session token - SessionToken: %d chars\n",
+		len(sessionToken))
 
+	// For server sessions, we return the session token as both IdToken and RefreshToken
+	// This maintains compatibility with the TokenExchangeResponse structure
 	return &models.TokenExchangeResponse{
 		Success:      true,
-		IdToken:      idToken,
-		RefreshToken: refreshToken,
+		IdToken:      sessionToken,
+		RefreshToken: sessionToken,
 	}, nil
 }
 
