@@ -29,9 +29,26 @@
 
 ---
 
-## 🎯 **The Question**
+## 💳 **Critical Consideration: Payment Integration**
 
-**Should we use JWTs or Server Sessions for authentication?**
+### **The Payment Challenge**
+When adding payment/subscription features, authentication requirements become more complex:
+
+- **Real-time membership validation** - Is subscription valid/active?
+- **Dynamic status updates** - Subscriptions change (expire, upgrade, cancel)
+- **Immediate access revocation** - Need to cut off access when payments fail
+- **Frequent validation checks** - Every protected action needs subscription status
+
+### **Payment-Specific Requirements**
+```
+Current Challenge: How to validate membership status dynamically?
+- User logs in → JWT contains user info ✓
+- User accesses paid features → Need subscription status ❌
+- Subscription expires → Need to revoke access immediately ❌
+- User upgrades plan → Need to grant new access ❌
+```
+
+---
 
 ---
 
