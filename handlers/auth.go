@@ -397,7 +397,7 @@ func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if req.Code == "" {
+	if req.AuthCode == "" {
 		fmt.Printf("🧪 TEST: Missing authorization code\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -406,10 +406,10 @@ func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	fmt.Printf("🧪 TEST: Authorization code received: %s\n", req.Code)
+	fmt.Printf("🧪 TEST: Authorization code received: %s\n", req.AuthCode)
 
 	// Test the new CreateSession function
-	response, err := h.AuthService.CreateSession(req.Code)
+	response, err := h.AuthService.CreateSession(req.AuthCode)
 	if err != nil {
 		fmt.Printf("🧪 TEST: CreateSession failed: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
