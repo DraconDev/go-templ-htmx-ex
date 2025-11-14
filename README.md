@@ -162,7 +162,7 @@ docker run -p 8081:8081 your-app
 
 ## 📈 Performance
 
-- **Navigation:** ~5-10ms with local JWT validation
+- **Navigation:** ~5-10ms with session validation
 - **Admin Dashboard:** Real-time database queries with live updates
 - **Database:** SQLC generated optimized queries
 - **UI:** HTMX for seamless updates
