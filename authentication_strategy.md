@@ -157,7 +157,7 @@ app → Query DB for subscription ❌ (duplicated logic!)
 // App: "I need Redis + DB + membership logic = I'm a monolith!"
 ```
 
-#### **5. Proper Server-Based Flow** 🔄
+#### **6. Proper Server-Based Flow** 🔄
 ```go
 // Server Sessions: Clean microservices architecture
 app → "Hey, I have this session ID, is it valid?"
@@ -167,7 +167,7 @@ app → "Great! User is authenticated and has access"
 // Clean separation, auth service owns everything auth-related
 ```
 
-#### **6. Payment Microservice Benefits**
+#### **7. Payment Microservice Benefits**
 - **Session-based membership** - Query auth service for subscription status
 - **Real-time updates** - Payment webhooks update Redis sessions immediately
 - **No auth service bottleneck** - Payment service scales independently
