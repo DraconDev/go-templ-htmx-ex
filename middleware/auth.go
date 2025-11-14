@@ -71,18 +71,6 @@ var sessionCache = NewSessionCache()
 
 // AuthMiddleware validates server sessions for protected routes
 func AuthMiddleware(next http.Handler) http.Handler {
-	// Protected routes that require authentication
-	protectedPaths := map[string]bool{
-		"/profile":   true, // User profile page
-		"/admin":     true, // Admin dashboard
-		"/api/admin": true, // Admin API routes
-	}
-
-	// API routes that require authentication
-	apiProtectedPaths := map[string]bool{
-		"/api/admin": true, // Admin API routes
-	}
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check if this route requires authentication
 		if requiresAuthentication(r.URL.Path) {
