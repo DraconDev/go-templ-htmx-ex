@@ -385,7 +385,7 @@ func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Re
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
-		Code string `json:"code"`
+		AuthCode string `json:"auth_code"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -436,7 +436,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
-		Code string `json:"code"`
+		AuthCode string `json:"auth_code"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
