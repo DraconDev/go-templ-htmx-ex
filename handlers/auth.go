@@ -488,13 +488,20 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
 	fmt.Printf("🔄 CODE: Auth response: %+v\n", tokensResp)
 
-	// Generate session ID for server session (in real app, this would come from auth service)
-	sessionID := fmt.Sprintf("sess_%d_%x", time.Now().UnixNano(), time.Now().Unix())
+	// Use the session token from auth service response
+	if tokensResp.IdToken == "" {
+		fmt.Printf("❌ CODE: No session token in auth response\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "No session token received from auth service",
+		})
+		return
+	}
 
-	// Set session_id cookie for server sessions
+	// Set session_id cookie for server sessions (use session token from auth service)
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
-		Value:    sessionID,
+		Value:    tokensResp.IdToken,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
@@ -504,7 +511,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	// Set session_id cookie
 	http.SetCookie(w, sessionCookie)
 
-	fmt.Printf("✅ CODE: Session ID cookie set successfully: %s\n", sessionID)
+	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(tokensResp.IdToken))
 	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
