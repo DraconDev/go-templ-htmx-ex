@@ -84,37 +84,60 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Always validate session and add to context (for UI purposes)
-		userInfo := validateSession(r)
-		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
-
 		// Check if this route requires authentication
-		var requiresAuth bool
-		if r.URL.Path[:5] == "/api/" {
-			requiresAuth = apiProtectedPaths[r.URL.Path]
-		} else {
-			requiresAuth = protectedPaths[r.URL.Path]
-		}
+		if requiresAuthentication(r.URL.Path) {
+			// Only validate session for protected routes
+			userInfo := validateSession(r)
+			ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
-		// If route requires auth but user is not logged in, redirect
-		if requiresAuth && !userInfo.LoggedIn {
-			if r.URL.Path[:5] == "/api/" {
-				// For API routes, return JSON error
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(map[string]interface{}{
-					"error": "Authentication required",
-				})
+			// If route requires auth but user is not logged in, redirect
+			if !userInfo.LoggedIn {
+				if r.URL.Path[:5] == "/api/" {
+					// For API routes, return JSON error
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusUnauthorized)
+					json.NewEncoder(w).Encode(map[string]interface{}{
+						"error": "Authentication required",
+					})
+					return
+				}
+
+				// For web routes, redirect to login
+				http.Redirect(w, r, "/login", http.StatusFound)
 				return
 			}
 
-			// For web routes, redirect to home
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
+			next.ServeHTTP(w, r.WithContext(ctx))
+		} else {
+			// For public routes, don't validate session (just pass through)
+			// Add empty user context to maintain compatibility
+			ctx := context.WithValue(r.Context(), userContextKey, layouts.UserInfo{LoggedIn: false})
+			next.ServeHTTP(w, r.WithContext(ctx))
 		}
-
-		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// requiresAuthentication checks if a route requires authentication
+func requiresAuthentication(path string) bool {
+	// Protected routes that require authentication
+	protectedPaths := []string{
+		"/profile",        // User profile page
+		"/admin",          // Admin dashboard
+	}
+	
+	// Check exact matches first
+	for _, route := range protectedPaths {
+		if path == route {
+			return true
+		}
+	}
+	
+	// Check if path starts with protected prefixes
+	if len(path) >= 11 && path[:11] == "/api/admin/" {
+		return true // All admin API routes are protected
+	}
+	
+	return false
 }
 
 // validateSession validates server session from session_id cookie with 15-second caching
