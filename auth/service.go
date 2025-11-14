@@ -2,21 +2,17 @@ package auth
 
 import (
 	"bytes"
-	"crypto/rsa"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
-
 // Service handles communication with the auth microservice
 type Service struct {
 	config *config.Config
