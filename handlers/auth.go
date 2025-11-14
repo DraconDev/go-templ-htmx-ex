@@ -283,7 +283,7 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
+	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		fmt.Printf("🔐 GETUSER: No session cookie found: %v\n", err)
 		w.WriteHeader(http.StatusUnauthorized)
@@ -326,7 +326,7 @@ func (h *AuthHandler) ValidateSessionHandler(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 
 	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
+	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -523,7 +523,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 // GetUserInfo returns current user information for server-side rendering
 func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	// Get session token from cookie
-	cookie, err := r.Cookie("session_token")
+	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		return layouts.UserInfo{LoggedIn: false}
 	}
