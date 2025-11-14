@@ -110,7 +110,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// validateSession validates server session from session_token cookie with 15-second caching
+// validateSession validates server session from session_id cookie with 15-second caching
 func validateSession(r *http.Request) layouts.UserInfo {
 // Get session_id cookie for server sessions
 cookie, err := r.Cookie("session_id")
