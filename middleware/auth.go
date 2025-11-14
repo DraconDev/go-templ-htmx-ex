@@ -72,8 +72,13 @@ var sessionCache = NewSessionCache()
 // AuthMiddleware validates server sessions for protected routes
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		category := GetRouteCategory(path)
+		
+		fmt.Printf("🔐 MIDDLEWARE: Processing route %s [Category: %s]\n", path, category)
+		
 		// Check if this route requires authentication
-		if requiresAuthentication(r.URL.Path) {
+		if requiresAuthentication(path) {
 			// Only validate session for protected routes
 			userInfo := validateSession(r)
 			ctx := context.WithValue(r.Context(), userContextKey, userInfo)
