@@ -112,48 +112,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 
 
-// validateSession validates server session from session_id cookie with 15-second caching
-func validateSession(r *http.Request) layouts.UserInfo {
-	// First try session_id (new server session format)
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		// Fallback to session_token (JWT format during migration)
-		cookie, err = r.Cookie("session_token")
-		if err != nil {
-			fmt.Printf("🔐 MIDDLEWARE: No session cookie found: %v\n", err)
-			return layouts.UserInfo{LoggedIn: false}
-		}
-	}
-
-	if cookie.Value == "" {
-		fmt.Printf("🔐 MIDDLEWARE: Empty session ID\n")
-		return layouts.UserInfo{LoggedIn: false}
-	}
-
-	fmt.Printf("🔐 MIDDLEWARE: Validating session, ID length: %d, cookie: %s\n", len(cookie.Value), cookie.Name)
-
-	// Check cache first (15-second TTL)
-	if cached, found := sessionCache.Get(cookie.Value); found {
-		fmt.Printf("🔐 MIDDLEWARE: Cache hit for session %s\n", cookie.Value[:8]+"...")
-		return cached
-	}
-
-	fmt.Printf("🔐 MIDDLEWARE: Cache miss - calling auth service for session %s\n", cookie.Value[:8]+"...")
-
-	// Cache miss - call auth service to validate session
-	userInfo, err := validateSessionWithAuthService(cookie.Value)
-	if err != nil {
-		fmt.Printf("🔐 MIDDLEWARE: Auth service validation failed: %v\n", err)
-		// Return unauthenticated instead of crashing
-		return layouts.UserInfo{LoggedIn: false}
-	}
-
-	// Cache result for 15 seconds
-	sessionCache.Set(cookie.Value, userInfo)
-
-	return userInfo
-}
-
 // validateSessionWithAuthService validates session by calling auth microservice
 func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
 	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
