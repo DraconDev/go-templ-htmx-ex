@@ -166,7 +166,7 @@ func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request)
 // DiscordLoginHandler handles Discord OAuth login
 // Flow: User clicks "Login with Discord" -> Redirect to our auth service ->
 //
-//	Auth service handles Discord OAuth -> Returns to our callback with JWT
+//	Auth service handles Discord OAuth -> Returns to our callback with session token
 func (h *AuthHandler) DiscordLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 DISCORD LOGIN: Starting Discord OAuth flow\n")
 	fmt.Printf("🔐 DISCORD LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
