@@ -15,11 +15,11 @@ import (
 // =============================================================================
 // AUTHENTICATION HANDLER
 // =============================================================================
-// This handler manages the complete OAuth + JWT authentication flow for the app:
-// 1. OAuth redirects to external providers (Google, GitHub)
-// 2. Callback processing to extract JWT tokens from URL fragments
-// 3. Session management with HTTP-only cookies
-// 4. Token validation and refresh logic
+// This handler manages the complete OAuth + Server Session authentication flow for the app:
+// 1. OAuth redirects to external providers (Google, GitHub, Discord, Microsoft)
+// 2. Callback processing to extract authorization codes from URL
+// 3. Server session management with HTTP-only cookies
+// 4. Session validation through middleware
 // =============================================================================
 
 // AuthHandler handles authentication-related HTTP requests
