@@ -549,34 +549,25 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
-	fmt.Printf("🔄 CODE: Id token length: %d\n", len(tokensResp.IdToken))
-	fmt.Printf("🔄 CODE: Refresh token length: %d\n", len(tokensResp.RefreshToken))
+	fmt.Printf("🔄 CODE: Auth response: %+v\n", tokensResp)
 
-	// Set session token cookie with the id_token (JWT)
+	// Generate session ID for server session (in real app, this would come from auth service)
+	sessionID := fmt.Sprintf("sess_%d_%s", time.Now().UnixNano(), tokensResp.UserID)
+
+	// Set session_id cookie for server sessions
 	sessionCookie := &http.Cookie{
-		Name:     "session_token",
-		Value:    tokensResp.IdToken,
+		Name:     "session_id",
+		Value:    sessionID,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
 
-	// Set refresh token cookie
-	refreshCookie := &http.Cookie{
-		Name:     "refresh_token",
-		Value:    tokensResp.RefreshToken,
-		Path:     "/",
-		MaxAge:   30 * 24 * 3600, // 30 days
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	}
-
-	// Set both cookies
+	// Set session_id cookie
 	http.SetCookie(w, sessionCookie)
-	http.SetCookie(w, refreshCookie)
 
-	fmt.Printf("✅ CODE: Both cookies set successfully")
+	fmt.Printf("✅ CODE: Session ID cookie set successfully: %s\n", sessionID)
 	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
