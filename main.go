@@ -134,10 +134,10 @@ func main() {
 	router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
 
 	// Admin API endpoints - Management operations for administrators
-	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")    // List all users
+	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")         // List all users
 	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET") // Platform analytics
 	router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")   // System settings
-	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")          // System logs
+	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")           // System logs
 
 	// =============================================================================
 	// SESSION MANAGEMENT API - Authentication required
