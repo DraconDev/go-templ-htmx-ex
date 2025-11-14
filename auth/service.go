@@ -97,27 +97,8 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		return &authResp, nil
 	}
 
-	fmt.Printf("🔐 AUTHSVC: Failed to parse as AuthResponse, trying JWT payload...\n")
-	// If that fails, try to decode as JWT payload and convert
-	var jwtPayload map[string]interface{}
-	if err := json.Unmarshal(bodyBytes, &jwtPayload); err != nil {
-		fmt.Printf("🔐 AUTHSVC: Failed to parse JWT payload: %v\n", err)
-		return nil, err
-	}
-
-	// Convert JWT payload to AuthResponse format
-	result := &models.AuthResponse{
-		Success: true,
-		Name:    getStringFromMap(jwtPayload, "name"),
-		Email:   getStringFromMap(jwtPayload, "email"),
-		Picture: getStringFromMap(jwtPayload, "picture"),
-		UserID:  getStringFromMap(jwtPayload, "sub"),
-	}
-
-	fmt.Printf("🔐 AUTHSVC: Converted JWT to AuthResponse - Name: %s, Email: %s\n", result.Name, result.Email)
-	fmt.Printf("🔐 AUTHSVC: === CallAuthService COMPLETED ===\n")
-
-	return result, nil
+	fmt.Printf("🔐 AUTHSVC: Failed to parse as AuthResponse: %v\n", err)
+	return nil, fmt.Errorf("invalid auth service response format")
 }
 
 // ValidateSession validates a session token
