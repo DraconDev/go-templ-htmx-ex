@@ -448,7 +448,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if req.Code == "" {
+	if req.AuthCode == "" {
 		fmt.Printf("🔄 CODE: Missing authorization code\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -457,11 +457,11 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.Code))
+	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.AuthCode))
 
 	// Exchange code for tokens via auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
-	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.Code)
+	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.AuthCode)
 	if err != nil {
 		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
 		fmt.Printf("❌ CODE: Error type: %T\n", err)
