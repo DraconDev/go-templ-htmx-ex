@@ -212,7 +212,7 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("🔐 CALLBACK: Setting content type and rendering template...\n")
 	w.Header().Set("Content-Type", "text/html")
 
-	// STEP 2: Render callback page with JavaScript to extract JWT from URL fragment
+	// STEP 2: Render callback page with JavaScript to extract session token from URL fragment
 	// The fragment (#access_token=...) is not sent to server, so JS must handle it
 	component := layouts.Layout("Authenticating", "Authentication processing page for OAuth callback and session establishment.", layouts.NavigationLoggedOut(), pages.AuthCallbackContent())
 
