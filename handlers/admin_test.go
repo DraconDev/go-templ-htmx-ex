@@ -28,7 +28,7 @@ func TestAdminDashboardAccess(t *testing.T) {
 	// Create response recorder
 	rr := httptest.NewRecorder()
 	
-	// Execute handler - this will try to validate the JWT
+	// Execute handler - this will try to validate the session
 	handler.AdminDashboardHandler(rr, req)
 	
 	// We expect this to either:
