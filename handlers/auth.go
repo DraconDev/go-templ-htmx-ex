@@ -253,7 +253,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Printf("🔐 SESSION: Session ID received, length: %d\n", len(req.SessionID))
 
 	// Set session_id cookie (replaces session_token)
-	sessionCookie := http.Cookie{
+	sessionCookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    req.SessionID,
 		Path:     "/",
