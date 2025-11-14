@@ -1,14 +1,5 @@
 package models
 
-// UserSession represents a logged-in user session
-type UserSession struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Picture  string `json:"picture"`
-	LoggedIn bool   `json:"logged_in"`
-}
-
 // TokenExchangeResponse represents the response from exchanging auth code for session
 type TokenExchangeResponse struct {
 	Success     bool   `json:"success"`
