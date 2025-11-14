@@ -19,7 +19,7 @@ A **production-ready startup platform** with **Google OAuth**, **PostgreSQL data
 - GitHub OAuth integration with profile pictures
 - **Separate session_token and refresh_token** cookies - NO MORE same value issue!
 - **HTTP-only cookies** for maximum security
-- **JWT local validation** for 5-10ms response times
+- **Server session validation** for 5-10ms response times
 - **Dual Automatic Token Refresh** - Users never get logged out:
   - ✅ **Frontend**: 25-minute proactive refresh via JavaScript
   - ✅ **Backend**: 5-minute reactive refresh via middleware
@@ -145,7 +145,7 @@ docker run -p 8081:8081 your-app
 - **✅ GitHub OAuth** with profile pictures and usernames (DraconDev, github.com/6221294)
 - **✅ Separate session_token and refresh_token** - No more same value issue!
 - **✅ HTTP-only cookie security** for all tokens
-- **✅ JWT local validation** - 5-10ms response times
+- **✅ Server session validation** - 5-10ms response times
 - **✅ User profile pages** with real Google/GitHub data display
 - **✅ Token refresh mechanism** working and tested
 - **✅ Admin dashboard** with live database statistics
@@ -181,7 +181,7 @@ docker run -p 8081:8081 your-app
 - **🛠️ Air auto-reload system** - 3-4ms rebuild times
 - **📋 Type-safe templates** - Compile-time validation
 - **🏗️ Microservice ready** - Scalable architecture
-- **🔐 JWT local validation** - 5-10ms vs API calls
+- **🔐 Server session validation** - 5-10ms vs API calls
 
 ## � For Your Startup
 
@@ -211,7 +211,7 @@ vim templates/pages/your_feature.templ
 - **🔐 OAuth 2.0 Token Separation:** Fixed refresh token issue - session_token and refresh_token now have different values
 - **✅ Real User Data:** Google OAuth now displays real names, emails, and profile pictures
 - **🛡️ Security Enhancement:** HTTP-only cookies for all authentication tokens
-- **⚡ Performance Optimization:** JWT local validation for 5-10ms response times
+- **⚡ Performance Optimization:** Server session validation for 5-10ms response times
 - **🧪 Token Refresh Testing:** Added test button on profile page for refresh mechanism
 - **Template Reorganization:** Moved to proper package structure (layouts/pages)
 - **Enhanced Homepage:** Professional startup messaging, pricing, social proof
