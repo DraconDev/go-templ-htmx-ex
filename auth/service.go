@@ -101,8 +101,27 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		return &authResp, nil
 	}
 
-	fmt.Printf("🔐 AUTHSVC: Failed to parse as AuthResponse\n")
-	return nil, fmt.Errorf("invalid response format from auth service")
+	fmt.Printf("🔐 AUTHSVC: Failed to parse as AuthResponse, trying JWT payload...\n")
+	// If that fails, try to decode as JWT payload and convert
+	var jwtPayload map[string]interface{}
+	if err := json.Unmarshal(bodyBytes, &jwtPayload); err != nil {
+		fmt.Printf("🔐 AUTHSVC: Failed to parse JWT payload: %v\n", err)
+		return nil, err
+	}
+
+	// Convert JWT payload to AuthResponse format
+	result := &models.AuthResponse{
+		Success: true,
+		Name:    getStringFromMap(jwtPayload, "name"),
+		Email:   getStringFromMap(jwtPayload, "email"),
+		Picture: getStringFromMap(jwtPayload, "picture"),
+		UserID:  getStringFromMap(jwtPayload, "sub"),
+	}
+
+	fmt.Printf("🔐 AUTHSVC: Converted JWT to AuthResponse - Name: %s, Email: %s\n", result.Name, result.Email)
+	fmt.Printf("🔐 AUTHSVC: === CallAuthService COMPLETED ===\n")
+
+	return result, nil
 }
 
 // ValidateSession validates a session token
@@ -380,14 +399,20 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 
 	fmt.Printf("🔄 AUTHSVC: Response status: %s\n", resp.Status)
 	fmt.Printf("🔄 AUTHSVC: Response body: %s\n", string(bodyBytes))
-	
+
 	// Log the full response for debugging server session format
 	fmt.Printf("🔄 AUTHSVC: Full response details:\n")
 	fmt.Printf("🔄 AUTHSVC: Status Code: %d\n", resp.StatusCode)
 	fmt.Printf("🔄 AUTHSVC: Content-Type: %s\n", resp.Header.Get("Content-Type"))
 	fmt.Printf("🔄 AUTHSVC: Body Length: %d\n", len(bodyBytes))
 	if len(bodyBytes) > 0 {
-		fmt.Printf("🔄 AUTHSVC: Body Preview: %s\n", func() string { if len(string(bodyBytes)) > 100 { return string(bodyBytes)[:100] + "..." } else { return string(bodyBytes) } }())
+		fmt.Printf("🔄 AUTHSVC: Body Preview: %s\n", func() string {
+			if len(string(bodyBytes)) > 100 {
+				return string(bodyBytes)[:100] + "..."
+			} else {
+				return string(bodyBytes)
+			}
+		}())
 	}
 
 	// Parse the response directly as a map to extract tokens
@@ -434,8 +459,8 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 	// For server sessions, we return the session token as IdToken
 	// This maintains compatibility with the TokenExchangeResponse structure
 	return &models.TokenExchangeResponse{
-		Success:  true,
-		IdToken:  sessionToken,
+		Success: true,
+		IdToken: sessionToken,
 	}, nil
 }
 
