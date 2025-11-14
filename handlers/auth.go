@@ -497,9 +497,9 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Set session_id cookie for server sessions (use session token from auth service)
+	// Set session_token cookie for server sessions (use session token from auth service)
 	sessionCookie := &http.Cookie{
-		Name:     "session_id",
+		Name:     "session_token",
 		Value:    tokensResp.IdToken,
 		Path:     "/",
 		MaxAge:   3600, // 1 hour
@@ -507,7 +507,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		Secure:   false, // Set to true in production with HTTPS
 	}
 
-	// Set session_id cookie
+	// Set session_token cookie
 	http.SetCookie(w, sessionCookie)
 
 	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(tokensResp.IdToken))
