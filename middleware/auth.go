@@ -25,7 +25,7 @@ type SessionCache struct {
 }
 
 type cacheEntry struct {
-	userInfo layouts.UserInfo
+	userInfo  layouts.UserInfo
 	expiresAt time.Time
 }
 
@@ -40,18 +40,18 @@ func NewSessionCache() *SessionCache {
 func (c *SessionCache) Get(sessionID string) (layouts.UserInfo, bool) {
 	c.RLock()
 	defer c.RUnlock()
-	
+
 	entry, exists := c.entries[sessionID]
 	if !exists {
 		return layouts.UserInfo{LoggedIn: false}, false
 	}
-	
+
 	if time.Now().After(entry.expiresAt) {
 		// Expired entry, clean up
 		delete(c.entries, sessionID)
 		return layouts.UserInfo{LoggedIn: false}, false
 	}
-	
+
 	return entry.userInfo, true
 }
 
@@ -59,7 +59,7 @@ func (c *SessionCache) Get(sessionID string) (layouts.UserInfo, bool) {
 func (c *SessionCache) Set(sessionID string, userInfo layouts.UserInfo) {
 	c.Lock()
 	defer c.Unlock()
-	
+
 	c.entries[sessionID] = &cacheEntry{
 		userInfo:  userInfo,
 		expiresAt: time.Now().Add(15 * time.Second),
@@ -84,6 +84,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Always validate session and add to context (for UI purposes)
+		userInfo := validateSession(r)
+		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
+
 		// Check if this route requires authentication
 		var requiresAuth bool
 		if r.URL.Path[:5] == "/api/" {
@@ -91,14 +95,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		} else {
 			requiresAuth = protectedPaths[r.URL.Path]
 		}
-
-		// Only validate session if route requires auth or might need user info
-		var userInfo layouts.UserInfo
-		if requiresAuth || isUserInfoNeeded(r.URL.Path) {
-			userInfo = validateSession(r)
-		}
-		
-		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
 		// If route requires auth but user is not logged in, redirect
 		if requiresAuth && !userInfo.LoggedIn {
@@ -112,31 +108,13 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			// For web routes, redirect to login
-			http.Redirect(w, r, "/login", http.StatusFound)
+			// For web routes, redirect to home
+			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-// isUserInfoNeeded determines if we need to validate session for UI purposes
-func isUserInfoNeeded(path string) bool {
-	// Routes that need user info for navigation/branding
-	userInfoRoutes := []string{
-		"/",           // Homepage - shows login/logout button
-		"/login",      // Login page - shows different content
-		"/profile",    // Profile page - needs user info
-		"/admin",      // Admin page - needs user info for UI
-	}
-	
-	for _, route := range userInfoRoutes {
-		if path == route || len(path) >= len(route) && path[:len(route)] == route {
-			return true
-		}
-	}
-	return false
 }
 
 // validateSession validates server session from session_id cookie with 15-second caching
@@ -177,17 +155,17 @@ func validateSession(r *http.Request) layouts.UserInfo {
 
 	// Cache result for 15 seconds
 	sessionCache.Set(cookie.Value, userInfo)
-	
+
 	return userInfo
 }
 
 // validateSessionWithAuthService validates session by calling auth microservice
 func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
 	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
-	
+
 	// Create HTTP client with timeout
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Prepare request to auth service
 	reqBody := map[string]string{"session_token": sessionID}
 	jsonData, err := json.Marshal(reqBody)
@@ -195,22 +173,22 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 		fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
 		return layouts.UserInfo{LoggedIn: false}, err
 	}
-	
+
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/validate", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
 		return layouts.UserInfo{LoggedIn: false}, err
 	}
-	
+
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	// Add auth secret if configured
 	if config.Current.AuthSecret != "" {
 		req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
 	}
-	
+
 	fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
-	
+
 	// Send request to auth service
 	resp, err := client.Do(req)
 	if err != nil {
@@ -219,25 +197,25 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 		return layouts.UserInfo{LoggedIn: false}, nil
 	}
 	defer resp.Body.Close()
-	
+
 	fmt.Printf("🔐 MIDDLEWARE: Auth service response status: %s\n", resp.Status)
-	
+
 	// Parse response
 	var respData map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
 		return layouts.UserInfo{LoggedIn: false}, nil
 	}
-	
+
 	fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
-	
+
 	// Check if session is valid
 	if valid, ok := respData["valid"].(bool); ok && valid {
 		// Session is valid - extract user info
 		userInfo := layouts.UserInfo{
 			LoggedIn: true,
 		}
-		
+
 		if name, ok := respData["name"].(string); ok {
 			userInfo.Name = name
 		}
@@ -247,11 +225,11 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 		if picture, ok := respData["picture"].(string); ok {
 			userInfo.Picture = picture
 		}
-		
+
 		fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
 		return userInfo, nil
 	}
-	
+
 	fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
 	return layouts.UserInfo{LoggedIn: false}, nil
 }
