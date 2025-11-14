@@ -36,9 +36,9 @@ func TestAdminDashboardAccess(t *testing.T) {
 	// 2. Return error if session validation fails
 	// 3. Return redirect if user is not authenticated
 	
-	// Since we're testing without real JWT validation, this will likely redirect
-	// but that's fine - we're testing the flow, not the JWT validation itself
-	t.Logf("Test status code: %d (expected for test JWT)", rr.Code)
+	// Since we're testing without real session validation, this will likely redirect
+	// but that's fine - we're testing the flow, not the session validation itself
+	t.Logf("Test status code: %d (expected for test session)", rr.Code)
 }
 
 // TestAdminDashboardUnauthorized tests admin dashboard without admin privileges
