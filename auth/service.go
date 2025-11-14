@@ -197,10 +197,9 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	// Create request with all required fields including context
+	// Create request with auth_code
 	jsonData := map[string]string{
 		"auth_code": code,
-		"context":   "server-session", // Required field for server session authentication
 	}
 	reqData, err := json.Marshal(jsonData)
 	if err != nil {
