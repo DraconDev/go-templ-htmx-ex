@@ -112,8 +112,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 // validateSession validates server session from session_token cookie with 15-second caching
 func validateSession(r *http.Request) layouts.UserInfo {
-// Get session_token cookie for server sessions
-cookie, err := r.Cookie("session_token")
+// Get session_id cookie for server sessions
+cookie, err := r.Cookie("session_id")
 if err != nil {
 	fmt.Printf("🔐 MIDDLEWARE: No session cookie found: %v\n", err)
 	return layouts.UserInfo{LoggedIn: false}
