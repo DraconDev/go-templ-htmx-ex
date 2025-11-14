@@ -30,9 +30,8 @@ func NewAdminHandler(config *config.Config, queries *dbSqlc.Queries) *AdminHandl
 func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("📋 ADMIN: Admin dashboard requested\n")
 
-	// Get user info using existing JWT validation logic
-	userInfo := GetUserFromJWT(r)
-
+	// Get user info from middleware context
+	userInfo := middleware.GetUserFromContext(r)
 	if !userInfo.LoggedIn {
 		fmt.Printf("📋 ADMIN: User not logged in\n")
 		http.Redirect(w, r, "/", http.StatusFound)
