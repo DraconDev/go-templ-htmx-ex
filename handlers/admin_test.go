@@ -15,27 +15,27 @@ func TestAdminDashboardAccess(t *testing.T) {
 		Config:  &config.Config{},
 		Queries: nil,
 	}
-	
+
 	// Create test request
 	req := httptest.NewRequest("GET", "/admin", nil)
-	
+
 	// Set session token cookie for admin user (simulating real authentication)
 	req.AddCookie(&http.Cookie{
-		Name:  "session_id",
-		Value: "admin-session-token",
+		Name:  "session_token",
+		Value: "admin-jwt-token",
 	})
-	
+
 	// Create response recorder
 	rr := httptest.NewRecorder()
-	
+
 	// Execute handler - this will try to validate the session
 	handler.AdminDashboardHandler(rr, req)
-	
+
 	// We expect this to either:
 	// 1. Return OK if session validation succeeds
 	// 2. Return error if session validation fails
 	// 3. Return redirect if user is not authenticated
-	
+
 	// Since we're testing without real session validation, this will likely redirect
 	// but that's fine - we're testing the flow, not the session validation itself
 	t.Logf("Test status code: %d (expected for test session)", rr.Code)
@@ -47,20 +47,20 @@ func TestAdminDashboardUnauthorized(t *testing.T) {
 		Config:  &config.Config{},
 		Queries: nil,
 	}
-	
+
 	// Create test request with non-admin user token
 	req := httptest.NewRequest("GET", "/admin", nil)
 	req.AddCookie(&http.Cookie{
 		Name:  "session_token",
 		Value: "regular-user-jwt-token",
 	})
-	
+
 	// Create response recorder
 	rr := httptest.NewRecorder()
-	
+
 	// Execute handler
 	handler.AdminDashboardHandler(rr, req)
-	
+
 	// Should either redirect or return error for non-admin users
 	if rr.Code == http.StatusFound {
 		location := rr.Header().Get("Location")
@@ -76,21 +76,21 @@ func TestAdminDashboardNoAuth(t *testing.T) {
 		Config:  &config.Config{},
 		Queries: nil,
 	}
-	
+
 	// Create test request without authentication (no cookie)
 	req := httptest.NewRequest("GET", "/admin", nil)
-	
+
 	// Create response recorder
 	rr := httptest.NewRecorder()
-	
+
 	// Execute handler
 	handler.AdminDashboardHandler(rr, req)
-	
+
 	// Should redirect for unauthenticated users
 	if rr.Code != http.StatusFound {
 		t.Errorf("Expected redirect status %d for unauthenticated user, got %d", http.StatusFound, rr.Code)
 	}
-	
+
 	location := rr.Header().Get("Location")
 	if location != "/" {
 		t.Errorf("Expected redirect to '/', got '%s'", location)
@@ -104,14 +104,14 @@ func TestAdminDashboardMiddlewareIntegration(t *testing.T) {
 		Config:  &config.Config{},
 		Queries: nil,
 	}
-	
+
 	// Test the full flow: unauthenticated -> authenticated user
 	scenarios := []struct {
-		name          string
-		hasCookie     bool
-		tokenValue    string
-		expectedCode  int
-		expectedLoc   string
+		name         string
+		hasCookie    bool
+		tokenValue   string
+		expectedCode int
+		expectedLoc  string
 	}{
 		{
 			name:         "No Authentication",
@@ -131,17 +131,17 @@ func TestAdminDashboardMiddlewareIntegration(t *testing.T) {
 	for _, scenario := range scenarios {
 		t.Run(scenario.name, func(t *testing.T) {
 			req := httptest.NewRequest("GET", "/admin", nil)
-			
+
 			if scenario.hasCookie {
 				req.AddCookie(&http.Cookie{
 					Name:  "session_token",
 					Value: scenario.tokenValue,
 				})
 			}
-			
+
 			rr := httptest.NewRecorder()
 			handler.AdminDashboardHandler(rr, req)
-			
+
 			// For unauthenticated users, expect redirect
 			// For authenticated users, expect either redirect (if JWT invalid) or success
 			if rr.Code == http.StatusFound {
