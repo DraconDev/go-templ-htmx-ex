@@ -223,9 +223,6 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 		if picture, ok := respData["picture"].(string); ok {
 			userInfo.Picture = picture
 		}
-		if userID, ok := respData["user_id"].(string); ok {
-			userInfo.UserID = userID
-		}
 		
 		fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
 		return userInfo, nil
