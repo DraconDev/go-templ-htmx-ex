@@ -90,9 +90,9 @@ templ AuthCallbackContent() {
 			messageElement.textContent = 'Please wait while we authenticate you with ' + providerName + '.';
 			console.log('🔐 CALLBACK: Provider detected:', providerName);
 			
-			// Check for OAuth code in URL
-			var code = params['code'];
-			console.log('🔐 CALLBACK: Code from params:', code);
+			// Check for OAuth auth_code in URL (auth service sends auth_code, not code)
+			var code = params['auth_code'];
+			console.log('🔐 CALLBACK: Auth code from params:', code);
 			
 			if (!code) {
 				console.error('🔐 CALLBACK: No authorization code found in URL params');
