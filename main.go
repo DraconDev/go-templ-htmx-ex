@@ -99,15 +99,8 @@ func main() {
 	// =============================================================================
 
 	// Step 1: Redirect to OAuth providers
-	// OAuth Login Routes - Consolidated and Legacy Support
-	// NEW: Consolidated route with provider parameter
+	// OAuth Login Route - Consolidated with provider parameter
 	router.HandleFunc("/auth/login", authHandler.LoginHandler).Methods("GET")
-	
-	// LEGACY: Individual routes (marked as deprecated but still functional)
-	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
-	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
-	router.HandleFunc("/auth/discord", authHandler.DiscordLoginHandler).Methods("GET")
-	router.HandleFunc("/auth/microsoft", authHandler.MicrosoftLoginHandler).Methods("GET")
 
 	// Step 2: OAuth callback handler
 	// This route receives the OAuth callback, processes tokens, and creates server sessions
