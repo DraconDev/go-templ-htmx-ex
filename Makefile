@@ -109,8 +109,17 @@ test:
 	$(GOTEST) ./...
 
 fmt:
-	@echo "Formatting Go code..."
-	$(GOFMT) ./...
+	@echo "Formatting Go code with goimports..."
+	goimports -w .
+	@echo "Go imports and formatting applied!"
+
+format: fmt ## Alias for fmt command
+	@echo "Code formatting completed!"
+
+imports: ## Organize imports only
+	@echo "Organizing imports..."
+	goimports -w -local="" .
+	@echo "Imports organized!"
 
 lint: ## Run golangci-lint for code quality
 	@echo "Running linter..."
