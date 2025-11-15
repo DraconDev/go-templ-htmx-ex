@@ -1,5 +1,5 @@
 # golangci-lint minimal configuration for authentication platform
-
+version: "2"
 linters:
   enable:
     - errcheck
