@@ -286,8 +286,9 @@ func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request
 			settings["total_users"] = totalUsers
 		}
 	}
-
-	json.NewEncoder(w).Encode(settings)
+	if err := json.NewEncoder(w).Encode(settings); err != nil {
+		fmt.Printf("📊 SETTINGS: Error encoding settings JSON: %v\n", err)
+	}
 }
 
 // GetLogsHandler returns recent user activity
