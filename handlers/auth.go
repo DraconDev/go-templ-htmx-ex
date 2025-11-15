@@ -227,12 +227,12 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 
 	fmt.Printf("� SESSION: Session ID received, length: %d\n", len(req.SessionID))
 
-	// Set session_id cookie (replaces session_token)
+	// Set session_id cookie (permanent session cookie - server-side validation handles security)
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    req.SessionID,
 		Path:     "/",
-		MaxAge:   3600, // 1 hour
+		MaxAge:   -1, // Session cookie - lasts until browser closes
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
