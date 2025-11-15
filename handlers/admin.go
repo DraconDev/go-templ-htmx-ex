@@ -268,7 +268,7 @@ func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request
 		"registration_enabled": true,
 		"database_connected":   h.Queries != nil,
 		"total_users":          0,
-		"session_timeout":      3600,
+		"session_timeout":      2592000, // 30 days
 	}
 
 	// Get real user count if database is available
