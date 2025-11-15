@@ -22,15 +22,21 @@
 
 ## 📋 **NEXT TASKS**
 
-### **💳 Priority 1: Stripe Integration**
-- [ ] **Payment Microservice Integration** - Communicate with payment microservice for checkout
-- [ ] **Subscription Management UI** - Users manage subscriptions via payment microservice
-- [ ] **Checkout Flow** - Redirect to payment microservice checkout pages
+### **💳 Priority 1: Payment Infrastructure Platform**
+- [ ] **Complete Session Refresh Endpoint** - Finish auth service session validation
+- [ ] **Multi-tenant Database Schema** - Design tenant isolation for payment service
+- [ ] **Stripe Integration Core** - Implement basic payment processing
+- [ ] **Webhook Routing System** - Route Stripe events to tenant callbacks
+- [ ] **Tenant Configuration API** - Allow startups to configure their payment settings
+- [ ] **Subscription Management API** - CRUD operations for subscriptions
+- [ ] **Payment Status Middleware** - Add subscription validation to main app
+- [ ] **Pricing Tier System** - Configurable subscription plans per tenant
 
-### **🏠 Priority 2: Homepage & UX Optimization**
-- [ ] **Landing Page Improvements** - Better conversion optimization
-- [ ] **User Experience Enhancements** - Smooth interactions with microservices
-- [ ] **Local Features Enhancement** - Maximize value of local app data
+### **🏠 Priority 2: Payment Integration Testing**
+- [ ] **Complete Payment Flow Testing** - End-to-end subscription testing
+- [ ] **Admin Dashboard Integration** - Payment management for platform operators
+- [ ] **Webhook Handler Testing** - Verify event routing works correctly
+- [ ] **Multi-tenant Isolation Testing** - Ensure data separation
 
 **Note:** Advanced analytics and admin tools require access to auth/payment microservices which are external services.
 
