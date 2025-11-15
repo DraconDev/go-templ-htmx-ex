@@ -99,7 +99,11 @@ func main() {
 	// =============================================================================
 
 	// Step 1: Redirect to OAuth providers
-	// These routes redirect users to Google, GitHub, Discord, or Microsoft for authentication
+	// OAuth Login Routes - Consolidated and Legacy Support
+	// NEW: Consolidated route with provider parameter
+	router.HandleFunc("/auth/login", authHandler.LoginHandler).Methods("GET")
+	
+	// LEGACY: Individual routes (marked as deprecated but still functional)
 	router.HandleFunc("/auth/google", authHandler.GoogleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/github", authHandler.GitHubLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/discord", authHandler.DiscordLoginHandler).Methods("GET")
