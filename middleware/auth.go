@@ -198,24 +198,26 @@ if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
 
 fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
 
-// Check if session is valid
-if valid, ok := respData["valid"].(bool); ok && valid {
-	// Session is valid - extract user info
+// Check if session is valid by looking for user_context
+if userContext, ok := respData["user_context"].(map[string]interface{}); ok && userContext != nil {
+	// Session is valid - extract user info from user_context
 	userInfo := layouts.UserInfo{
 		LoggedIn: true,
 	}
 
-	if name, ok := respData["name"].(string); ok {
+	if name, ok := userContext["name"].(string); ok && name != "" {
 		userInfo.Name = name
 	}
-	if email, ok := respData["email"].(string); ok {
+	if email, ok := userContext["email"].(string); ok && email != "" {
 		userInfo.Email = email
 	}
-	if picture, ok := respData["picture"].(string); ok {
+	if picture, ok := userContext["picture"].(string); ok && picture != "" {
 		userInfo.Picture = picture
 	}
+	if userID, ok := userContext["user_id"].(string); ok && userID != "" {
+		fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
+	}
 
-	fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
 	return userInfo, nil
 }
 
