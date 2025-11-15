@@ -194,7 +194,26 @@ if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
 fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
 
 // Check if session is valid by looking for user_context
-if userContext, ok := respData["user_context"].(map[string]interface{}); ok && userContext != nil {
+// Handle both create and refresh response formats
+var userContext map[string]interface{}
+var ok bool
+
+// Try different response formats
+if userContext, ok = respData["user_context"].(map[string]interface{}); !ok {
+	// Try direct format from refresh endpoint
+	if sessionData, ok := respData["session_data"].(map[string]interface{}); ok {
+		userContext = sessionData
+	} else if respData["session_id"] != nil {
+		// If we have session_id but no user_context, the session is valid
+		// but we might not have user info in this response
+		if userContext, ok = respData["user_context"].(map[string]interface{}); !ok {
+			// Session exists but no user_context - still considered logged in
+			return layouts.UserInfo{LoggedIn: true}, nil
+		}
+	}
+}
+
+if userContext != nil {
 	// Session is valid - extract user info from user_context
 	userInfo := layouts.UserInfo{
 		LoggedIn: true,
@@ -214,6 +233,12 @@ if userContext, ok := respData["user_context"].(map[string]interface{}); ok && u
 	}
 
 	return userInfo, nil
+}
+
+// Fallback: if no user_context but session_id exists, user is logged in
+if respData["session_id"] != nil {
+	fmt.Printf("🔐 MIDDLEWARE: Session valid but no user context found\n")
+	return layouts.UserInfo{LoggedIn: true}, nil
 }
 
 fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
