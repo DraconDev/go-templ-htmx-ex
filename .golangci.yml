@@ -1,5 +1,4 @@
-# golangci-lint minimal configuration for authentication platform
-version: "2"
+# golangci-lint configuration for v1
 linters:
   enable:
     - errcheck
@@ -14,10 +13,5 @@ linters:
     - misspell
     - gocritic
 
-issues:
-  new: false
-  max-issues-per-linter: 50
-  max-same-issues: 10
-
 run:
-  timeout: 5m
+  deadline: 5m
