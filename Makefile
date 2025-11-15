@@ -112,7 +112,14 @@ fmt:
 	@echo "Formatting Go code..."
 	$(GOFMT) ./...
 
+lint: ## Run golangci-lint for code quality
+	@echo "Running linter..."
+	golangci-lint run --timeout=2m
+
+check: fmt lint build ## Run all checks (fmt + lint + build)
+	@echo "All checks completed!"
+
 all: deps generate build
 	@echo "Setup complete!"
 
-.PHONY: build clean deps generate dev watch dev-watch run test fmt all
+.PHONY: build clean deps generate dev watch dev-watch run test fmt lint check all
