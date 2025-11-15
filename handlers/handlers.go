@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/a-h/templ"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
+	"github.com/a-h/templ"
 )
+
 // HealthHandler handles health check requests
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -19,10 +20,10 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	// Get user info from middleware context
 	userInfo := middleware.GetUserFromContext(r)
-	
+
 	fmt.Printf("🏠 HOME: User info - LoggedIn: %v, Name: %s, Email: %s\n",
 		userInfo.LoggedIn, userInfo.Name, userInfo.Email)
 

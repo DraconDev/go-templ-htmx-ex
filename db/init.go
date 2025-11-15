@@ -67,7 +67,7 @@ func InitDatabase(dbURL string) error {
 					VALUES ($1, $2, $3, $4, $5)
 					ON CONFLICT (email) DO UPDATE SET is_admin = TRUE
 				`, "admin-"+adminEmail, adminEmail, "Platform Admin", "", true)
-				
+
 				if err != nil {
 					log.Printf("⚠️  Could not create initial admin user: %v", err)
 				} else {

@@ -5,21 +5,21 @@ package middleware
 
 // Protected routes that require authentication
 var ProtectedRoutes = []string{
-	"/profile",        // User profile page
-	"/admin",          // Admin dashboard
+	"/profile", // User profile page
+	"/admin",   // Admin dashboard
 }
 
 // Admin routes that require authentication
 var AdminRoutes = []string{
-	"/api/admin",      // All admin API endpoints
+	"/api/admin", // All admin API endpoints
 }
 
 // Public routes that don't require authentication
 var PublicRoutes = []string{
-	"/",               // Homepage
-	"/health",         // Health check endpoint
-	"/login",          // Login page
-	"/test",           // Test page for development
+	"/",       // Homepage
+	"/health", // Health check endpoint
+	"/login",  // Login page
+	"/test",   // Test page for development
 }
 
 // OAuth routes that are part of authentication flow
@@ -56,14 +56,14 @@ func requiresAuthentication(path string) bool {
 			return true
 		}
 	}
-	
+
 	// Check admin routes (prefix matching)
 	for _, route := range AdminRoutes {
 		if len(path) >= len(route) && path[:len(route)] == route {
 			return true // All admin API routes are protected
 		}
 	}
-	
+
 	return false
 }
 
@@ -74,14 +74,14 @@ func isPublicRoute(path string) bool {
 			return true
 		}
 	}
-	
+
 	// Check OAuth routes (prefix matching for /auth/*)
 	for _, route := range OAuthRoutes {
 		if len(path) >= len(route) && path[:len(route)] == route {
 			return true
 		}
 	}
-	
+
 	return false
 }
 

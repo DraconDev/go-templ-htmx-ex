@@ -12,6 +12,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
+
 // Service handles communication with the auth microservice
 type Service struct {
 	config *config.Config
@@ -23,8 +24,6 @@ func NewService(cfg *config.Config) *Service {
 		config: cfg,
 	}
 }
-
-
 
 // CallAuthService makes a request to the auth microservice
 func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
