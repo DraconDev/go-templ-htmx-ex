@@ -158,7 +158,7 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 		return layouts.UserInfo{LoggedIn: false}, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/validate", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/refresh", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
 		return layouts.UserInfo{LoggedIn: false}, err
