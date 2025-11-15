@@ -172,37 +172,7 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
-// GoogleLoginHandler handles Google OAuth login (DEPRECATED - Use LoginHandler)
-// Flow: User clicks "Login with Google" -> Redirect to our auth service ->
-//
-//	Auth service handles Google OAuth -> Returns to our callback with session token
-func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=google instead of /auth/google\n")
-	h.LoginHandler(w, r)
-}
 
-func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=github instead of /auth/github\n")
-	h.LoginHandler(w, r)
-}
-
-// DiscordLoginHandler handles Discord OAuth login (DEPRECATED - Use LoginHandler)
-// Flow: User clicks "Login with Discord" -> Redirect to our auth service ->
-//
-//	Auth service handles Discord OAuth -> Returns to our callback with session token
-func (h *AuthHandler) DiscordLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=discord instead of /auth/discord\n")
-	h.LoginHandler(w, r)
-}
-
-// MicrosoftLoginHandler handles Microsoft OAuth login (DEPRECATED - Use LoginHandler)
-// Flow: User clicks "Login with Microsoft" -> Redirect to our auth service ->
-//
-//	Auth service handles Microsoft OAuth -> Returns to our callback with session token
-func (h *AuthHandler) MicrosoftLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=microsoft instead of /auth/microsoft\n")
-	h.LoginHandler(w, r)
-}
 
 // AuthCallbackHandler handles the OAuth callback
 // Flow: OAuth provider redirects here with authorization code in URL
