@@ -77,12 +77,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		
 		fmt.Printf("🔐 MIDDLEWARE: Processing route %s [Category: %s]\n", path, category)
 		
+		// Always validate session for all routes (to show logged-in status)
+		userInfo := validateSession(r)
+		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
+
 		// Check if this route requires authentication
 		if requiresAuthentication(path) {
-			// Only validate session for protected routes
-			userInfo := validateSession(r)
-			ctx := context.WithValue(r.Context(), userContextKey, userInfo)
-
 			// If route requires auth but user is not logged in, redirect
 			if !userInfo.LoggedIn {
 				if r.URL.Path[:5] == "/api/" {
@@ -99,14 +99,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				http.Redirect(w, r, "/login", http.StatusFound)
 				return
 			}
-
-			next.ServeHTTP(w, r.WithContext(ctx))
-		} else {
-			// For public routes, don't validate session (just pass through)
-			// Add empty user context to maintain compatibility
-			ctx := context.WithValue(r.Context(), userContextKey, layouts.UserInfo{LoggedIn: false})
-			next.ServeHTTP(w, r.WithContext(ctx))
 		}
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
