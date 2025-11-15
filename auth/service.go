@@ -150,7 +150,7 @@ func (s *Service) CreateSession(code string) (interface{}, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/authenticate", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/create", s.config.AuthServiceURL), bytes.NewBuffer(reqData))
 	if err != nil {
 		return nil, err
 	}
