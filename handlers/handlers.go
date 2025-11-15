@@ -37,7 +37,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	component := layouts.Layout("Home", "Production-ready startup platform with Google OAuth, PostgreSQL database, and admin dashboard. Built with Go + HTMX + Templ.", navigation, pages.HomeContent())
-	component.Render(r.Context(), w)
+	if err := component.Render(r.Context(), w); err != nil {
+		fmt.Printf("Error rendering Home page: %v\n", err)
+	}
 }
 
 // ProfileHandler handles the user profile page
