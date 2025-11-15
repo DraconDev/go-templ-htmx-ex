@@ -112,7 +112,7 @@ templ AuthCallbackContent() {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					code: code
+					auth_code: code
 				})
 			})
 			.then(response => {
