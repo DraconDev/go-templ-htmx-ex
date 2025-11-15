@@ -74,9 +74,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 		category := GetRouteCategory(path)
-		
+
 		fmt.Printf("🔐 MIDDLEWARE: Processing route %s [Category: %s]\n", path, category)
-		
+
 		// Always validate session for all routes (to show logged-in status)
 		userInfo := validateSession(r)
 		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
@@ -107,142 +107,117 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 // validateSession validates server session from session_id cookie with 15-second caching
 func validateSession(r *http.Request) layouts.UserInfo {
-// Get session_id cookie for server sessions
-cookie, err := r.Cookie("session_id")
-if err != nil {
-	fmt.Printf("🔐 MIDDLEWARE: No session cookie found: %v\n", err)
-	return layouts.UserInfo{LoggedIn: false}
-}
+	// Get session_id cookie for server sessions
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: No session cookie found: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}
+	}
 
-if cookie.Value == "" {
-	fmt.Printf("🔐 MIDDLEWARE: Empty session ID\n")
-	return layouts.UserInfo{LoggedIn: false}
-}
+	if cookie.Value == "" {
+		fmt.Printf("🔐 MIDDLEWARE: Empty session ID\n")
+		return layouts.UserInfo{LoggedIn: false}
+	}
 
-fmt.Printf("🔐 MIDDLEWARE: Validating session, ID length: %d\n", len(cookie.Value))
+	fmt.Printf("🔐 MIDDLEWARE: Validating session, ID length: %d\n", len(cookie.Value))
 
-// Check cache first (15-second TTL)
-if cached, found := sessionCache.Get(cookie.Value); found {
-	fmt.Printf("🔐 MIDDLEWARE: Cache hit for session %s\n", cookie.Value[:8]+"...")
-	return cached
-}
+	// Check cache first (15-second TTL)
+	if cached, found := sessionCache.Get(cookie.Value); found {
+		fmt.Printf("🔐 MIDDLEWARE: Cache hit for session %s\n", cookie.Value[:8]+"...")
+		return cached
+	}
 
-fmt.Printf("🔐 MIDDLEWARE: Cache miss - calling auth service for session %s\n", cookie.Value[:8]+"...")
+	fmt.Printf("🔐 MIDDLEWARE: Cache miss - calling auth service for session %s\n", cookie.Value[:8]+"...")
 
-// Cache miss - call auth service to validate session
-userInfo, err := validateSessionWithAuthService(cookie.Value)
-if err != nil {
-	fmt.Printf("🔐 MIDDLEWARE: Auth service validation failed: %v\n", err)
-	// Return unauthenticated instead of crashing
-	return layouts.UserInfo{LoggedIn: false}
-}
+	// Cache miss - call auth service to validate session
+	userInfo, err := validateSessionWithAuthService(cookie.Value)
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Auth service validation failed: %v\n", err)
+		// Return unauthenticated instead of crashing
+		return layouts.UserInfo{LoggedIn: false}
+	}
 
-// Cache result for 15 seconds
-sessionCache.Set(cookie.Value, userInfo)
+	// Cache result for 15 seconds
+	sessionCache.Set(cookie.Value, userInfo)
 
-return userInfo
+	return userInfo
 }
 
 // validateSessionWithAuthService validates session by calling auth microservice
 func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
-fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
+	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
 
-// Create HTTP client with timeout
-client := &http.Client{Timeout: 10 * time.Second}
+	// Create HTTP client with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
 
-// Prepare request to auth service
-reqBody := map[string]string{"session_token": sessionID}
-jsonData, err := json.Marshal(reqBody)
-if err != nil {
-	fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
-	return layouts.UserInfo{LoggedIn: false}, err
-}
+	// Prepare request to auth service
+	reqBody := map[string]string{"session_token": sessionID}
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, err
+	}
 
-req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/refresh", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
-if err != nil {
-	fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
-	return layouts.UserInfo{LoggedIn: false}, err
-}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/auth/session/refresh", config.Current.AuthServiceURL), bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to create request: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, err
+	}
 
-req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
-// Add auth secret if configured
-if config.Current.AuthSecret != "" {
-	req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
-}
+	// Add auth secret if configured
+	if config.Current.AuthSecret != "" {
+		req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
+	}
 
-fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
+	fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
 
-// Send request to auth service
-resp, err := client.Do(req)
-if err != nil {
-	fmt.Printf("🔐 MIDDLEWARE: Failed to call auth service: %v\n", err)
-	// Don't fail the request if auth service is unavailable
-	return layouts.UserInfo{LoggedIn: false}, nil
-}
-defer resp.Body.Close()
+	// Send request to auth service
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to call auth service: %v\n", err)
+		// Don't fail the request if auth service is unavailable
+		return layouts.UserInfo{LoggedIn: false}, nil
+	}
+	defer resp.Body.Close()
 
-fmt.Printf("🔐 MIDDLEWARE: Auth service response status: %s\n", resp.Status)
+	fmt.Printf("🔐 MIDDLEWARE: Auth service response status: %s\n", resp.Status)
 
-// Parse response
-var respData map[string]interface{}
-if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
-	fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
-	return layouts.UserInfo{LoggedIn: false}, nil
-}
+	// Parse response
+	var respData map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&respData); err != nil {
+		fmt.Printf("🔐 MIDDLEWARE: Failed to parse response: %v\n", err)
+		return layouts.UserInfo{LoggedIn: false}, nil
+	}
 
-fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
+	fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
 
-// Check if session is valid by looking for user_context
-// Handle both create and refresh response formats
-var userContext map[string]interface{}
-var ok bool
-
-// Try different response formats
-if userContext, ok = respData["user_context"].(map[string]interface{}); !ok {
-	// Try direct format from refresh endpoint
-	if sessionData, ok := respData["session_data"].(map[string]interface{}); ok {
-		userContext = sessionData
-	} else if respData["session_id"] != nil {
-		// If we have session_id but no user_context, the session is valid
-		// but we might not have user info in this response
-		if userContext, ok = respData["user_context"].(map[string]interface{}); !ok {
-			// Session exists but no user_context - still considered logged in
-			return layouts.UserInfo{LoggedIn: true}, nil
+	// Check if session is valid by looking for user_context
+	if userContext, ok := respData["user_context"].(map[string]interface{}); ok && userContext != nil {
+		// Session is valid - extract user info from user_context
+		userInfo := layouts.UserInfo{
+			LoggedIn: true,
 		}
-	}
-}
 
-if userContext != nil {
-	// Session is valid - extract user info from user_context
-	userInfo := layouts.UserInfo{
-		LoggedIn: true,
-	}
+		if name, ok := userContext["name"].(string); ok && name != "" {
+			userInfo.Name = name
+		}
+		if email, ok := userContext["email"].(string); ok && email != "" {
+			userInfo.Email = email
+		}
+		if picture, ok := userContext["picture"].(string); ok && picture != "" {
+			userInfo.Picture = picture
+		}
+		if userID, ok := userContext["user_id"].(string); ok && userID != "" {
+			fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
+		}
 
-	if name, ok := userContext["name"].(string); ok && name != "" {
-		userInfo.Name = name
-	}
-	if email, ok := userContext["email"].(string); ok && email != "" {
-		userInfo.Email = email
-	}
-	if picture, ok := userContext["picture"].(string); ok && picture != "" {
-		userInfo.Picture = picture
-	}
-	if userID, ok := userContext["user_id"].(string); ok && userID != "" {
-		fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
+		return userInfo, nil
 	}
 
-	return userInfo, nil
-}
-
-// Fallback: if no user_context but session_id exists, user is logged in
-if respData["session_id"] != nil {
-	fmt.Printf("🔐 MIDDLEWARE: Session valid but no user context found\n")
-	return layouts.UserInfo{LoggedIn: true}, nil
-}
-
-fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
-return layouts.UserInfo{LoggedIn: false}, nil
+	fmt.Printf("🔐 MIDDLEWARE: Session validation failed\n")
+	return layouts.UserInfo{LoggedIn: false}, nil
 }
 
 // GetUserFromContext gets user info from request context
