@@ -56,7 +56,10 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	// Create profile content with real user data
 	navigation := layouts.NavigationLoggedIn(userInfo)
 	component := layouts.Layout("Profile", "User profile page with authentication details and account management.", navigation, pages.ProfileContent(userInfo.Name, userInfo.Email, userInfo.Picture))
-	component.Render(r.Context(), w)
+	if err := component.Render(r.Context(), w); err != nil {
+		http.Error(w, "Failed to render profile page", http.StatusInternalServerError)
+		return
+	}
 }
 
 // LoginHandler handles the login page
