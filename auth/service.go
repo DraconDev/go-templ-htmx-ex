@@ -110,7 +110,7 @@ func (s *Service) GetUserInfo(token string) (*models.AuthResponse, error) {
 func (s *Service) Logout(token string) error {
 	// Since this is a server session system, we can just log it
 	// In a more complex system, you might want to blacklist the token
-	log.Printf("User logged out with token: %s", token)
+	fmt.Printf("🔐 LOGOUT: User logged out with token: %s\n", token)
 	return nil
 }
 
