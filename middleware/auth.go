@@ -138,7 +138,7 @@ func validateSession(r *http.Request) layouts.UserInfo {
 	}
 
 	// Cache result for 15 seconds
-	sessionCache.Set(cookie.Value, userInfo)
+	// sessionCache.Set(cookie.Value, userInfo)
 
 	return userInfo
 }
