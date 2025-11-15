@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"net/http/httptest"
+
 	"testing"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
