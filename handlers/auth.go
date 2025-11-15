@@ -231,7 +231,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 		Name:     "session_id",
 		Value:    req.SessionID,
 		Path:     "/",
-		MaxAge:   604800, // 1 week (server-side validation handles real security)
+		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
