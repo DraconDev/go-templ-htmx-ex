@@ -1,6 +1,15 @@
-# 🚀 Go + HTMX + Templ Startup Platform
+# 🚀 Go + HTMX + Templ Authentication & Payment Platform
 
-A **production-ready startup platform** with **Google OAuth**, **PostgreSQL database**, **admin dashboard**, and **enhanced startup-focused homepage**. Built with **Templ**, **HTMX**, and **SQLC** for high performance.
+A **production-ready authentication platform** with **multi-provider OAuth**, **PostgreSQL database**, **admin dashboard**, and **reusable payment infrastructure**. Built with **Templ**, **HTMX**, and **SQLC** for high performance.
+
+## 🏗️ **Strategic Vision: Payment Infrastructure Platform**
+
+This platform is evolving into a **reusable payment infrastructure** that other startups can integrate. Instead of each startup building their own Stripe integration, we provide a centralized, multi-tenant payment microservice that handles:
+- Multi-tenant subscription management
+- Webhook routing and event distribution  
+- Flexible pricing tier configuration
+- Real-time payment status updates
+- White-labeled checkout flows
 
 ## 🎯 What This Is
 
