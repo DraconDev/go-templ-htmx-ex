@@ -477,7 +477,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 		Name:     "session_id",
 		Value:    tokensResp.IdToken,
 		Path:     "/",
-		MaxAge:   3600, // 1 hour
+		MaxAge:   2592000, // 30 days (server-side validation handles real security)
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
