@@ -102,9 +102,9 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 }
 
 // ValidateSession validates a session token
-func (s *Service) ValidateSession(token string) (*models.AuthResponse, error) {
-	return s.CallAuthService(fmt.Sprintf("%s/auth/validate", s.config.AuthServiceURL), map[string]string{
-		"token": token,
+func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error) {
+	return s.CallAuthService(fmt.Sprintf("%s/auth/session/refresh", s.config.AuthServiceURL), map[string]string{
+		"session_id": sessionID,
 	})
 }
 
