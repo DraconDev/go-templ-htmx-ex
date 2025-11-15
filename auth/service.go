@@ -270,34 +270,34 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 		}, fmt.Errorf("auth service error: %v", errMsg)
 	}
 
-	// Extract session token for server session management
-	var sessionToken string
-	var hasSessionToken bool
+	// Extract session_id for server session management
+	var sessionID string
+	var hasSessionID bool
 
-	if sessionInterface, exists := respData["session_token"]; exists {
+	if sessionInterface, exists := respData["session_id"]; exists {
 		if sessionStr, ok := sessionInterface.(string); ok {
-			sessionToken = sessionStr
-			hasSessionToken = true
+			sessionID = sessionStr
+			hasSessionID = true
 		}
 	}
 
-	fmt.Printf("🔄 AUTHSVC: Session extraction - SessionToken: %t (%d chars)\n",
-		hasSessionToken, len(sessionToken))
+	fmt.Printf("🔄 AUTHSVC: Session extraction - session_id: %t (%d chars)\n",
+		hasSessionID, len(sessionID))
 
-	if !hasSessionToken || sessionToken == "" {
+	if !hasSessionID || sessionID == "" {
 		return &models.TokenExchangeResponse{
 			Success: false,
-			Error:   fmt.Sprintf("Missing session token - SessionToken: %t", hasSessionToken),
-		}, fmt.Errorf("missing session token in auth service response")
+			Error:   fmt.Sprintf("Missing session_id - session_id: %t", hasSessionID),
+		}, fmt.Errorf("missing session_id in auth service response")
 	}
 
-	fmt.Printf("🔄 AUTHSVC: Successfully extracted session token - SessionToken: %d chars\n",
-		len(sessionToken))
+	fmt.Printf("🔄 AUTHSVC: Successfully extracted session_id - session_id: %d chars\n",
+		len(sessionID))
 
-	// For server sessions, we return the session token as IdToken
+	// For server sessions, we return the session_id as IdToken
 	// This maintains compatibility with the TokenExchangeResponse structure
 	return &models.TokenExchangeResponse{
 		Success: true,
-		IdToken: sessionToken,
+		IdToken: sessionID,
 	}, nil
 }
