@@ -131,71 +131,77 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
 // OAUTH LOGIN FLOWS
 // =============================================================================
 
-// GoogleLoginHandler handles Google OAuth login
+// LoginHandler handles OAuth login for any provider
+// Flow: User clicks "Login with [Provider]" -> Redirect to our auth service ->
+//	Auth service handles OAuth -> Returns to our callback with session token
+//
+// Usage: /auth/login?provider=google|github|discord|microsoft
+func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	// Get provider from query parameter
+	provider := r.URL.Query().Get("provider")
+	if provider == "" {
+		fmt.Printf("🔐 LOGIN ERROR: Missing provider parameter\n")
+		http.Redirect(w, r, "/login?error=missing_provider", http.StatusFound)
+		return
+	}
+
+	// Validate provider
+	validProviders := map[string]bool{
+		"google":    true,
+		"github":    true,
+		"discord":   true,
+		"microsoft": true,
+	}
+
+	if !validProviders[provider] {
+		fmt.Printf("🔐 LOGIN ERROR: Invalid provider '%s'\n", provider)
+		http.Redirect(w, r, "/login?error=invalid_provider", http.StatusFound)
+		return
+	}
+
+	fmt.Printf("🔐 LOGIN: Starting %s OAuth flow\n", provider)
+	fmt.Printf("🔐 LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
+	fmt.Printf("🔐 LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
+
+	// Redirect to our auth microservice with redirect_uri parameter
+	// The auth service will handle the actual OAuth flow for the specified provider
+	authURL := fmt.Sprintf("%s/auth/%s?redirect_uri=%s/auth/callback",
+		h.Config.AuthServiceURL, provider, h.Config.RedirectURL)
+
+	fmt.Printf("🔐 LOGIN: Redirecting to: %s\n", authURL)
+	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
+// GoogleLoginHandler handles Google OAuth login (DEPRECATED - Use LoginHandler)
 // Flow: User clicks "Login with Google" -> Redirect to our auth service ->
 //
 //	Auth service handles Google OAuth -> Returns to our callback with session token
 func (h *AuthHandler) GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 GOOGLE LOGIN: Starting Google OAuth flow\n")
-	fmt.Printf("🔐 GOOGLE LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
-	fmt.Printf("🔐 GOOGLE LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
-
-	// STEP 1: Redirect to our auth microservice with redirect_uri parameter
-	// The auth service will handle the actual Google OAuth flow
-	authURL := fmt.Sprintf("%s/auth/google?redirect_uri=%s/auth/callback",
-		h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-	fmt.Printf("🔐 GOOGLE LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=google instead of /auth/google\n")
+	h.LoginHandler(w, r)
 }
 
 func (h *AuthHandler) GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 GITHUB LOGIN: Starting GitHub OAuth flow\n")
-	fmt.Printf("🔐 GITHUB LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
-	fmt.Printf("🔐 GITHUB LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
-
-	// OAuth endpoints are public - just redirect
-	authURL := fmt.Sprintf("%s/auth/github?redirect_uri=%s/auth/callback",
-		h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-	fmt.Printf("🔐 GITHUB LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=github instead of /auth/github\n")
+	h.LoginHandler(w, r)
 }
 
-// DiscordLoginHandler handles Discord OAuth login
+// DiscordLoginHandler handles Discord OAuth login (DEPRECATED - Use LoginHandler)
 // Flow: User clicks "Login with Discord" -> Redirect to our auth service ->
 //
 //	Auth service handles Discord OAuth -> Returns to our callback with session token
 func (h *AuthHandler) DiscordLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 DISCORD LOGIN: Starting Discord OAuth flow\n")
-	fmt.Printf("🔐 DISCORD LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
-	fmt.Printf("🔐 DISCORD LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
-
-	// Redirect to our auth microservice with redirect_uri parameter
-	// The auth service will handle the actual Discord OAuth flow
-	authURL := fmt.Sprintf("%s/auth/discord?redirect_uri=%s/auth/callback",
-		h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-	fmt.Printf("🔐 DISCORD LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=discord instead of /auth/discord\n")
+	h.LoginHandler(w, r)
 }
 
-// MicrosoftLoginHandler handles Microsoft OAuth login
+// MicrosoftLoginHandler handles Microsoft OAuth login (DEPRECATED - Use LoginHandler)
 // Flow: User clicks "Login with Microsoft" -> Redirect to our auth service ->
 //
 //	Auth service handles Microsoft OAuth -> Returns to our callback with session token
 func (h *AuthHandler) MicrosoftLoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 MICROSOFT LOGIN: Starting Microsoft OAuth flow\n")
-	fmt.Printf("🔐 MICROSOFT LOGIN: AuthServiceURL = %s\n", h.Config.AuthServiceURL)
-	fmt.Printf("🔐 MICROSOFT LOGIN: RedirectURL = %s\n", h.Config.RedirectURL)
-
-	// Redirect to our auth microservice with redirect_uri parameter
-	// The auth service will handle the actual Microsoft OAuth flow
-	authURL := fmt.Sprintf("%s/auth/microsoft?redirect_uri=%s/auth/callback",
-		h.Config.AuthServiceURL, h.Config.RedirectURL)
-
-	fmt.Printf("🔐 MICROSOFT LOGIN: Redirecting to: %s\n", authURL)
-	http.Redirect(w, r, authURL, http.StatusFound)
+	fmt.Printf("⚠️  DEPRECATED: Use /auth/login?provider=microsoft instead of /auth/microsoft\n")
+	h.LoginHandler(w, r)
 }
 
 // AuthCallbackHandler handles the OAuth callback
