@@ -158,6 +158,9 @@ func main() {
 	// Exchange OAuth code - Convert OAuth authorization code to server session
 	router.HandleFunc("/api/auth/exchange-code", authHandler.ExchangeCodeHandler).Methods("POST")
 
+	// Refresh existing session - Extend session lifetime
+	router.HandleFunc("/api/auth/refresh-session", authHandler.RefreshSessionHandler).Methods("POST")
+
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
