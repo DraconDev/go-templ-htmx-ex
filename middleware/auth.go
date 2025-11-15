@@ -151,7 +151,7 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Prepare request to auth service
-	reqBody := map[string]string{"session_token": sessionID}
+	reqBody := map[string]string{"session_id": sessionID}
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
