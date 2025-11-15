@@ -133,6 +133,7 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
 
 // LoginHandler handles OAuth login for any provider
 // Flow: User clicks "Login with [Provider]" -> Redirect to our auth service ->
+//
 //	Auth service handles OAuth -> Returns to our callback with session token
 //
 // Usage: /auth/login?provider=google|github|discord|microsoft
@@ -171,8 +172,6 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 LOGIN: Redirecting to: %s\n", authURL)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
-
-
 
 // AuthCallbackHandler handles the OAuth callback
 // Flow: OAuth provider redirects here with authorization code in URL
@@ -227,12 +226,12 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 
 	fmt.Printf("� SESSION: Session ID received, length: %d\n", len(req.SessionID))
 
-	// Set session_id cookie (permanent session cookie - server-side validation handles security)
+	// Set session_id cookie (replaces session_token)
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    req.SessionID,
 		Path:     "/",
-		MaxAge:   -1, // Session cookie - lasts until browser closes
+		MaxAge:   3600, // 1 hour
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 	}
