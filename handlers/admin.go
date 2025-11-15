@@ -139,7 +139,11 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	component := layouts.Layout("Admin Dashboard", "Administrative dashboard with user statistics, analytics, and platform management tools.", layouts.NavigationLoggedIn(userInfo), pages.AdminDashboardContent(pagesUserInfo, dashboardData))
-	component.Render(r.Context(), w)
+	if err := component.Render(r.Context(), w); err != nil {
+		fmt.Printf("🚨 ADMIN: Error rendering admin dashboard: %v\n", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetUsersHandler returns a list of users from the database
@@ -255,7 +259,9 @@ func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Reques
 		fmt.Printf("📊 ANALYTICS: No database connection - using default values\n")
 	}
 
-	json.NewEncoder(w).Encode(analytics)
+	if err := json.NewEncoder(w).Encode(analytics); err != nil {
+		fmt.Printf("📊 ANALYTICS: Error encoding analytics JSON: %v\n", err)
+	}
 }
 
 // GetSettingsHandler returns system settings
