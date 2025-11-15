@@ -66,5 +66,8 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	component := layouts.Layout("Login", "Secure authentication page with Google OAuth integration for user access.", layouts.NavigationLoggedOut(), pages.LoginContent())
-	component.Render(r.Context(), w)
+	if err := component.Render(r.Context(), w); err != nil {
+		http.Error(w, "Failed to render login page", http.StatusInternalServerError)
+		return
+	}
 }
