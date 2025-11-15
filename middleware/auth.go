@@ -166,11 +166,6 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 
 	req.Header.Set("Content-Type", "application/json")
 
-	// Add auth secret if configured
-	if config.Current.AuthSecret != "" {
-		req.Header.Set("X-Auth-Secret", config.Current.AuthSecret)
-	}
-
 	fmt.Printf("🔐 MIDDLEWARE: Sending validation request to auth service\n")
 
 	// Send request to auth service
