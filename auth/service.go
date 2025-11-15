@@ -25,15 +25,7 @@ func NewService(cfg *config.Config) *Service {
 	}
 }
 
-// getStringFromMap safely gets a string from a map
-func getStringFromMap(m map[string]interface{}, key string) string {
-	if val, ok := m[key]; ok {
-		if str, ok := val.(string); ok {
-			return str
-		}
-	}
-	return ""
-}
+
 
 // CallAuthService makes a request to the auth microservice
 func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
