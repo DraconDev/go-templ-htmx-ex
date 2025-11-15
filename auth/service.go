@@ -138,8 +138,8 @@ func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 func (s *Service) CreateSession(code string) (interface{}, error) {
 	fmt.Printf("🔄 AUTHSVC: Testing /session/create endpoint...\n")
 
-	// Call the authentication endpoint (handles both creation and refreshing)
-	fmt.Printf("🔄 AUTHSVC: Calling authenticate endpoint: %s/auth/authenticate\n", s.config.AuthServiceURL)
+	// Call the session create endpoint
+	fmt.Printf("🔄 AUTHSVC: Calling create endpoint: %s/auth/session/create\n", s.config.AuthServiceURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
