@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth"
@@ -125,7 +126,9 @@ func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Req
 </body>
 </html>
 `
-	w.Write([]byte(testHTML))
+	if _, err := w.Write([]byte(testHTML)); err != nil {
+		log.Printf("Error writing test HTML: %v", err)
+	}
 }
 
 // OAUTH LOGIN FLOWS
