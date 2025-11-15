@@ -191,7 +191,11 @@ func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request
 	component := layouts.Layout("Authenticating", "Authentication processing page for OAuth callback and session establishment.", layouts.NavigationLoggedOut(), pages.AuthCallbackContent())
 
 	fmt.Printf("🔐 CALLBACK: About to render component...\n")
-	component.Render(r.Context(), w)
+	if err := component.Render(r.Context(), w); err != nil {
+		fmt.Printf("🚨 CALLBACK: Error rendering component: %v\n", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	fmt.Printf("🔐 CALLBACK: Component rendered successfully\n")
 	fmt.Printf("🔐 CALLBACK: === OAuth callback COMPLETED ===\n")
 }
