@@ -15,7 +15,9 @@ import (
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status": "healthy", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`))
+	if _, err := w.Write([]byte(`{"status": "healthy", "timestamp": "` + time.Now().Format(time.RFC3339) + `"}`)); err != nil {
+		fmt.Printf("Error writing health check response: %v\n", err)
+	}
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
