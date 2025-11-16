@@ -102,7 +102,7 @@ func (s *Service) callAuthService(endpoint string, params map[string]string) (*m
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, bodyBytes, err := s.http.Do(req)
+	_, bodyBytes, err := s.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (s *Service) callAuthServiceGeneric(endpoint string, params map[string]stri
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, bodyBytes, err := s.http.Do(req)
+	_, bodyBytes, err := s.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
