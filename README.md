@@ -122,6 +122,18 @@ cp .env.example .env
 ├── main.go                    # Application entry point
 ├── Dockerfile                 # Production container
 ├── sqlc.yaml                  # Database query generation
+├── auth/                      # Refactored Auth Service (All files <100 lines)
+│   ├── http/
+│   │   └── client.go         # HTTP client for auth service communication
+│   ├── builder/
+│   │   └── request_builder.go # Request building logic with auth headers
+│   ├── parsers/
+│   │   └── response_parser.go # Response parsing for different auth responses
+│   ├── services/
+│   │   ├── session.go        # Session validation and management
+│   │   ├── user.go           # User info retrieval operations
+│   │   └── exchange.go       # OAuth code/token exchange operations
+│   └── service.go            # Main service with delegation methods
 ├── handlers/
 │   ├── admin.go              # Admin dashboard
 │   ├── auth.go               # Authentication
