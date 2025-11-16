@@ -307,16 +307,17 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 
 	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.AuthCode))
 
-	// Exchange code for server session (direct implementation)
-	fmt.Printf("🔄 CODE: Processing authorization code for server session...\n")
+	// Process OAuth authorization code for session_id
+	fmt.Printf("🔄 CODE: Processing authorization code for session_id...\n")
 	
-	// Generate a session token from the authorization code
-	sessionToken := "session_" + req.AuthCode
+	// Generate session_id from authorization code for demo purposes
+	// In production, this would call the actual auth service
+	sessionID := "session_" + fmt.Sprintf("%x", len(req.AuthCode))
 	
 	// Set session_id cookie for server sessions
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
-		Value:    sessionToken,
+		Value:    sessionID,
 		Path:     "/",
 		MaxAge:   2592000, // 30 days (server-side validation handles real security)
 		HttpOnly: true,
