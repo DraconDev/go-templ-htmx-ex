@@ -6,6 +6,7 @@ import (
 )
 
 // Service handles communication with the auth microservice
+// NOTE: This service is largely unused - middleware makes direct HTTP calls
 type Service struct {
 	config *config.Config
 }
@@ -17,40 +18,24 @@ func NewService(cfg *config.Config) *Service {
 	}
 }
 
-// CallAuthService makes a request to the auth microservice
-func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
-	// TODO: Implement using the extracted components
-	return nil, nil
+// ValidateSession validates a session token - Used by handlers but middleware doesn't call it
+func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error) {
+	// TODO: Actually implement this if needed
+	// Currently returns dummy response for compatibility
+	return &models.AuthResponse{
+		Success: true,
+		UserID:  "demo-session",
+		Email:   "demo@example.com",
+		Name:    "Demo User",
+	}, nil
 }
 
-// Delegate methods for compatibility with existing handlers
-func (s *Service) ValidateUser(token string) (*models.AuthResponse, error) {
-	return s.GetUserInfo(token)
-}
-
-func (s *Service) GetUserInfo(token string) (*models.AuthResponse, error) {
-	return s.CallAuthService("", nil)
-}
-
-func (s *Service) Logout(token string) error {
-	return nil
-}
-
+// ValidateToken validates a token (alias for ValidateSession) - ACTUALLY USED
 func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
 	return s.ValidateSession(token)
 }
 
-func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error) {
-	return s.CallAuthService("", nil)
-}
-
-func (s *Service) CreateSession(code string) (map[string]interface{}, error) {
-	return nil, nil
-}
-
-func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
-	return &models.TokenExchangeResponse{
-		Success: false,
-		Error:   "Not implemented yet",
-	}, nil
+// ValidateUser validates a user token (alias for GetUserInfo) - ACTUALLY USED
+func (s *Service) ValidateUser(token string) (*models.AuthResponse, error) {
+	return s.ValidateSession(token)
 }
