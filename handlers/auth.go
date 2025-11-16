@@ -353,7 +353,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	// Set session_id cookie
 	http.SetCookie(w, sessionCookie)
 
-	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(tokensResp.IdToken))
+	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(session_id))
 	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
@@ -372,7 +372,7 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	}
 
 	// Get user info from auth microservice
-	userResp, err := h.AuthService.ValidateUser(cookie.Value)
+	userResp, err := h.AuthService.GetUserInfo(cookie.Value)
 	if err != nil {
 		return layouts.UserInfo{LoggedIn: false}
 	}
