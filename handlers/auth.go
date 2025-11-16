@@ -392,13 +392,6 @@ func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Re
 		"session_id": "demo-session-" + req.AuthCode,
 		"success":    true,
 	}
-		fmt.Printf("🧪 TEST: CreateSession failed: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": err.Error(),
-		})
-		return
-	}
 
 	fmt.Printf("🧪 TEST: Session creation response: %+v\n", response)
 
