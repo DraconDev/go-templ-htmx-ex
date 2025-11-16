@@ -63,9 +63,9 @@ func NewService(cfg *config.Config) *Service {
 }
 
 // CreateSession exchanges OAuth authorization code for session_id and user info
-func (s *Service) CreateSession(authCode string) (map[string]interface{}, error) {
+func (s *Service) CreateSession(auth_code string) (map[string]interface{}, error) {
 	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
-		"auth_code": authCode,
+		"auth_code": auth_code,
 	})
 }
 
