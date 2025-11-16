@@ -1,4 +1,4 @@
-jpackage auth
+package auth
 
 import (
 	"bytes"
@@ -13,9 +13,9 @@ import (
 
 // HTTPClient handles HTTP communication with auth service
 type HTTPClient struct {
-	client   *http.Client
-	baseURL  string
-	timeout  time.Duration
+	client  *http.Client
+	baseURL string
+	timeout time.Duration
 }
 
 // NewHTTPClient creates a new HTTP client
