@@ -23,7 +23,8 @@ import (
 
 // AuthHandler handles authentication-related HTTP requests
 type AuthHandler struct {
-	Config *config.Config // App configuration
+	Config     *config.Config // App configuration
+	AuthService *auth.Service // Auth service for session management
 }
 
 // NewAuthHandler creates a new authentication handler
