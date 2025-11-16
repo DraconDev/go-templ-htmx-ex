@@ -16,12 +16,13 @@ import (
 	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
+	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 	_ "github.com/lib/pq"
 )
 
 var authHandler *handlers.AuthHandler
-var adminHandler *handlers.AdminHandler
+var adminHandler *admin.AdminHandler
 var db *sql.DB
 var queries *dbSqlc.Queries
 
