@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/DraconDev/go-templ-htmx-ex/auth/errors"
 )
 
 // AuthServiceError represents a basic auth service error for HTTP package
