@@ -353,7 +353,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	// Set session_id cookie
 	http.SetCookie(w, sessionCookie)
 
-	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(sessionID))
+	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(tokensResp.IdToken))
 	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
