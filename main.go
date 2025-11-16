@@ -62,8 +62,7 @@ func main() {
 		}
 	}
 
-	// Create auth service
-	authService := auth.NewService(cfg)
+	
 
 	// Create admin handler with SQLC queries (handle nil db gracefully)
 	if queries != nil {
