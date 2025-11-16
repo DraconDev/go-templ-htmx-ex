@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	authHttp "github.com/DraconDev/go-templ-htmx-ex/auth/http"
+	"github.com/DraconDev/go-templ-htmx-ex/auth/http"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
