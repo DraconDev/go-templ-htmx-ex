@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
 // =============================================================================
