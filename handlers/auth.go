@@ -307,17 +307,48 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 
 	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.AuthCode))
 
-	// Process OAuth authorization code for session_id
-	fmt.Printf("🔄 CODE: Processing authorization code for session_id...\n")
-	
-	// Generate session_id from authorization code for demo purposes
-	// In production, this would call the actual auth service
-	sessionID := "session_" + fmt.Sprintf("%x", len(req.AuthCode))
-	
-	// Set session_id cookie for server sessions
+	// Exchange code for tokens via auth service
+	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
+	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.AuthCode)
+	if err != nil {
+		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
+		fmt.Printf("❌ CODE: Error type: %T\n", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":      err.Error(),
+			"error_type": fmt.Sprintf("%T", err),
+		})
+		return
+	}
+
+	if !tokensResp.Success {
+		fmt.Printf("❌ CODE: Token exchange failed: %s\n", tokensResp.Error)
+		fmt.Printf("❌ CODE: Response: %+v\n", tokensResp)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":   tokensResp.Error,
+			"success": tokensResp.Success,
+		})
+		return
+	}
+
+	fmt.Printf("✅ CODE: Auth service returned success: %v\n", tokensResp.Success)
+	fmt.Printf("🔄 CODE: Auth response: %+v\n", tokensResp)
+
+	// Use the session token from auth service response
+	if tokensResp.IdToken == "" {
+		fmt.Printf("❌ CODE: No session token in auth response\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "No session token received from auth service",
+		})
+		return
+	}
+
+	// Set session_id cookie for server sessions (use session token from auth service)
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
-		Value:    sessionID,
+		Value:    tokensResp.IdToken,
 		Path:     "/",
 		MaxAge:   2592000, // 30 days (server-side validation handles real security)
 		HttpOnly: true,
