@@ -1,6 +1,9 @@
 package auth
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // AuthServiceError represents errors from the auth service
 type AuthServiceError struct {
