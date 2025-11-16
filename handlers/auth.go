@@ -256,8 +256,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
-// GetUserHandler returns current user information
-func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
+// GetUserHandler returns current user information - DEPRECATED: Use middleware for authentication
 	fmt.Printf("🔐 GETUSER: === GetUser STARTED ===\n")
 	w.Header().Set("Content-Type", "application/json")
 
