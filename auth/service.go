@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 // Service handles session management with the auth microservice
 type Service struct {
 	config  *config.Config
-	http    *HTTPClient
+	client  *http.Client
 	timeout time.Duration
 }
 
@@ -22,7 +23,7 @@ type Service struct {
 func NewService(cfg *config.Config) *Service {
 	return &Service{
 		config:  cfg,
-		http:    NewHTTPClient(cfg.AuthServiceURL, 10*time.Second),
+		client:  &http.Client{Timeout: 10 * time.Second},
 		timeout: 10 * time.Second,
 	}
 }
@@ -56,18 +57,7 @@ func (s *Service) Logout(session_id string) error {
 
 // callAuthService makes a request to the auth microservice
 func (s *Service) callAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
-	jsonData, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", s.http.baseURL+endpoint, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	_, bodyBytes, err := s.http.Do(req)
+	bodyBytes, err := s.makeRequest(endpoint, params)
 	if err != nil {
 		return nil, err
 	}
@@ -82,18 +72,7 @@ func (s *Service) callAuthService(endpoint string, params map[string]string) (*m
 
 // callAuthServiceGeneric makes a request and returns generic response
 func (s *Service) callAuthServiceGeneric(endpoint string, params map[string]string) (map[string]interface{}, error) {
-	jsonData, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", s.http.baseURL+endpoint, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	_, bodyBytes, err := s.http.Do(req)
+	bodyBytes, err := s.makeRequest(endpoint, params)
 	if err != nil {
 		return nil, err
 	}
@@ -104,4 +83,32 @@ func (s *Service) callAuthServiceGeneric(endpoint string, params map[string]stri
 	}
 
 	return response, nil
+}
+
+// makeRequest handles the HTTP request to auth microservice
+func (s *Service) makeRequest(endpoint string, params map[string]string) ([]byte, error) {
+	jsonData, err := json.Marshal(params)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", s.config.AuthServiceURL+endpoint, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Read response body
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return bodyBytes, nil
 }

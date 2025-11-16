@@ -64,7 +64,7 @@ func main() {
 
 	// Create admin handler with SQLC queries (handle nil db gracefully)
 	if queries != nil {
-		adminHandler = handlers.NewAdminHandler(cfg, queries)
+		adminHandler = admin.NewAdminHandler(cfg, queries)
 	} else {
 		log.Println("⚠️  Admin handler not initialized - no database connection")
 	}
