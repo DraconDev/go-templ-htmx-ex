@@ -1,6 +1,6 @@
 # Makefile for Startup Platform
 
-BINARY_NAME=startup-platform
+BINARY_NAME=server
 BUILD_DIR=bin
 
 GOCMD=go
