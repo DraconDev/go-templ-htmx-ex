@@ -258,7 +258,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 
 
 
-// ValidateSessionHandler validates the current session
+// ValidateSessionHandler validates the current session - DEPRECATED: Use middleware for authentication
 func (h *AuthHandler) ValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
