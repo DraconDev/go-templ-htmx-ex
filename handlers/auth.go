@@ -258,42 +258,7 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 
 
 
-// ValidateSessionHandler validates the current session - DEPRECATED: Use middleware for authentication
-func (h *AuthHandler) ValidateSessionHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
-	// Get session token from cookie
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"valid": false,
-			"error": "No session token",
-		})
-		return
-	}
-
-	// Validate token with auth microservice
-	userResp, err := h.AuthService.ValidateToken(cookie.Value)
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"valid": false,
-			"error": err.Error(),
-		})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"valid":   userResp.Success,
-		"user_id": userResp.UserID,
-		"email":   userResp.Email,
-		"name":    userResp.Name,
-		"picture": userResp.Picture,
-		"status":  "validated",
-	})
-}
 
 // LogoutHandler handles user logout
 func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
