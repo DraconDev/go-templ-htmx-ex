@@ -311,7 +311,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 
 	// Exchange code for tokens via auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
-	tokensResp, err := h.AuthService.ExchangeCodeForTokens(req.AuthCode)
+	tokensResp, err := h.AuthService.CreateSession(req.AuthCode)
 	if err != nil {
 		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
 		fmt.Printf("❌ CODE: Error type: %T\n", err)
