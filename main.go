@@ -122,6 +122,7 @@ func main() {
 	// =============================================================================
 
 	// Admin dashboard - Main admin interface for platform management
+	// TODO: Move to separate admin router with /admin/* structure
 	router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
 
 	// Admin API endpoints - Management operations for administrators
@@ -129,6 +130,17 @@ func main() {
 	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET") // Platform analytics
 	router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")   // System settings
 	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")           // System logs
+
+	// =============================================================================
+	// DEVELOPMENT & TESTING ROUTES (DISABLED IN PRODUCTION)
+	// =============================================================================
+
+	// These routes are commented out for production safety
+	// Uncomment for development testing
+	/*
+	// Test authentication page - Development tool for testing OAuth flows
+	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
+	*/
 
 	// =============================================================================
 	// SESSION MANAGEMENT API - Authentication required
