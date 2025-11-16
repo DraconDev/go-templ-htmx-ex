@@ -14,7 +14,6 @@ type Config struct {
 	AuthServiceURL string
 	RedirectURL    string
 	AdminEmail     string
-	AuthSecret     string
 }
 
 var (
@@ -41,8 +40,7 @@ func LoadConfig() *Config {
 		ServerPort:     getEnvOrDefault("PORT", "8081"),
 		AuthServiceURL: getEnvOrDefault("AUTH_SERVICE_URL", "http://localhost:8080"),
 		RedirectURL:    getEnvOrDefault("REDIRECT_URL", "http://localhost:8081"),
-		AdminEmail:     getEnvOrDefault("ADMIN_EMAIL", "admin@startup-platform.local"),
-		AuthSecret:     getEnvOrDefault("AUTH_SECRET", ""),
+		AdminEmail:     getEnvOrDefault("ADMIN_EMAIL", "admin@startup-platform.local")
 	}
 
 	Current = config
