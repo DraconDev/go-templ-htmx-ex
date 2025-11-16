@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
@@ -15,35 +13,9 @@ import (
 
 // Service handles session management with the auth microservice
 type Service struct {
-	config    *config.Config
-	http      *HTTPClient
-	timeout   time.Duration
-	logger    *log.Logger
-	mu        sync.RWMutex
-	sessions  map[string]*SessionInfo
-	metrics   *ServiceMetrics
-}
-
-// SessionInfo represents session information
-type SessionInfo struct {
-	SessionID   string    `json:"session_id"`
-	UserID      string    `json:"user_id"`
-	CreatedAt   time.Time `json:"created_at"`
-	LastAccess  time.Time `json:"last_access"`
-	IPAddress   string    `json:"ip_address"`
-	UserAgent   string    `json:"user_agent"`
-	Role        string    `json:"role"`
-	Permissions []string  `json:"permissions"`
-	IsActive    bool      `json:"is_active"`
-}
-
-// ServiceMetrics tracks service metrics
-type ServiceMetrics struct {
-	TotalRequests    int64     `json:"total_requests"`
-	ActiveSessions   int64     `json:"active_sessions"`
-	FailedRequests   int64     `json:"failed_requests"`
-	LastRequest      time.Time `json:"last_request"`
-	mu               sync.RWMutex
+	config  *config.Config
+	http    *HTTPClient
+	timeout time.Duration
 }
 
 // NewService creates a new auth service instance
