@@ -70,22 +70,22 @@ func (s *Service) CreateSession(authCode string) (map[string]interface{}, error)
 }
 
 // RefreshSession refreshes an existing session_id
-func (s *Service) RefreshSession(sessionID string) (*models.AuthResponse, error) {
+func (s *Service) RefreshSession(session_id string) (*models.AuthResponse, error) {
 	return s.callAuthService("/auth/session/refresh", map[string]string{
-		"session_id": sessionID,
+		"session_id": session_id,
 	})
 }
 
 // GetUserInfo retrieves user information using session_id
-func (s *Service) GetUserInfo(sessionID string) (*models.AuthResponse, error) {
+func (s *Service) GetUserInfo(session_id string) (*models.AuthResponse, error) {
 	return s.callAuthService("/auth/userinfo", map[string]string{
-		"session_id": sessionID,
+		"session_id": session_id,
 	})
 }
 
 // Logout logs out a user using session_id
-func (s *Service) Logout(sessionID string) error {
-	fmt.Printf("User logged out with session_id: %s\n", sessionID)
+func (s *Service) Logout(session_id string) error {
+	fmt.Printf("User logged out with session_id: %s\n", session_id)
 	return nil
 }
 

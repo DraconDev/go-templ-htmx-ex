@@ -92,9 +92,9 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 }
 
 // ValidateSession validates a session token
-func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error) {
+func (s *Service) ValidateSession(session_id string) (*models.AuthResponse, error) {
 	return s.CallAuthService(fmt.Sprintf("%s/auth/session/refresh", s.config.AuthServiceURL), map[string]string{
-		"session_id": sessionID,
+		"session_id": session_id,
 	})
 }
 
@@ -261,20 +261,20 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 	}
 
 	// Extract session_id for server session management
-	var sessionID string
+	var session_id string
 	var hasSessionID bool
 
 	if sessionInterface, exists := respData["session_id"]; exists {
 		if sessionStr, ok := sessionInterface.(string); ok {
-			sessionID = sessionStr
+			session_id = sessionStr
 			hasSessionID = true
 		}
 	}
 
 	fmt.Printf("🔄 AUTHSVC: Session extraction - session_id: %t (%d chars)\n",
-		hasSessionID, len(sessionID))
+		hasSessionID, len(session_id))
 
-	if !hasSessionID || sessionID == "" {
+	if !hasSessionID || session_id == "" {
 		return &models.TokenExchangeResponse{
 			Success: false,
 			Error:   fmt.Sprintf("Missing session_id - session_id: %t", hasSessionID),
@@ -282,12 +282,12 @@ func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeRespo
 	}
 
 	fmt.Printf("🔄 AUTHSVC: Successfully extracted session_id - session_id: %d chars\n",
-		len(sessionID))
+		len(session_id))
 
 	// For server sessions, we return the session_id as IdToken
 	// This maintains compatibility with the TokenExchangeResponse structure
 	return &models.TokenExchangeResponse{
 		Success: true,
-		IdToken: sessionID,
+		IdToken: session_id,
 	}, nil
 }

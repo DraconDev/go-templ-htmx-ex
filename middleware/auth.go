@@ -37,18 +37,18 @@ func NewSessionCache() *SessionCache {
 }
 
 // Get retrieves cached user info if not expired
-func (c *SessionCache) Get(sessionID string) (layouts.UserInfo, bool) {
+func (c *SessionCache) Get(session_id string) (layouts.UserInfo, bool) {
 	c.RLock()
 	defer c.RUnlock()
 
-	entry, exists := c.entries[sessionID]
+	entry, exists := c.entries[session_id]
 	if !exists {
 		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
 	if time.Now().After(entry.expiresAt) {
 		// Expired entry, clean up
-		delete(c.entries, sessionID)
+		delete(c.entries, session_id)
 		return layouts.UserInfo{LoggedIn: false}, false
 	}
 
@@ -56,11 +56,11 @@ func (c *SessionCache) Get(sessionID string) (layouts.UserInfo, bool) {
 }
 
 // Set caches user info with 15-second TTL
-func (c *SessionCache) Set(sessionID string, userInfo layouts.UserInfo) {
+func (c *SessionCache) Set(session_id string, userInfo layouts.UserInfo) {
 	c.Lock()
 	defer c.Unlock()
 
-	c.entries[sessionID] = &cacheEntry{
+	c.entries[session_id] = &cacheEntry{
 		userInfo:  userInfo,
 		expiresAt: time.Now().Add(15 * time.Second),
 	}
@@ -146,14 +146,14 @@ func validateSession(r *http.Request) layouts.UserInfo {
 }
 
 // validateSessionWithAuthService validates session by calling auth microservice
-func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) {
-	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", sessionID[:8]+"...")
+func validateSessionWithAuthService(session_id string) (layouts.UserInfo, error) {
+	fmt.Printf("🔐 MIDDLEWARE: Calling auth service to validate session %s\n", session_id[:8]+"...")
 
 	// Create HTTP client with timeout
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Prepare request to auth service
-	reqBody := map[string]string{"session_id": sessionID}
+	reqBody := map[string]string{"session_id": session_id}
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
 		fmt.Printf("🔐 MIDDLEWARE: Failed to marshal request: %v\n", err)
