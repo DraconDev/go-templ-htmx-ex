@@ -280,50 +280,7 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// TestCreateSessionHandler tests the session creation endpoint
-func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🧪 TEST: Testing /auth/session/create endpoint...\n")
 
-	w.Header().Set("Content-Type", "application/json")
-
-	var req struct {
-		AuthCode string `json:"auth_code"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		fmt.Printf("🧪 TEST: Failed to decode request: %v\n", err)
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Invalid request body",
-		})
-		return
-	}
-
-	if req.AuthCode == "" {
-		fmt.Printf("🧪 TEST: Missing authorization code\n")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Missing authorization code",
-		})
-		return
-	}
-
-	fmt.Printf("🧪 TEST: Authorization code received: %s\n", req.AuthCode)
-
-	// Test session creation - mock response since auth service is removed
-	response := map[string]interface{}{
-		"session_id": "demo-session-" + req.AuthCode,
-		"success":    true,
-	}
-
-	fmt.Printf("🧪 TEST: Session creation response: %+v\n", response)
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success":  true,
-		"response": response,
-	})
-}
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
 func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
