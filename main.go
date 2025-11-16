@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/DraconDev/go-templ-htmx-ex/auth"
+	
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	// Create auth handler
-	authHandler = handlers.NewAuthHandler(authService, cfg)
+	authHandler = handlers.NewAuthHandler(cfg)
 
 	// Create router
 	router := mux.NewRouter()
