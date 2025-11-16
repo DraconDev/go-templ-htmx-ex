@@ -1,110 +1,150 @@
 package auth
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth/http"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
 
-// Service handles session management with the auth microservice
+// Service handles communication with the auth microservice for session management
 type Service struct {
 	config  *config.Config
 	http    *http.Client
-	timeout time.Duration
+	builder *Builder
+	parser  *Parser
 }
 
 // NewService creates a new auth service instance
 func NewService(cfg *config.Config) *Service {
+	httpClient := http.NewClient()
+
 	return &Service{
 		config:  cfg,
-		http:    http.NewClient(10 * time.Second),
-		timeout: 10 * time.Second,
+		http:    httpClient,
+		builder: NewBuilder(cfg.AuthSecret),
+		parser:  NewParser(),
 	}
 }
 
-// CreateSession exchanges OAuth authorization code for session_id and user info
-func (s *Service) CreateSession(code string) (map[string]interface{}, error) {
-	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
-		"code": code,
-	})
+// CallAuthService makes a request to the auth microservice
+func (s *Service) CallAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
+	// Build request
+	req, err := s.builder.BuildPOSTRequest(endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Execute request
+	_, bodyBytes, err := s.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse response
+	authResp, err := s.parser.ParseAuthResponse(bodyBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return authResp, nil
 }
 
-// RefreshSession refreshes an existing session_id
-func (s *Service) RefreshSession(sessionID string) (*models.AuthResponse, error) {
-	return s.callAuthService("/auth/session/refresh", map[string]string{
+// ValidateSession validates a session_id with the auth service
+func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error) {
+	endpoint := fmt.Sprintf("%s/auth/session/refresh", s.config.AuthServiceURL)
+	params := map[string]string{
 		"session_id": sessionID,
-	})
+	}
+	return s.CallAuthService(endpoint, params)
 }
 
-// GetUserInfo retrieves user information using session_id
+// GetUserInfo retrieves user information from auth service using session_id
 func (s *Service) GetUserInfo(sessionID string) (*models.AuthResponse, error) {
-	return s.callAuthService("/auth/userinfo", map[string]string{
+	endpoint := fmt.Sprintf("%s/auth/userinfo", s.config.AuthServiceURL)
+	params := map[string]string{
 		"session_id": sessionID,
-	})
+	}
+	return s.CallAuthService(endpoint, params)
 }
 
 // Logout logs out a user using session_id
 func (s *Service) Logout(sessionID string) error {
+	// Log the logout for debugging purposes
 	fmt.Printf("User logged out with session_id: %s\n", sessionID)
 	return nil
 }
 
-// callAuthService makes a request to the auth microservice
-func (s *Service) callAuthService(endpoint string, params map[string]string) (*models.AuthResponse, error) {
-	jsonData, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", s.config.AuthServiceURL+endpoint, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, bodyBytes, err := s.http.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var authResp models.AuthResponse
-	if err := json.Unmarshal(bodyBytes, &authResp); err != nil {
-		return nil, err
-	}
-
-	return &authResp, nil
+// ValidateUser validates a user using session_id (alias for GetUserInfo)
+func (s *Service) ValidateUser(sessionID string) (*models.AuthResponse, error) {
+	return s.GetUserInfo(sessionID)
 }
 
-// callAuthServiceGeneric makes a request and returns generic response
-func (s *Service) callAuthServiceGeneric(endpoint string, params map[string]string) (map[string]interface{}, error) {
-	jsonData, err := json.Marshal(params)
+// ValidateToken validates a token (alias for ValidateSession) - kept for compatibility
+func (s *Service) ValidateToken(sessionID string) (*models.AuthResponse, error) {
+	return s.ValidateSession(sessionID)
+}
+
+// CreateSession creates a session from OAuth authorization code
+func (s *Service) CreateSession(code string) (map[string]interface{}, error) {
+	endpoint := fmt.Sprintf("%s/auth/session/create", s.config.AuthServiceURL)
+	params := map[string]string{"code": code}
+
+	// Build request
+	req, err := s.builder.BuildPOSTRequest(endpoint, params)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", s.config.AuthServiceURL+endpoint, bytes.NewBuffer(jsonData))
+	// Execute request
+	_, bodyBytes, err := s.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, bodyBytes, err := s.http.Do(req)
+	// Parse response as generic map
+	response, err := s.parser.ParseGenericResponse(bodyBytes)
 	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var response map[string]interface{}
-	if err := json.Unmarshal(bodyBytes, &response); err != nil {
 		return nil, err
 	}
 
 	return response, nil
+}
+
+// ExchangeCodeForTokens exchanges OAuth authorization code for session_id
+func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
+	endpoint := fmt.Sprintf("%s/auth/session/create", s.config.AuthServiceURL)
+	params := map[string]string{
+		"auth_code": code,
+	}
+
+	// Build request
+	req, err := s.builder.BuildPOSTRequest(endpoint, params)
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to build request",
+		}, err
+	}
+
+	// Execute request
+	_, bodyBytes, err := s.http.Do(req)
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to call auth service: " + err.Error(),
+		}, err
+	}
+
+	// Parse response
+	tokenResp, err := s.parser.ParseTokenExchangeResponse(bodyBytes)
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to parse token exchange response: " + err.Error(),
+		}, err
+	}
+
+	return tokenResp, nil
 }
