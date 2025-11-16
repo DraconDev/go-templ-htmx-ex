@@ -324,14 +324,14 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	fmt.Printf("✅ CODE: Auth service returned session data: %+v\n", sessionData)
 
 	// Extract session_id from the response
-	var sessionID string
+	var session_id string
 	if sid, exists := sessionData["session_id"]; exists {
 		if sidStr, ok := sid.(string); ok {
-			sessionID = sidStr
+			session_id = sidStr
 		}
 	}
 
-	if sessionID == "" {
+	if session_id == "" {
 		fmt.Printf("❌ CODE: No session_id in auth response\n")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -343,7 +343,7 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	// Set session_id cookie for server sessions
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
-		Value:    sessionID,
+		Value:    session_id,
 		Path:     "/",
 		MaxAge:   2592000, // 30 days (server-side validation handles real security)
 		HttpOnly: true,
