@@ -1,18 +1,14 @@
 package auth
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
 
-// Service handles communication with the auth microservice
+// Service handles communication with the auth microservice for session management
 type Service struct {
 	config   *config.Config
 	http     *HTTPClient
@@ -55,15 +51,10 @@ func (s *Service) CallAuthService(endpoint string, params map[string]string) (*m
 		return nil, err
 	}
 
-	// Validate response
-	if !authResp.Success {
-		return authResp, NewAuthServiceError("AUTH_FAILED", "Authentication failed", nil)
-	}
-
 	return authResp, nil
 }
 
-// ValidateSession validates a session token
+// ValidateSession validates a session_id with the auth service
 func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error) {
 	endpoint := fmt.Sprintf("%s/auth/session/refresh", s.config.AuthServiceURL)
 	params := map[string]string{
@@ -72,35 +63,33 @@ func (s *Service) ValidateSession(sessionID string) (*models.AuthResponse, error
 	return s.CallAuthService(endpoint, params)
 }
 
-// GetUserInfo retrieves user information from auth service
-func (s *Service) GetUserInfo(token string) (*models.AuthResponse, error) {
+// GetUserInfo retrieves user information from auth service using session_id
+func (s *Service) GetUserInfo(sessionID string) (*models.AuthResponse, error) {
 	endpoint := fmt.Sprintf("%s/auth/userinfo", s.config.AuthServiceURL)
 	params := map[string]string{
-		"token": token,
+		"session_id": sessionID,
 	}
 	return s.CallAuthService(endpoint, params)
 }
 
-// Logout logs out a user (通知auth service)
-func (s *Service) Logout(token string) error {
-	// Since this is a server session system, we log it
-	// In a more complex system, you might want to blacklist the token
-	fmt.Printf("User logged out with token: %s\n", token)
+// Logout logs out a user using session_id
+func (s *Service) Logout(sessionID string) error {
+	// Log the logout for debugging purposes
+	fmt.Printf("User logged out with session_id: %s\n", sessionID)
 	return nil
 }
 
-// ValidateUser validates a user token (alias for GetUserInfo)
-func (s *Service) ValidateUser(token string) (*models.AuthResponse, error) {
-	return s.GetUserInfo(token)
+// ValidateUser validates a user using session_id (alias for GetUserInfo)
+func (s *Service) ValidateUser(sessionID string) (*models.AuthResponse, error) {
+	return s.GetUserInfo(sessionID)
 }
 
-// ValidateToken validates a token (alias for ValidateSession)
-func (s *Service) ValidateToken(token string) (*models.AuthResponse, error) {
-	return s.ValidateSession(token)
+// ValidateToken validates a token (alias for ValidateSession) - kept for compatibility
+func (s *Service) ValidateToken(sessionID string) (*models.AuthResponse, error) {
+	return s.ValidateSession(sessionID)
 }
 
-// CreateSession exchanges OAuth authorization code for session creation
-// This is a test function to see what /session/create returns
+// CreateSession creates a session from OAuth authorization code
 func (s *Service) CreateSession(code string) (map[string]interface{}, error) {
 	endpoint := fmt.Sprintf("%s/auth/session/create", s.config.AuthServiceURL)
 	params := map[string]string{"code": code}
@@ -126,7 +115,7 @@ func (s *Service) CreateSession(code string) (map[string]interface{}, error) {
 	return response, nil
 }
 
-// ExchangeCodeForTokens exchanges OAuth authorization code for server session
+// ExchangeCodeForTokens exchanges OAuth authorization code for session_id
 func (s *Service) ExchangeCodeForTokens(code string) (*models.TokenExchangeResponse, error) {
 	endpoint := fmt.Sprintf("%s/auth/session/create", s.config.AuthServiceURL)
 	params := map[string]string{
