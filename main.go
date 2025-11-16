@@ -112,8 +112,7 @@ func main() {
 	// Test authentication page - Development tool for testing OAuth flows
 	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
 
-	// Test session creation - Development endpoint for testing server session creation
-	router.HandleFunc("/api/auth/test-session-create", authHandler.TestCreateSessionHandler).Methods("POST")
+	
 
 	// =============================================================================
 	// PROTECTED USER ROUTES - Authentication required
