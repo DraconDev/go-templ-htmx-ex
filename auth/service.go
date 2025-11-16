@@ -20,7 +20,7 @@ type Service struct {
 // NewService creates a new auth service instance
 func NewService(cfg *config.Config) *Service {
 	timeout := 10 * time.Second
-	httpClient := NewHTTPClient(timeout, cfg.AuthSecret, cfg.AuthServiceURL)
+	httpClient := NewHTTPClient(timeout)
 	
 	return &Service{
 		config:  cfg,

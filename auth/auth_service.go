@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
 
 // AuthService represents the main auth service that orchestrates all auth operations
