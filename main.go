@@ -107,7 +107,8 @@ func main() {
 	// =============================================================================
 
 	// Test authentication page - Development tool for testing OAuth flows
-	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
+	// This route is now handled by the auth_test.go file
+	// router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
 
 	// =============================================================================
 	// PROTECTED USER ROUTES - Authentication required
