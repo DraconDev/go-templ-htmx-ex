@@ -243,6 +243,9 @@ vim templates/pages/your_feature.templ
 
 ## 🔍 Recent Updates
 
+- **✅ Complete Auth Service Refactoring:** Transformed 293-line monolithic file into 7 focused components under 100 lines each
+- **✅ Clean Architecture:** Organized auth service with http/, builder/, parsers/, services/ folders
+- **✅ Binary Naming Configuration:** Updated Makefile to build as 'server' instead of 'go-templ-htmx-ex'
 - **✅ Complete JWT to Server Session Migration:** Full migration to Redis-backed sessions
 - **✅ Clear session_id Terminology:** Consistent naming across all components
 - **✅ Improved API Clarity:** Changed "code" parameter to "auth_code" for better understanding
