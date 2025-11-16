@@ -133,8 +133,7 @@ func main() {
 	// SESSION MANAGEMENT API - Authentication required
 	// =============================================================================
 
-	// Validate session - Check if current session is valid and get user info
-	router.HandleFunc("/api/auth/validate", authHandler.ValidateSessionHandler).Methods("POST")
+	
 
 	// Logout user - Destroy current session and clear cookies
 	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
