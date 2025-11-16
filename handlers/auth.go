@@ -35,10 +35,7 @@ func NewAuthHandler(config *config.Config) *AuthHandler {
 	}
 }
 
-// =============================================================================
-// TEST ROUTES
-// =============================================================================
-// These routes help test the authentication flow during development
+
 
 // TestTokenRefreshHandler serves a test page with token refresh button
 func (h *AuthHandler) TestTokenRefreshHandler(w http.ResponseWriter, r *http.Request) {
