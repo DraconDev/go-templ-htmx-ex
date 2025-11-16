@@ -139,8 +139,7 @@ func main() {
 	// Logout user - Destroy current session and clear cookies
 	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
 
-	// Get current user - Retrieve authenticated user information
-	router.HandleFunc("/api/auth/user", authHandler.GetUserHandler).Methods("GET")
+	
 
 	// Set session - Create new server session with provided session ID
 	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
