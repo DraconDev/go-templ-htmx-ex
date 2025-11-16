@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/config"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
