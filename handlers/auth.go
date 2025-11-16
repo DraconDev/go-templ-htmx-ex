@@ -275,14 +275,16 @@ func (h *AuthHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 GETUSER: Session cookie found, value length: %d\n", len(cookie.Value))
 
 	// Get user info from auth microservice
-	fmt.Printf("🔐 GETUSER: Calling auth service to validate user...\n")
-	userResp, err := h.AuthService.ValidateUser(cookie.Value)
-	if err != nil {
-		fmt.Printf("🔐 GETUSER: Auth service failed: %v\n", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"logged_in": false,
-		})
+	fmt.Printf("🔐 GETUSER: Returning mock user data...\n")
+	
+	// Return mock user data since auth service is removed
+	userResp := map[string]interface{}{
+		"success":  true,
+		"user_id":  "demo-user",
+		"email":    "demo@example.com",
+		"name":     "Demo User",
+		"picture":  "https://via.placeholder.com/64",
+	}
 		return
 	}
 
