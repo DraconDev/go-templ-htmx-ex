@@ -2,7 +2,6 @@ package auth
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/auth/http"
 	"github.com/DraconDev/go-templ-htmx-ex/config"
@@ -11,24 +10,21 @@ import (
 
 // Service handles communication with the auth microservice for session management
 type Service struct {
-	config   *config.Config
-	http     *HTTPClient
-	builder  *RequestBuilder
-	parser   *ResponseParser
-	timeout  time.Duration
+	config  *config.Config
+	http    *http.Client
+	builder *Builder
+	parser  *Parser
 }
 
 // NewService creates a new auth service instance
 func NewService(cfg *config.Config) *Service {
-	timeout := 10 * time.Second
-	httpClient := NewHTTPClient(timeout, cfg.AuthSecret, cfg.AuthServiceURL)
+	httpClient := http.NewClient()
 	
 	return &Service{
 		config:  cfg,
 		http:    httpClient,
-		builder: NewRequestBuilder(cfg.AuthSecret),
-		parser:  NewResponseParser(),
-		timeout: timeout,
+		builder: NewBuilder(cfg.AuthSecret),
+		parser:  NewParser(),
 	}
 }
 
