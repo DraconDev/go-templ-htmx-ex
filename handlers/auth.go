@@ -387,9 +387,11 @@ func (h *AuthHandler) TestCreateSessionHandler(w http.ResponseWriter, r *http.Re
 
 	fmt.Printf("🧪 TEST: Authorization code received: %s\n", req.AuthCode)
 
-	// Test the new CreateSession function
-	response, err := h.AuthService.CreateSession(req.AuthCode)
-	if err != nil {
+	// Test session creation - mock response since auth service is removed
+	response := map[string]interface{}{
+		"session_id": "demo-session-" + req.AuthCode,
+		"success":    true,
+	}
 		fmt.Printf("🧪 TEST: CreateSession failed: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
