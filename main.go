@@ -12,7 +12,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-	
 	"github.com/DraconDev/go-templ-htmx-ex/config"
 	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
@@ -62,8 +61,6 @@ func main() {
 		}
 	}
 
-	
-
 	// Create admin handler with SQLC queries (handle nil db gracefully)
 	if queries != nil {
 		adminHandler = handlers.NewAdminHandler(cfg, queries)
@@ -112,8 +109,6 @@ func main() {
 	// Test authentication page - Development tool for testing OAuth flows
 	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
 
-	
-
 	// =============================================================================
 	// PROTECTED USER ROUTES - Authentication required
 	// =============================================================================
@@ -149,9 +144,6 @@ func main() {
 
 	// Set session - Create new server session with provided session ID
 	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
-
-	// Exchange OAuth code - Convert OAuth authorization code to server session
-	router.HandleFunc("/api/auth/exchange-code", authHandler.ExchangeCodeHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
