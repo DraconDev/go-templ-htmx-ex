@@ -23,15 +23,13 @@ import (
 
 // AuthHandler handles authentication-related HTTP requests
 type AuthHandler struct {
-	AuthService *auth.Service  // Communication with auth microservice
-	Config      *config.Config // App configuration
+	Config *config.Config // App configuration
 }
 
 // NewAuthHandler creates a new authentication handler
-func NewAuthHandler(authService *auth.Service, config *config.Config) *AuthHandler {
+func NewAuthHandler(config *config.Config) *AuthHandler {
 	return &AuthHandler{
-		AuthService: authService,
-		Config:      config,
+		Config: config,
 	}
 }
 
