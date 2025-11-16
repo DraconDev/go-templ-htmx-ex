@@ -1,10 +1,12 @@
-package auth
+package http
 
 import (
 	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"github.com/DraconDev/go-templ-htmx-ex/auth/errors"
 )
 
 // Request represents a built HTTP request
