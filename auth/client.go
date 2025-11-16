@@ -1,58 +1,41 @@
 package auth
 
 import (
-	"log"
+	"net/http"
 	"time"
-
-	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
 
-// AuthClient handles communication with auth service
-type AuthClient struct {
-	service *Service
-	logger  *log.Logger
+// HTTPClient handles HTTP communication with auth service
+type HTTPClient struct {
+	client  *http.Client
+	baseURL string
+	timeout time.Duration
 }
 
-// NewAuthClient creates a new auth client
-func NewAuthClient(s *Service) *AuthClient {
-	return &AuthClient{
-		service: s,
-		logger:  log.New(log.Writer(), "[auth] ", log.LstdFlags),
+// NewHTTPClient creates a new HTTP client
+func NewHTTPClient(baseURL string, timeout time.Duration) *HTTPClient {
+	return &HTTPClient{
+		client:  &http.Client{Timeout: timeout},
+		baseURL: baseURL,
+		timeout: timeout,
 	}
 }
 
-// Logout logs out a user using session_id
-func (ac *AuthClient) Logout(sessionID string) error {
-	ac.logger.Printf("Logging out session: %s", sessionID)
-	
-	// Call auth service to properly invalidate session
-	_, err := ac.service.callAuthServiceGeneric("/auth/logout", map[string]string{
-		"session_id": sessionID,
-	})
-	
+// Do executes an HTTP request
+func (c *HTTPClient) Do(req *http.Request) (*http.Response, []byte, error) {
+	resp, err := c.client.Do(req)
 	if err != nil {
-		ac.logger.Printf("Error logging out session %s: %v", sessionID, err)
-		return err
+		return nil, nil, err
 	}
-	
-	ac.logger.Printf("Successfully logged out session: %s", sessionID)
-	return nil
-}
+	defer resp.Body.Close()
 
-// CheckHealth checks auth service health
-func (ac *AuthClient) CheckHealth() error {
-	ac.logger.Println("Checking auth service health")
-	
-	_, err := ac.service.callAuthServiceGeneric("/health", map[string]string{})
-	return err
-}
+	// Read response body
+	bodyBytes := make([]byte, 0)
+	if resp.Body != nil {
+		bodyBytes = make([]byte, 4096) // Reasonable buffer size
+		n, _ := resp.Body.Read(bodyBytes)
+		bodyBytes = bodyBytes[:n]
+	}
 
-// AuthError represents authentication errors
-type AuthError struct {
-	Code    string
-	Message string
-}
-
-func (e *AuthError) Error() string {
-	return e.Message
+	return resp, bodyBytes, nil
 }
