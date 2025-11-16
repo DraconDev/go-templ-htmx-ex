@@ -71,7 +71,7 @@ func main() {
 	}
 
 	// Create auth handler
-	authHandler = handlers.NewAuthHandler(cfg)
+	authHandler = authHandlers.NewAuthHandler(cfg)
 
 	// Create router
 	router := mux.NewRouter()
