@@ -2,7 +2,6 @@ package auth
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/models"
 )
