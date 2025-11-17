@@ -83,7 +83,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
 		// Check if this route requires authentication
-		if requiresAuthentication(path) {
+		if routing.RequiresAuthentication(path) {
 			// If route requires auth but user is not logged in, redirect
 			if !userInfo.LoggedIn {
 				if r.URL.Path[:5] == "/api/" {
