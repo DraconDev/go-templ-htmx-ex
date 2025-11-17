@@ -20,9 +20,9 @@ import (
 func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Get all users from database using SQLC
+	// Get all users from database using UserService
 	ctx := r.Context()
-	users, err := h.Queries.GetAllUsers(ctx)
+	users, err := h.UserService.GetAllUsers(ctx)
 	if err != nil {
 		fmt.Printf("❌ Database query failed: %v\n", err)
 		// Fallback to enhanced mock data if database query fails
@@ -60,11 +60,11 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("✅ Retrieved %d users from database\n", len(users))
 
-	// Convert SQLC users to response format
+	// Convert users to response format
 	userMaps := make([]map[string]interface{}, len(users))
 	for i, user := range users {
 		role := "user"
-		if user.IsAdmin.Valid && user.IsAdmin.Bool {
+		if user.IsAdmin {
 			role = "admin"
 		}
 
@@ -72,11 +72,11 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 			"id":        user.ID,
 			"email":     user.Email,
 			"name":      user.Name,
-			"picture":   user.Picture.String,
+			"picture":   user.Picture,
 			"role":      role,
 			"status":    "active",
-			"lastLogin": user.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
-			"createdAt": user.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
+			"lastLogin": user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+			"createdAt": user.CreatedAt.Format("2006-01-02T15:04:05Z"),
 		}
 	}
 
@@ -100,10 +100,10 @@ func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Reques
 		"system_health":     "operational",
 	}
 
-	// Get real user counts from database if available
-	if h.Queries != nil {
+	// Get real user counts from database if UserService is available
+	if h.UserService != nil {
 		// Get total user count
-		totalUsers, err := h.Queries.CountUsers(r.Context())
+		totalUsers, err := h.UserService.CountUsers(r.Context())
 		if err != nil {
 			fmt.Printf("📊 ANALYTICS: Error getting total users: %v\n", err)
 		} else {
@@ -111,7 +111,7 @@ func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		// Get today's signups
-		signupsToday, err := h.Queries.CountUsersCreatedToday(r.Context())
+		signupsToday, err := h.UserService.CountUsersCreatedToday(r.Context())
 		if err != nil {
 			fmt.Printf("📊 ANALYTICS: Error getting today's signups: %v\n", err)
 		} else {
@@ -119,14 +119,14 @@ func (h *AdminHandler) GetAnalyticsHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		// Get this week's signups
-		signupsThisWeek, err := h.Queries.CountUsersCreatedThisWeek(r.Context())
+		signupsThisWeek, err := h.UserService.CountUsersCreatedThisWeek(r.Context())
 		if err != nil {
 			fmt.Printf("📊 ANALYTICS: Error getting this week's signups: %v\n", err)
 		} else {
 			analytics["signups_this_week"] = signupsThisWeek
 		}
 	} else {
-		fmt.Printf("📊 ANALYTICS: No database connection - using default values\n")
+		fmt.Printf("📊 ANALYTICS: No UserService available - using default values\n")
 	}
 
 	if err := json.NewEncoder(w).Encode(analytics); err != nil {
@@ -142,14 +142,14 @@ func (h *AdminHandler) GetSettingsHandler(w http.ResponseWriter, r *http.Request
 	settings := map[string]interface{}{
 		"maintenance_mode":     false,
 		"registration_enabled": true,
-		"database_connected":   h.Queries != nil,
+		"database_connected":   h.UserService != nil,
 		"total_users":          0,
 		"session_timeout":      2592000, // 30 days
 	}
 
-	// Get real user count if database is available
-	if h.Queries != nil {
-		totalUsers, err := h.Queries.CountUsers(r.Context())
+	// Get real user count if UserService is available
+	if h.UserService != nil {
+		totalUsers, err := h.UserService.CountUsers(r.Context())
 		if err != nil {
 			fmt.Printf("📊 SETTINGS: Error getting user count: %v\n", err)
 		} else {
@@ -168,14 +168,14 @@ func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get recent user activity as logs
 	logs := []map[string]interface{}{}
 
-	if h.Queries != nil {
-		recentUsers, err := h.Queries.GetRecentUsers(r.Context())
+	if h.UserService != nil {
+		recentUsers, err := h.UserService.GetRecentUsers(r.Context())
 		if err != nil {
 			fmt.Printf("📊 LOGS: Error getting recent users: %v\n", err)
 		} else {
 			for _, user := range recentUsers {
 				logs = append(logs, map[string]interface{}{
-					"timestamp": user.CreatedAt.Time.Format("2006-01-02T15:04:05Z07:00"),
+					"timestamp": user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 					"level":     "INFO",
 					"message":   "New user registration",
 					"user":      user.Email,
@@ -184,7 +184,7 @@ func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else {
-		fmt.Printf("📊 LOGS: No database connection - showing empty logs\n")
+		fmt.Printf("📊 LOGS: No UserService available - showing empty logs\n")
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
