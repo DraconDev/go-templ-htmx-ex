@@ -1,5 +1,29 @@
 package models
 
+import (
+	"errors"
+	"time"
+
+	"github.com/google/uuid"
+)
+
+// Database errors
+var (
+	ErrDatabaseNotConnected = errors.New("database not connected")
+)
+
+// User represents a user in the system
+type User struct {
+	ID        uuid.UUID `json:"id"`
+	AuthID    string    `json:"auth_id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name"`
+	Picture   string    `json:"picture"`
+	IsAdmin   bool      `json:"is_admin"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // AuthResponse represents the response from the auth service
 type AuthResponse struct {
 	Success bool   `json:"success"`
@@ -22,4 +46,23 @@ type TokenExchangeResponse struct {
 // ExchangeCodeRequest represents a request to exchange authorization code for tokens
 type ExchangeCodeRequest struct {
 	AuthCode string `json:"auth_code"`
+}
+
+// UserSummary represents user summary data for admin views
+type UserSummary struct {
+	ID        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name"`
+	Picture   string    `json:"picture"`
+	IsAdmin   bool      `json:"is_admin"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// UserStats represents user statistics for admin dashboard
+type UserStats struct {
+	TotalUsers        int64 `json:"total_users"`
+	SignupsToday      int64 `json:"signups_today"`
+	UsersThisWeek     int64 `json:"users_this_week"`
+	ActiveUsers       int64 `json:"active_users"`
+	InactiveUsers     int64 `json:"inactive_users"`
 }
