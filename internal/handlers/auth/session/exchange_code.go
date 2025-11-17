@@ -1,11 +1,11 @@
-package auth
+package session
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session_utils"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 )
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens

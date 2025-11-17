@@ -1,4 +1,5 @@
-package auth
+package session
+
 
 import (
 	"encoding/json"
