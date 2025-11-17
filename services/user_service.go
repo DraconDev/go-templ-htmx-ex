@@ -4,6 +4,7 @@ import (
 	"context"
 
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
+	"github.com/DraconDev/go-templ-htmx-ex/models"
 	"github.com/DraconDev/go-templ-htmx-ex/repositories"
 )
 
@@ -20,17 +21,17 @@ func NewUserService(queries *dbSqlc.Queries) *UserService {
 }
 
 // CreateUser creates a new user
-func (s *UserService) CreateUser(ctx context.Context, user *repositories.User) (*repositories.User, error) {
+func (s *UserService) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
 	return s.userRepo.CreateUser(ctx, user)
 }
 
 // GetUserByEmail retrieves a user by email
-func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*repositories.User, error) {
+func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	return s.userRepo.GetUserByEmail(ctx, email)
 }
 
 // GetAllUsers retrieves all users
-func (s *UserService) GetAllUsers(ctx context.Context) ([]repositories.User, error) {
+func (s *UserService) GetAllUsers(ctx context.Context) ([]models.User, error) {
 	return s.userRepo.GetAllUsers(ctx)
 }
 
@@ -40,12 +41,12 @@ func (s *UserService) CountUsers(ctx context.Context) (int64, error) {
 }
 
 // UpdateUser updates user information
-func (s *UserService) UpdateUser(ctx context.Context, user *repositories.User) (*repositories.User, error) {
+func (s *UserService) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
 	return s.userRepo.UpdateUser(ctx, user)
 }
 
 // GetRecentUsers returns recently created users
-func (s *UserService) GetRecentUsers(ctx context.Context) ([]repositories.User, error) {
+func (s *UserService) GetRecentUsers(ctx context.Context) ([]models.User, error) {
 	return s.userRepo.GetRecentUsers(ctx)
 }
 
