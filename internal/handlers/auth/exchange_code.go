@@ -61,19 +61,3 @@ func extractSessionID(sessionData map[string]interface{}) (string, error) {
 	}
 	return "", fmt.Errorf("no session_id in auth response")
 }
-
-// handleJSONError is a helper to standardize error responses
-func handleJSONError(w http.ResponseWriter, message string, err error, errorType func(string) *errors.AppError) {
-	if err != nil {
-		// Log the error for debugging
-		// This would typically use a proper logger
-	}
-	statusCode := http.StatusBadRequest
-	if errorType != nil {
-		statusCode = errorType(message).Code
-	}
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"error": message,
-	})
-}

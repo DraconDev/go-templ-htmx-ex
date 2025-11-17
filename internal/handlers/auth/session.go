@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"net/http"
+
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
