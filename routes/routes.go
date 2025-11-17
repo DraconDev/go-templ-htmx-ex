@@ -5,8 +5,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
-	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
-	authHandlers "github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 )
 
@@ -48,114 +46,54 @@ var RouteDefinitions = []Route{
 		Pattern:     "/login",
 		HandlerFunc: handlers.LoginHandler,
 	},
-
-	// =============================================================================
-	// OAUTH AUTHENTICATION FLOW
-	// =============================================================================
-
-	// OAuth Login Route - Consolidated with provider parameter
-	{
-		Name:        "oauth_login",
-		Method:      "GET",
-		Pattern:     "/auth/login",
-		HandlerFunc: authHandlers.AuthHandler.LoginHandler,
-	},
-
-	// OAuth callback handler
-	{
-		Name:        "oauth_callback",
-		Method:      "GET",
-		Pattern:     "/auth/callback",
-		HandlerFunc: authHandlers.AuthHandler.AuthCallbackHandler,
-	},
-
-	// =============================================================================
-	// PROTECTED USER ROUTES - Authentication required
-	// =============================================================================
-
-	// User profile page - Display user information and account details
-	{
-		Name:        "profile",
-		Method:      "GET",
-		Pattern:     "/profile",
-		HandlerFunc: handlers.ProfileHandler,
-	},
-
-	// =============================================================================
-	// ADMIN ROUTES - Admin authentication required
-	// =============================================================================
-
-	// Admin dashboard - Main admin interface for platform management
-	{
-		Name:        "admin_dashboard",
-		Method:      "GET",
-		Pattern:     "/admin",
-		HandlerFunc: admin.AdminHandler.AdminDashboardHandler,
-	},
-
-	// Admin API endpoints - Management operations for administrators
-	{
-		Name:        "admin_get_users",
-		Method:      "GET",
-		Pattern:     "/api/admin/users",
-		HandlerFunc: admin.AdminHandler.GetUsersHandler,
-	},
-
-	{
-		Name:        "admin_get_analytics",
-		Method:      "GET",
-		Pattern:     "/api/admin/analytics",
-		HandlerFunc: admin.AdminHandler.GetAnalyticsHandler,
-	},
-
-	{
-		Name:        "admin_get_settings",
-		Method:      "GET",
-		Pattern:     "/api/admin/settings",
-		HandlerFunc: admin.AdminHandler.GetSettingsHandler,
-	},
-
-	{
-		Name:        "admin_get_logs",
-		Method:      "GET",
-		Pattern:     "/api/admin/logs",
-		HandlerFunc: admin.AdminHandler.GetLogsHandler,
-	},
-
-	// =============================================================================
-	// SESSION MANAGEMENT API - Authentication required
-	// =============================================================================
-
-	// Logout user - Destroy current session and clear cookies
-	{
-		Name:        "logout",
-		Method:      "POST",
-		Pattern:     "/api/auth/logout",
-		HandlerFunc: authHandlers.AuthHandler.LogoutHandler,
-	},
-
-	// Set session - Create new server session with provided session ID
-	{
-		Name:        "set_session",
-		Method:      "POST",
-		Pattern:     "/api/auth/set-session",
-		HandlerFunc: authHandlers.AuthHandler.SetSessionHandler,
-	},
 }
 
 // SetupRoutes configures and returns the router with all routes
+// This version doesn't use the RouteDefinitions to avoid compilation issues
+// with handler instance methods
 func SetupRoutes() *mux.Router {
 	router := mux.NewRouter()
 
 	// Add authentication middleware to all routes
 	router.Use(middleware.AuthMiddleware)
 
-	// Register all routes
-	for _, route := range RouteDefinitions {
-		router.HandleFunc(route.Pattern, route.HandlerFunc).
-			Methods(route.Method).
-			Name(route.Name)
-	}
+	// =============================================================================
+	// PUBLIC ROUTES - No authentication required
+	// =============================================================================
+
+	// Homepage - Main landing page with platform showcase
+	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
+
+	// Health check - API health monitoring endpoint
+	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
+
+	// Login page - OAuth provider selection UI
+	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
+
+	// =============================================================================
+	// OAUTH AUTHENTICATION FLOW
+	// =============================================================================
+
+	// These routes are configured directly in main.go since they need handler instances
+
+	// =============================================================================
+	// PROTECTED USER ROUTES - Authentication required
+	// =============================================================================
+
+	// User profile page - Display user information and account details
+	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
+
+	// =============================================================================
+	// ADMIN ROUTES - Admin authentication required
+	// =============================================================================
+
+	// These routes are configured directly in main.go since they need handler instances
+
+	// =============================================================================
+	// SESSION MANAGEMENT API - Authentication required
+	// =============================================================================
+
+	// These routes are configured directly in main.go since they need handler instances
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(
