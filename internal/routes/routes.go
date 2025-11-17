@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/DraconDev/go-templ-htmx-ex/internal/routing"
 )
 
 // HandlerInstances holds all handler instances for route registration
