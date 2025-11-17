@@ -32,6 +32,6 @@ func (h *auth.AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 
 // IsUserLoggedIn checks if a user is currently logged in
 // This function is responsible ONLY for checking login status
-func (h *AuthHandler) IsUserLoggedIn(r *http.Request) bool {
+func (h *auth.AuthHandler) IsUserLoggedIn(r *http.Request) bool {
 	return IsSessionValid(r)
 }
