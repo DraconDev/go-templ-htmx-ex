@@ -12,14 +12,14 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/DraconDev/go-templ-htmx-ex/config"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
 	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
-	"github.com/DraconDev/go-templ-htmx-ex/handlers"
-	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
-	authHandlers "github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
-	"github.com/DraconDev/go-templ-htmx-ex/middleware"
-	"github.com/DraconDev/go-templ-htmx-ex/services"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
+	authHandlers "github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 	_ "github.com/lib/pq"
 )
 
