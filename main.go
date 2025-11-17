@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/db"
+	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
@@ -35,7 +35,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Initialize database if configured
-	if err := db.InitDatabaseIfConfigured(); err != nil {
+	if err := dbInit.InitDatabaseIfConfigured(); err != nil {
 		log.Printf("⚠️  Database initialization failed: %v", err)
 		log.Println("💡 Continuing without database functionality")
 	}
@@ -52,7 +52,7 @@ func main() {
 			sqlDB = nil
 		} else {
 			// Test connection
-			if err := db.Ping(); err != nil {
+			if err := sqlDB.Ping(); err != nil {
 				log.Printf("❌ Database ping failed: %v", err)
 				log.Println("⚠️  Continuing without database...")
 				sqlDB = nil
