@@ -119,39 +119,54 @@ cp .env.example .env
 ## 📁 Project Structure
 
 ```
-├── main.go                    # Application entry point
-├── Dockerfile                 # Production container
-├── sqlc.yaml                  # Database query generation
-├── auth/                      # Refactored Auth Service (All files <100 lines)
-│   ├── http/
-│   │   └── client.go         # HTTP client for auth service communication
-│   ├── builder/
-│   │   └── request_builder.go # Request building logic with auth headers
-│   ├── parsers/
-│   │   └── response_parser.go # Response parsing for different auth responses
-│   ├── services/
-│   │   ├── session.go        # Session validation and management
-│   │   ├── user.go           # User info retrieval operations
-│   │   └── exchange.go       # OAuth code/token exchange operations
-│   └── service.go            # Main service with delegation methods
-├── handlers/
-│   ├── admin.go              # Admin dashboard
-│   ├── auth.go               # Authentication
-│   └── handlers.go           # User pages
-├── middleware/
-│   └── auth.go              # Session validation
-├── templates/
-│   ├── layouts/             # Layout templates (reorganized)
+go-templ-htmx-ex/
+├── cmd/                          # Application entry points
+│   └── main.go                   # Main application entry
+├── internal/                     # Private application code
+│   ├── config/                   # Configuration management
+│   ├── handlers/                 # HTTP request handlers (MVC Views)
+│   │   ├── admin/               # Admin dashboard handlers
+│   │   │   ├── admin.go
+│   │   │   ├── api.go
+│   │   │   └── dashboard.go
+│   │   ├── auth/                # Authentication handlers
+│   │   │   ├── auth.go
+│   │   │   ├── login.go
+│   │   │   └── session.go
+│   │   └── app.go               # General app handlers
+│   ├── middleware/              # HTTP middleware
+│   │   ├── auth.go             # Authentication middleware
+│   │   └── routes.go           # Route definitions for middleware
+│   ├── models/                  # Data models (MVC Models)
+│   │   ├── user.go
+│   │   └── database.go
+│   ├── repositories/            # Data access layer
+│   │   └── user_repository.go
+│   ├── routing/                 # Route definitions & constants
+│   │   └── constants.go        # All route definitions centralized
+│   ├── routes/                  # Route setup & configuration
+│   │   └── routes.go           # Router configuration
+│   └── services/                # Business logic (MVC Controllers)
+│       ├── auth_service.go
+│       └── user_service.go
+├── db/                          # Database files
+│   ├── init.go                 # Database initialization
+│   ├── migrations/             # Database schema
+│   ├── queries/                # SQL queries for SQLC
+│   └── sqlc/                   # Generated queries
+├── templates/                   # Templ templates
+│   ├── layouts/                # Layout templates
 │   │   ├── layout.templ
 │   │   └── layout_templ.go
-│   └── pages/               # Page templates (reorganized)
-│       ├── home.templ       # Enhanced startup homepage
+│   └── pages/                  # Page templates
+│       ├── home.templ
 │       ├── profile.templ
 │       ├── login.templ
 │       └── admin_dashboard.templ
-└── db/
-    ├── migrations/          # Database schema
-    └── sqlc/               # Generated queries
+├── Dockerfile                  # Production container
+├── Makefile                    # Build configuration
+├── .air.toml                   # Air live-reload config
+└── go.mod                      # Go module definition
 ```
 
 ## 🧪 Testing
