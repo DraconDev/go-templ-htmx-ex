@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/errors"
-	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session_utils"
 )
 
 // SetSessionHandler handles setting a new session cookie
