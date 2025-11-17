@@ -1,10 +1,6 @@
 package auth
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
@@ -12,9 +8,7 @@ import (
 // SESSION MANAGEMENT HANDLERS
 // =============================================================================
 // These handlers manage authentication sessions:
-// - Set and validate session cookies
-// - Handle user logout
-// - Exchange authorization codes for sessions
+// - Get user information from session cookies
 // =============================================================================
 
 
