@@ -1,0 +1,79 @@
+package auth
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/session"
+)
+
+// ExchangeCodeHandler exchanges OAuth authorization code for tokens
+// This handler is responsible ONLY for exchanging auth codes for session tokens
+func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		AuthCode string `json:"auth_code"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		handleJSONError(w, "Invalid request body", err, nil) // Use nil for standard error for now
+		return
+	}
+
+	if req.AuthCode == "" {
+		handleJSONError(w, "Missing authorization code", nil, nil)
+		return
+	}
+
+	// Create session from authorization code
+	sessionData, err := h.AuthService.CreateSession(req.AuthCode)
+	if err != nil {
+		handleJSONError(w, err.Error(), err, nil)
+		return
+	}
+
+	// Extract session_id from the response
+	sessionID, err := extractSessionID(sessionData)
+	if err != nil {
+		handleJSONError(w, "No session_id received from auth service", nil, nil)
+		return
+	}
+
+	// Use session utility to set the cookie
+	sessionConfig := session.DefaultSessionCookieConfig()
+	session.SetSessionCookie(w, sessionID, sessionConfig)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Tokens exchanged successfully",
+	})
+}
+
+// extractSessionID extracts session_id from session data map
+func extractSessionID(sessionData map[string]interface{}) (string, error) {
+	if sid, exists := sessionData["session_id"]; exists {
+		if sidStr, ok := sid.(string); ok && sidStr != "" {
+			return sidStr, nil
+		}
+	}
+	return "", fmt.Errorf("no session_id in auth response")
+}
+
+// handleJSONError is a helper to standardize error responses
+func handleJSONError(w http.ResponseWriter, message string, err error, errorType func(string) *errors.AppError) {
+	if err != nil {
+		// Log the error for debugging
+		// This would typically use a proper logger
+	}
+	statusCode := http.StatusBadRequest
+	if errorType != nil {
+		statusCode = errorType(message).Code
+	}
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"error": message,
+	})
+}
