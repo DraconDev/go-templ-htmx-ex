@@ -1,4 +1,4 @@
-package routing
+package routes
 
 // Route categories for middleware configuration
 // This allows easy configuration of which routes require authentication

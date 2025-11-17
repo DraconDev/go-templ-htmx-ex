@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
-	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
@@ -83,7 +82,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
 		// Check if this route requires authentication
-		if routing.RequiresAuthentication(path) {
+		if requiresAuthentication(path) {
 			// If route requires auth but user is not logged in, redirect
 			if !userInfo.LoggedIn {
 				if r.URL.Path[:5] == "/api/" {
