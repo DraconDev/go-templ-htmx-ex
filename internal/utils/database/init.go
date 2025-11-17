@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// InitDatabase initializes the database schema and creates initial admin
-func InitDatabase(dbURL string) error {
+// RunMigrations initializes the database schema and creates initial admin
+func RunMigrations(dbURL string) error {
 	// Connect to database
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
