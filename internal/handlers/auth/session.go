@@ -1,16 +1,14 @@
 package auth
 
-import (
-	"net/http"
-
-	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
-)
-
 // =============================================================================
 // SESSION MANAGEMENT HANDLERS
 // =============================================================================
-// These handlers manage authentication sessions:
-// - Get user information from session cookies
+// This file now serves as documentation for the separated session functionality:
+// - Session cookie management: internal/utils/session/cookies.go
+// - Set session handler: internal/handlers/auth/set_session.go
+// - Logout handler: internal/handlers/auth/logout.go
+// - Code exchange handler: internal/handlers/auth/exchange_code.go
+// - User info retrieval: internal/handlers/auth/user_info.go
 // =============================================================================
 
 
