@@ -7,6 +7,7 @@ import (
 
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
+	"github.com/google/uuid"
 )
 
 // UserRepository handles user data access operations
@@ -48,7 +49,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (*mo
 		Name:      dbUser.Name,
 		Picture:   dbUser.Picture.String,
 		IsAdmin:   dbUser.IsAdmin.Bool,
-		Provider:  dbUser.Provider.String,
+		Provider:  "", // SQLC User doesn't have Provider field
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -72,7 +73,7 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 		Name:      dbUser.Name,
 		Picture:   dbUser.Picture.String,
 		IsAdmin:   dbUser.IsAdmin.Bool,
-		Provider:  dbUser.Provider.String,
+		Provider:  "", // SQLC User doesn't have Provider field
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -98,7 +99,7 @@ func (r *UserRepository) GetAllUsers(ctx context.Context) ([]models.User, error)
 			Name:      dbUser.Name,
 			Picture:   dbUser.Picture.String,
 			IsAdmin:   dbUser.IsAdmin.Bool,
-			Provider:  dbUser.Provider.String,
+			Provider:  "", // SQLC User doesn't have Provider field
 			CreatedAt: dbUser.CreatedAt.Time,
 			UpdatedAt: dbUser.UpdatedAt.Time,
 		}
@@ -124,8 +125,14 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *models.User) (*mo
 
 	picture := sql.NullString{String: user.Picture, Valid: user.Picture != ""}
 
-	err := r.queries.UpdateUser(ctx, dbSqlc.UpdateUserParams{
-		ID:       dbUser.ID, // This will need to be converted from string to uuid
+	// Convert string ID to UUID
+	userID, err := uuid.Parse(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.queries.UpdateUser(ctx, dbSqlc.UpdateUserParams{
+		ID:       userID,
 		Name:     user.Name,
 		Picture:  picture,
 	})
