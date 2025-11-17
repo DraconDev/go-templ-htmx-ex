@@ -5,6 +5,16 @@ import (
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
+)
+package admin
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/repositories"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
