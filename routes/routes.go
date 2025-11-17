@@ -10,167 +10,76 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 )
 
-// Route represents a route definition
-type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
-	Middleware  []mux.MiddlewareFunc
-}
-
-// RouteConfig defines all application routes with proper organization
-type RouteConfig struct {
-	PublicRoutes      []Route
-	ProtectedRoutes   []Route
-	AdminRoutes       []Route
-	AuthAPIRoutes     []Route
-}
-
-// GetRoutes returns all application routes
-func GetRoutes() RouteConfig {
-	return RouteConfig{
-		// =============================================================================
-		// PUBLIC ROUTES - No authentication required
-		// =============================================================================
-		PublicRoutes: []Route{
-			{
-				Name:        "home",
-				Method:      "GET",
-				Pattern:     "/",
-				HandlerFunc: handlers.HomeHandler,
-			},
-			{
-				Name:        "health",
-				Method:      "GET",
-				Pattern:     "/health",
-				HandlerFunc: handlers.HealthHandler,
-			},
-			{
-				Name:        "login",
-				Method:      "GET",
-				Pattern:     "/login",
-				HandlerFunc: handlers.LoginHandler,
-			},
-		},
-
-		// =============================================================================
-		// PROTECTED USER ROUTES - Authentication required
-		// =============================================================================
-		ProtectedRoutes: []Route{
-			{
-				Name:        "profile",
-				Method:      "GET",
-				Pattern:     "/profile",
-				HandlerFunc: handlers.ProfileHandler,
-			},
-		},
-
-		// =============================================================================
-		// ADMIN ROUTES - Admin authentication required
-		// =============================================================================
-		AdminRoutes: []Route{
-			{
-				Name:        "admin_dashboard",
-				Method:      "GET",
-				Pattern:     "/admin",
-				HandlerFunc: admin.AdminDashboardHandler,
-			},
-			{
-				Name:        "admin_get_users",
-				Method:      "GET",
-				Pattern:     "/api/admin/users",
-				HandlerFunc: admin.GetUsersHandler,
-			},
-			{
-				Name:        "admin_get_analytics",
-				Method:      "GET",
-				Pattern:     "/api/admin/analytics",
-				HandlerFunc: admin.GetAnalyticsHandler,
-			},
-			{
-				Name:        "admin_get_settings",
-				Method:      "GET",
-				Pattern:     "/api/admin/settings",
-				HandlerFunc: admin.GetSettingsHandler,
-			},
-			{
-				Name:        "admin_get_logs",
-				Method:      "GET",
-				Pattern:     "/api/admin/logs",
-				HandlerFunc: admin.GetLogsHandler,
-			},
-		},
-
-		// =============================================================================
-		// AUTH API ROUTES - Handle authentication endpoints
-		// =============================================================================
-		AuthAPIRoutes: []Route{
-			{
-				Name:        "oauth_login",
-				Method:      "GET",
-				Pattern:     "/auth/login",
-				HandlerFunc: authHandlers.AuthHandler.LoginHandler,
-			},
-			{
-				Name:        "oauth_callback",
-				Method:      "GET",
-				Pattern:     "/auth/callback",
-				HandlerFunc: authHandlers.AuthHandler.AuthCallbackHandler,
-			},
-			{
-				Name:        "logout",
-				Method:      "POST",
-				Pattern:     "/api/auth/logout",
-				HandlerFunc: authHandlers.AuthHandler.LogoutHandler,
-			},
-			{
-				Name:        "set_session",
-				Method:      "POST",
-				Pattern:     "/api/auth/set-session",
-				HandlerFunc: authHandlers.AuthHandler.SetSessionHandler,
-			},
-		},
-	}
+// HandlerInstances holds all handler instances for route registration
+type HandlerInstances struct {
+	AuthHandler *authHandlers.AuthHandler
+	AdminHandler *admin.AdminHandler
 }
 
 // SetupRoutes configures and returns the router with all routes
-func SetupRoutes() *mux.Router {
+// This approach accepts handler instances to avoid method reference issues
+func SetupRoutes(handlers *HandlerInstances) *mux.Router {
 	router := mux.NewRouter()
 
 	// Add authentication middleware to all routes
 	router.Use(middleware.AuthMiddleware)
 
-	// Get all route definitions
-	routes := GetRoutes()
+	// =============================================================================
+	// PUBLIC ROUTES - No authentication required
+	// =============================================================================
 
-	// Register all public routes
-	for _, route := range routes.PublicRoutes {
-		router.HandleFunc(route.Pattern, route.HandlerFunc).
-			Methods(route.Method).
-			Name(route.Name)
+	// Homepage - Main landing page with platform showcase
+	router.HandleFunc("/", handlers.HomeHandler).Methods("GET").Name("home")
+
+	// Health check - API health monitoring endpoint
+	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET").Name("health")
+
+	// Login page - OAuth provider selection UI
+	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET").Name("login")
+
+	// =============================================================================
+	// OAUTH AUTHENTICATION FLOW
+	// =============================================================================
+
+	// OAuth Login Route - Consolidated with provider parameter
+	router.HandleFunc("/auth/login", handlers.AuthHandler.LoginHandler).Methods("GET").Name("oauth_login")
+
+	// OAuth callback handler
+	router.HandleFunc("/auth/callback", handlers.AuthHandler.AuthCallbackHandler).Methods("GET").Name("oauth_callback")
+
+	// =============================================================================
+	// PROTECTED USER ROUTES - Authentication required
+	// =============================================================================
+
+	// User profile page - Display user information and account details
+	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET").Name("profile")
+
+	// =============================================================================
+	// ADMIN ROUTES - Admin authentication required
+	// =============================================================================
+
+	// Admin dashboard - Main admin interface for platform management
+	if handlers.AdminHandler != nil {
+		router.HandleFunc("/admin", handlers.AdminHandler.AdminDashboardHandler).Methods("GET").Name("admin_dashboard")
+		router.HandleFunc("/api/admin/users", handlers.AdminHandler.GetUsersHandler).Methods("GET").Name("admin_get_users")
+		router.HandleFunc("/api/admin/analytics", handlers.AdminHandler.GetAnalyticsHandler).Methods("GET").Name("admin_get_analytics")
+		router.HandleFunc("/api/admin/settings", handlers.AdminHandler.GetSettingsHandler).Methods("GET").Name("admin_get_settings")
+		router.HandleFunc("/api/admin/logs", handlers.AdminHandler.GetLogsHandler).Methods("GET").Name("admin_get_logs")
 	}
 
-	// Register all protected routes
-	for _, route := range routes.ProtectedRoutes {
-		router.HandleFunc(route.Pattern, route.HandlerFunc).
-			Methods(route.Method).
-			Name(route.Name)
-	}
+	// =============================================================================
+	// SESSION MANAGEMENT API - Authentication required
+	// =============================================================================
 
-	// Register all admin routes
-	for _, route := range routes.AdminRoutes {
-		router.HandleFunc(route.Pattern, route.HandlerFunc).
-			Methods(route.Method).
-			Name(route.Name)
-	}
+	// Logout user - Destroy current session and clear cookies
+	router.HandleFunc("/api/auth/logout", handlers.AuthHandler.LogoutHandler).Methods("POST").Name("logout")
 
-	// Register all auth API routes
-	for _, route := range routes.AuthAPIRoutes {
-		router.HandleFunc(route.Pattern, route.HandlerFunc).
-			Methods(route.Method).
-			Name(route.Name)
-	}
+	// Set session - Create new server session with provided session ID
+	router.HandleFunc("/api/auth/set-session", handlers.AuthHandler.SetSessionHandler).Methods("POST").Name("set_session")
+
+	// =============================================================================
+	// STATIC FILES
+	// =============================================================================
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(
@@ -179,22 +88,22 @@ func SetupRoutes() *mux.Router {
 	return router
 }
 
-// GetPublicRoutes returns just the public routes for external use
-func GetPublicRoutes() []Route {
-	return GetRoutes().PublicRoutes
+// RouteSummary provides a summary of all registered routes
+type RouteSummary struct {
+	TotalRoutes     int `json:"total_routes"`
+	PublicRoutes    int `json:"public_routes"`
+	ProtectedRoutes int `json:"protected_routes"`
+	AdminRoutes     int `json:"admin_routes"`
+	AuthAPIRoutes   int `json:"auth_api_routes"`
 }
 
-// GetProtectedRoutes returns just the protected routes for external use
-func GetProtectedRoutes() []Route {
-	return GetRoutes().ProtectedRoutes
-}
-
-// GetAdminRoutes returns just the admin routes for external use
-func GetAdminRoutes() []Route {
-	return GetRoutes().AdminRoutes
-}
-
-// GetAuthAPIRoutes returns just the auth API routes for external use
-func GetAuthAPIRoutes() []Route {
-	return GetRoutes().AuthAPIRoutes
+// CountRoutes provides a count of all route types
+func CountRoutes() RouteSummary {
+	return RouteSummary{
+		TotalRoutes:     15, // Approximate count
+		PublicRoutes:    3,
+		ProtectedRoutes: 1,
+		AdminRoutes:     5,
+		AuthAPIRoutes:   4,
+	}
 }
