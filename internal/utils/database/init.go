@@ -93,7 +93,7 @@ func InitDatabaseIfConfigured() error {
 	}
 
 	log.Println("🚀 Initializing database...")
-	if err := InitDatabase(dbURL); err != nil {
+	if err := RunMigrations(dbURL); err != nil {
 		return fmt.Errorf("database initialization failed: %w", err)
 	}
 
