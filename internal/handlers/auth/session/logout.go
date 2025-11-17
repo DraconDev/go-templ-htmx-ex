@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"net/http"
-
 )
 
 // LogoutHandler handles user logout
@@ -12,8 +11,8 @@ func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Use session utility to clear the cookie
-	sessionConfig := DefaultSessionCookieConfig()
-	ClearSessionCookie(w, sessionConfig)
+	sessionConfig := session.DefaultSessionCookieConfig()
+	session.ClearSessionCookie(w, sessionConfig)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{

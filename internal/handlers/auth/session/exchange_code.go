@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 )
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
@@ -41,8 +42,8 @@ func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// Use session utility to set the cookie
-	sessionConfig := DefaultSessionCookieConfig()
-	SetSessionCookie(w, sessionID, sessionConfig)
+	sessionConfig := session.DefaultSessionCookieConfig()
+	session.SetSessionCookie(w, sessionID, sessionConfig)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{

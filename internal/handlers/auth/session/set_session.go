@@ -1,6 +1,5 @@
 package auth
 
-
 import (
 	"encoding/json"
 	"net/http"
@@ -28,8 +27,8 @@ func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Use session utility to set the cookie
-	sessionConfig := DefaultSessionCookieConfig()
-	SetSessionCookie(w, req.SessionID, sessionConfig)
+	sessionConfig := session.DefaultSessionCookieConfig()
+	session.SetSessionCookie(w, req.SessionID, sessionConfig)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{

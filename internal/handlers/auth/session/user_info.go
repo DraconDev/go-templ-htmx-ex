@@ -10,7 +10,7 @@ import (
 // This function is responsible ONLY for extracting user info from session cookies
 func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	// Use session utility to get session cookie
-	sessionID, err := GetSessionCookie(r)
+	sessionID, err := session.GetSessionCookie(r)
 	if err != nil {
 		return layouts.UserInfo{LoggedIn: false}
 	}
@@ -32,5 +32,5 @@ func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 // IsUserLoggedIn checks if a user is currently logged in
 // This function is responsible ONLY for checking login status
 func (h *AuthHandler) IsUserLoggedIn(r *http.Request) bool {
-	return IsSessionValid(r)
+	return session.IsSessionValid(r)
 }
