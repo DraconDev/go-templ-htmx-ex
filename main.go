@@ -13,17 +13,20 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/DraconDev/go-templ-htmx-ex/config"
-	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
+	"github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
 	authHandlers "github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/services"
 	_ "github.com/lib/pq"
 )
 
 var authHandler *authHandlers.AuthHandler
 var adminHandler *admin.AdminHandler
+var userService *services.UserService
+var authService *services.AuthService
 var db *sql.DB
 var queries *dbSqlc.Queries
 
@@ -32,7 +35,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Initialize database if configured
-	if err := dbInit.InitDatabaseIfConfigured(); err != nil {
+	if err := db.InitDatabaseIfConfigured(); err != nil {
 		log.Printf("⚠️  Database initialization failed: %v", err)
 		log.Println("💡 Continuing without database functionality")
 	}
@@ -63,103 +66,26 @@ func main() {
 		}
 	}
 
-	// Create admin handler with SQLC queries (handle nil db gracefully)
+	// Initialize services
+	if queries != nil {
+		userService = services.NewUserService(queries)
+		log.Println("✅ User service initialized")
+	}
+
+	authService = services.NewAuthService(cfg)
+	log.Println("✅ Auth service initialized")
+
+	// Create handlers with services
 	if queries != nil {
 		adminHandler = admin.NewAdminHandler(cfg, queries)
 	} else {
 		log.Println("⚠️  Admin handler not initialized - no database connection")
 	}
 
-	// Create auth handler
 	authHandler = authHandlers.NewAuthHandler(cfg)
 
-	// Create router
-	router := mux.NewRouter()
-
-	// Add authentication middleware to all routes
-	router.Use(middleware.AuthMiddleware)
-
-	// =============================================================================
-	// PUBLIC ROUTES - No authentication required
-	// =============================================================================
-
-	// Homepage - Main landing page with platform showcase
-	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
-
-	// Health check - API health monitoring endpoint
-	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
-
-	// Login page - OAuth provider selection UI
-	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
-
-	// =============================================================================
-	// OAUTH AUTHENTICATION FLOW
-	// =============================================================================
-
-	// Step 1: Redirect to OAuth providers
-	// OAuth Login Route - Consolidated with provider parameter
-	router.HandleFunc("/auth/login", authHandler.LoginHandler).Methods("GET")
-
-	// Step 2: OAuth callback handler
-	// This route receives the OAuth callback, processes tokens, and creates server sessions
-	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
-
-	// =============================================================================
-	// DEVELOPMENT & TESTING ROUTES
-	// =============================================================================
-
-	// Test authentication page - Development tool for testing OAuth flows
-	// This route is now handled by the auth_test.go file
-	// router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
-
-	// =============================================================================
-	// PROTECTED USER ROUTES - Authentication required
-	// =============================================================================
-
-	// User profile page - Display user information and account details
-	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
-
-	// =============================================================================
-	// ADMIN ROUTES - Admin authentication required
-	// =============================================================================
-
-	// Admin dashboard - Main admin interface for platform management
-	// TODO: Move to separate admin router with /admin/* structure
-	router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
-
-	// Admin API endpoints - Management operations for administrators
-	router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")         // List all users
-	router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET") // Platform analytics
-	router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")   // System settings
-	router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")           // System logs
-
-	// =============================================================================
-	// DEVELOPMENT & TESTING ROUTES (DISABLED IN PRODUCTION)
-	// =============================================================================
-
-	// These routes are commented out for production safety
-	// Uncomment for development testing
-	/*
-	// Test authentication page - Development tool for testing OAuth flows
-	router.HandleFunc("/test", authHandler.TestTokenRefreshHandler).Methods("GET")
-	*/
-
-	// =============================================================================
-	// SESSION MANAGEMENT API - Authentication required
-	// =============================================================================
-
-	
-
-	// Logout user - Destroy current session and clear cookies
-	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
-
-	
-
-	// Set session - Create new server session with provided session ID
-	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
-
-	// Static files (for CSS, JS, etc.)
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+	// Create router using new route structure
+	router := SetupRoutes()
 
 	// Create HTTP server
 	server := &http.Server{
@@ -195,4 +121,70 @@ func main() {
 	}
 
 	log.Println("Server stopped")
+}
+
+// SetupRoutes creates and configures the router with all routes
+func SetupRoutes() *mux.Router {
+	router := mux.NewRouter()
+
+	// Add authentication middleware to all routes
+	router.Use(middleware.AuthMiddleware)
+
+	// =============================================================================
+	// PUBLIC ROUTES - No authentication required
+	// =============================================================================
+
+	// Homepage - Main landing page with platform showcase
+	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
+
+	// Health check - API health monitoring endpoint
+	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
+
+	// Login page - OAuth provider selection UI
+	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
+
+	// =============================================================================
+	// OAUTH AUTHENTICATION FLOW
+	// =============================================================================
+
+	// OAuth Login Route - Consolidated with provider parameter
+	router.HandleFunc("/auth/login", authHandler.LoginHandler).Methods("GET")
+
+	// OAuth callback handler
+	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
+
+	// =============================================================================
+	// PROTECTED USER ROUTES - Authentication required
+	// =============================================================================
+
+	// User profile page - Display user information and account details
+	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
+
+	// =============================================================================
+	// ADMIN ROUTES - Admin authentication required
+	// =============================================================================
+
+	// Admin dashboard - Main admin interface for platform management
+	if adminHandler != nil {
+		router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
+		router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")
+		router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET")
+		router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")
+		router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")
+	}
+
+	// =============================================================================
+	// SESSION MANAGEMENT API - Authentication required
+	// =============================================================================
+
+	// Logout user - Destroy current session and clear cookies
+	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
+
+	// Set session - Create new server session with provided session ID
+	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
+
+	// Static files (for CSS, JS, etc.)
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+
+	return router
 }
