@@ -17,62 +17,6 @@ import (
 // - Exchange authorization codes for sessions
 // =============================================================================
 
-// SetSessionHandler sets a new session cookie
-func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("🔐 SESSION: === Set session STARTED ===\n")
-	fmt.Printf("🔐 SESSION: Content-Type: %s\n", r.Header.Get("Content-Type"))
-
-	w.Header().Set("Content-Type", "application/json")
-
-	var req struct {
-		SessionID string `json:"session_id"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		fmt.Printf("🔐 SESSION: Failed to decode request: %v\n", err)
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Invalid request body",
-		})
-		return
-	}
-
-	if req.SessionID == "" {
-		fmt.Printf("🔐 SESSION: Missing session_id\n")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": "Missing session_id",
-		})
-		return
-	}
-
-	fmt.Printf("🔐 SESSION: Session ID received, length: %d\n", len(req.SessionID))
-
-	// Set session_id cookie (replaces session_token)
-	sessionCookie := &http.Cookie{
-		Name:     "session_id",
-		Value:    req.SessionID,
-		Path:     "/",
-		MaxAge:   2592000, // 30 days (server-side validation handles real security)
-		HttpOnly: true,
-		Secure:   false, // Set to true in production with HTTPS
-	}
-
-	// Set session_id cookie
-	http.SetCookie(w, sessionCookie)
-
-	fmt.Printf("🔐 SESSION: Session ID cookie set successfully:")
-	fmt.Printf("🔐 SESSION: - session_id cookie, Length: %d\n", len(sessionCookie.Value))
-
-	fmt.Printf("🔐 SESSION: SUCCESS: Server session established")
-	fmt.Printf("🔐 SESSION: === Set session COMPLETED ===\n")
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true,
-		"message": "Server session established successfully",
-	})
-}
 
 // LogoutHandler handles user logout
 func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
