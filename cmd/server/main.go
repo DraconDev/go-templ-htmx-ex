@@ -35,7 +35,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Initialize database if configured
-	if err := dbInit.InitDatabaseIfConfigured(); err != nil {
+	if err := database.InitDatabaseIfConfigured(); err != nil {
 		log.Printf("⚠️  Database initialization failed: %v", err)
 		log.Println("💡 Continuing without database functionality")
 	}
