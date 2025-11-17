@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session_utils"
 )
 
 // LogoutHandler handles user logout
