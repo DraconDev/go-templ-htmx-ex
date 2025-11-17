@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/repositories"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 )
@@ -32,17 +33,17 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 
 	fmt.Printf("📋 ADMIN: User logged in: %s (%s)\n", userInfo.Name, userInfo.Email)
 
-	// Check if this user is admin using database
-	if h.Queries != nil {
-		userRecord, err := h.Queries.GetUserByEmail(r.Context(), userInfo.Email)
+	// Check if this user is admin using UserService
+	if h.UserService != nil {
+		userRecord, err := h.UserService.GetUserByEmail(r.Context(), userInfo.Email)
 		if err != nil {
 			fmt.Printf("📋 ACCESS DENIED: Could not fetch user from database: %v\n", err)
 			http.Error(w, "Access denied: Admin privileges required", http.StatusForbidden)
 			return
 		}
 
-		// Check if user is admin in database
-		if !userRecord.IsAdmin.Bool || !userRecord.IsAdmin.Valid {
+		// Check if user is admin
+		if !userRecord.IsAdmin {
 			fmt.Printf("📋 ACCESS DENIED: User %s is not admin in database\n", userInfo.Email)
 			http.Error(w, "Access denied: Admin privileges required", http.StatusForbidden)
 			return
@@ -63,22 +64,22 @@ func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Requ
 	h.renderAdminDashboard(w, r, userInfo, dashboardData)
 }
 
-// getDashboardData loads real dashboard data from database
+// getDashboardData loads real dashboard data from UserService
 func (h *AdminHandler) getDashboardData(r *http.Request) pages.DashboardData {
 	var dashboardData pages.DashboardData
 	dashboardData.SystemHealth = "operational"
 
-	if h.Queries == nil {
+	if h.UserService == nil {
 		// Default values when no database connection
 		dashboardData.SystemHealth = "offline"
-		fmt.Printf("⚠️ ADMIN: No database connection available\n")
+		fmt.Printf("⚠️ ADMIN: No UserService available\n")
 		return dashboardData
 	}
 
 	fmt.Printf("📊 ADMIN: Loading real database data...\n")
 
 	// Total users
-	totalUsers, err := h.Queries.CountUsers(r.Context())
+	totalUsers, err := h.UserService.CountUsers(r.Context())
 	if err == nil {
 		dashboardData.TotalUsers = int(totalUsers)
 		fmt.Printf("📊 ADMIN: Total users loaded: %d\n", dashboardData.TotalUsers)
@@ -87,7 +88,7 @@ func (h *AdminHandler) getDashboardData(r *http.Request) pages.DashboardData {
 	}
 
 	// Today's signups
-	signupsToday, err := h.Queries.CountUsersCreatedToday(r.Context())
+	signupsToday, err := h.UserService.CountUsersCreatedToday(r.Context())
 	if err == nil {
 		dashboardData.SignupsToday = int(signupsToday)
 		fmt.Printf("📊 ADMIN: Today's signups loaded: %d\n", dashboardData.SignupsToday)
@@ -96,7 +97,7 @@ func (h *AdminHandler) getDashboardData(r *http.Request) pages.DashboardData {
 	}
 
 	// This week's signups
-	signupsThisWeek, err := h.Queries.CountUsersCreatedThisWeek(r.Context())
+	signupsThisWeek, err := h.UserService.CountUsersCreatedThisWeek(r.Context())
 	if err == nil {
 		dashboardData.UsersThisWeek = int(signupsThisWeek)
 		fmt.Printf("📊 ADMIN: This week's signups loaded: %d\n", dashboardData.UsersThisWeek)
@@ -105,7 +106,7 @@ func (h *AdminHandler) getDashboardData(r *http.Request) pages.DashboardData {
 	}
 
 	// Recent users
-	recentUsers, err := h.Queries.GetRecentUsers(r.Context())
+	recentUsers, err := h.UserService.GetRecentUsers(r.Context())
 	if err == nil && len(recentUsers) > 0 {
 		// Show up to 5 recent users
 		maxUsers := 5
@@ -116,7 +117,7 @@ func (h *AdminHandler) getDashboardData(r *http.Request) pages.DashboardData {
 			dashboardData.RecentUsers = append(dashboardData.RecentUsers, pages.RecentUser{
 				Name:  user.Name,
 				Email: user.Email,
-				Date:  user.CreatedAt.Time.Format("2006-01-02"),
+				Date:  user.CreatedAt.Format("2006-01-02"),
 			})
 			fmt.Printf("📊 ADMIN: Recent user %d: %s (%s)\n", i+1, user.Name, user.Email)
 		}
