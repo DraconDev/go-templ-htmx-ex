@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
-	"github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
+	authHandlers "github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 )
 
@@ -58,7 +58,7 @@ var RouteDefinitions = []Route{
 		Name:        "oauth_login",
 		Method:      "GET",
 		Pattern:     "/auth/login",
-		HandlerFunc: auth,
+		HandlerFunc: authHandlers.AuthHandler.LoginHandler,
 	},
 
 	// OAuth callback handler
@@ -66,7 +66,7 @@ var RouteDefinitions = []Route{
 		Name:        "oauth_callback",
 		Method:      "GET",
 		Pattern:     "/auth/callback",
-		HandlerFunc: authHandlers.AuthCallbackHandler,
+		HandlerFunc: authHandlers.AuthHandler.AuthCallbackHandler,
 	},
 
 	// =============================================================================
@@ -90,7 +90,7 @@ var RouteDefinitions = []Route{
 		Name:        "admin_dashboard",
 		Method:      "GET",
 		Pattern:     "/admin",
-		HandlerFunc: admin.AdminDashboardHandler,
+		HandlerFunc: admin.AdminHandler.AdminDashboardHandler,
 	},
 
 	// Admin API endpoints - Management operations for administrators
@@ -98,28 +98,28 @@ var RouteDefinitions = []Route{
 		Name:        "admin_get_users",
 		Method:      "GET",
 		Pattern:     "/api/admin/users",
-		HandlerFunc: admin.GetUsersHandler,
+		HandlerFunc: admin.AdminHandler.GetUsersHandler,
 	},
 
 	{
 		Name:        "admin_get_analytics",
 		Method:      "GET",
 		Pattern:     "/api/admin/analytics",
-		HandlerFunc: admin.GetAnalyticsHandler,
+		HandlerFunc: admin.AdminHandler.GetAnalyticsHandler,
 	},
 
 	{
 		Name:        "admin_get_settings",
 		Method:      "GET",
 		Pattern:     "/api/admin/settings",
-		HandlerFunc: admin.GetSettingsHandler,
+		HandlerFunc: admin.AdminHandler.GetSettingsHandler,
 	},
 
 	{
 		Name:        "admin_get_logs",
 		Method:      "GET",
 		Pattern:     "/api/admin/logs",
-		HandlerFunc: admin.GetLogsHandler,
+		HandlerFunc: admin.AdminHandler.GetLogsHandler,
 	},
 
 	// =============================================================================
@@ -131,7 +131,7 @@ var RouteDefinitions = []Route{
 		Name:        "logout",
 		Method:      "POST",
 		Pattern:     "/api/auth/logout",
-		HandlerFunc: authHandlers.LogoutHandler,
+		HandlerFunc: authHandlers.AuthHandler.LogoutHandler,
 	},
 
 	// Set session - Create new server session with provided session ID
@@ -139,7 +139,7 @@ var RouteDefinitions = []Route{
 		Name:        "set_session",
 		Method:      "POST",
 		Pattern:     "/api/auth/set-session",
-		HandlerFunc: authHandlers.SetSessionHandler,
+		HandlerFunc: authHandlers.AuthHandler.SetSessionHandler,
 	},
 }
 
