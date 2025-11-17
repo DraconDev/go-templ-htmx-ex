@@ -27,7 +27,7 @@ var authHandler *authHandlers.AuthHandler
 var adminHandler *admin.AdminHandler
 var userService *services.UserService
 var authService *services.AuthService
-var db *sql.DB
+var sqlDB *sql.DB
 var queries *dbSqlc.Queries
 
 func main() {
