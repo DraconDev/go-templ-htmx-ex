@@ -49,13 +49,13 @@ func main() {
 		if err != nil {
 			log.Printf("❌ Database connection failed: %v", err)
 			log.Println("⚠️  Continuing without database...")
-			db = nil
+			sqlDB = nil
 		} else {
 			// Test connection
 			if err := db.Ping(); err != nil {
 				log.Printf("❌ Database ping failed: %v", err)
 				log.Println("⚠️  Continuing without database...")
-				db = nil
+				sqlDB = nil
 			} else {
 				log.Println("✅ Database connected successfully")
 
