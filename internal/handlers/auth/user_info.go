@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session_utils"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
