@@ -1,14 +1,15 @@
-package auth
+package session
 
 import (
 	"net/http"
 
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
 // GetUserInfo returns current user information for server-side rendering
 // This function is responsible ONLY for extracting user info from session cookies
-func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
+func (h *auth.AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	// Use session utility to get session cookie
 	sessionID, err := GetSessionCookie(r)
 	if err != nil {
