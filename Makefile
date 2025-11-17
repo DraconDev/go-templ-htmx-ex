@@ -13,7 +13,7 @@ GOFMT=$(GOCMD) fmt
 
 build: generate clean
 	@echo "Building $(BINARY_NAME)..."
-	$(GOBUILD) -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd
+	$(GOBUILD) -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/main.go
 	@echo "Built $(BINARY_NAME) successfully!"
 
 clean:
