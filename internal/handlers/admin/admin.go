@@ -1,8 +1,8 @@
 package admin
 
 import (
-	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/services"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 )
 
