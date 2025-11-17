@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 )
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
