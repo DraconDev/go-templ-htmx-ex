@@ -19,7 +19,8 @@ build: generate clean
 clean:
 	@echo "Cleaning build artifacts..."
 	$(GOCLEAN)
-	rm -rf $(BUILD_DIR)
+	rm -f $(BUILD_DIR)/$(BINARY_NAME)
+	rm -rf tmp/
 	@echo "Cleaned successfully!"
 
 deps:
