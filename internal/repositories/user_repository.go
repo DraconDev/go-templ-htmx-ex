@@ -6,7 +6,7 @@ import (
 	"time"
 
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
-	"github.com/DraconDev/go-templ-htmx-ex/models"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
 	"github.com/google/uuid"
 )
 
