@@ -133,7 +133,7 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *User) (*User, err
 
 	picture := sql.NullString{String: user.Picture, Valid: user.Picture != ""}
 
-	dbUser, err := r.queries.UpdateUser(ctx, dbSqlc.UpdateUserParams{
+	err := r.queries.UpdateUser(ctx, dbSqlc.UpdateUserParams{
 		ID:       user.ID,
 		Name:     user.Name,
 		Picture:  picture,
@@ -142,16 +142,8 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *User) (*User, err
 		return nil, err
 	}
 
-	return &User{
-		ID:        dbUser.ID,
-		AuthID:    dbUser.AuthID,
-		Email:     dbUser.Email,
-		Name:      dbUser.Name,
-		Picture:   dbUser.Picture.String,
-		IsAdmin:   dbUser.IsAdmin.Bool,
-		CreatedAt: dbUser.CreatedAt.Time,
-		UpdatedAt: dbUser.UpdatedAt.Time,
-	}, nil
+	// Return updated user by fetching it again
+	return r.GetUserByEmail(ctx, user.Email)
 }
 
 // GetRecentUsers returns recently created users
@@ -169,13 +161,13 @@ func (r *UserRepository) GetRecentUsers(ctx context.Context) ([]User, error) {
 	for i, dbUser := range dbUsers {
 		users[i] = User{
 			ID:        dbUser.ID,
-			AuthID:    dbUser.AuthID,
+			AuthID:    "", // Recent users query doesn't return auth_id
 			Email:     dbUser.Email,
 			Name:      dbUser.Name,
-			Picture:   dbUser.Picture.String,
+			Picture:   "", // Recent users query doesn't return picture
 			IsAdmin:   false, // Recent users query doesn't return is_admin
 			CreatedAt: dbUser.CreatedAt.Time,
-			UpdatedAt: dbUser.UpdatedAt.Time,
+			UpdatedAt: time.Time{}, // Recent users query doesn't return updated_at
 		}
 	}
 
