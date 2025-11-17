@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
