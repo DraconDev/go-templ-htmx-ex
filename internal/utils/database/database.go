@@ -6,53 +6,23 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 // DB holds the database connection pool
 var DB *sql.DB
 
-// InitDatabase initializes the database connection
+// InitDatabase initializes the database connection using DB_URL environment variable
 func InitDatabase() error {
-	// Load environment variables
-	if err := godotenv.Load(); err != nil {
-		log.Printf("Warning: .env file not found: %v", err)
+	// Get database URL from environment
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		return fmt.Errorf("DB_URL environment variable is required")
 	}
-
-	// Get database configuration from environment
-	dbHost := os.Getenv("DB_HOST")
-	if dbHost == "" {
-		dbHost = "localhost"
-	}
-	
-	dbPort := os.Getenv("DB_PORT")
-	if dbPort == "" {
-		dbPort = "5432"
-	}
-	
-	dbUser := os.Getenv("DB_USER")
-	if dbUser == "" {
-		dbUser = "postgres"
-	}
-	
-	dbPassword := os.Getenv("DB_PASSWORD")
-	if dbPassword == "" {
-		dbPassword = "postgres"
-	}
-	
-	dbName := os.Getenv("DB_NAME")
-	if dbName == "" {
-		dbName = "go_templ_htmx"
-	}
-
-	// Build connection string
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	// Open database connection
 	var err error
-	DB, err = sql.Open("postgres", connStr)
+	DB, err = sql.Open("postgres", dbURL)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
@@ -62,7 +32,23 @@ func InitDatabase() error {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	log.Println("Database connection established successfully")
+	log.Println("✅ Database connection established successfully with Neon DB")
+	return nil
+}
+
+// InitDatabaseFromConnString initializes database from a connection string
+func InitDatabaseFromConnString(connString string) error {
+	var err error
+	DB, err = sql.Open("postgres", connString)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
+	}
+
+	if err := DB.Ping(); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	log.Println("✅ Database connection established successfully")
 	return nil
 }
 
@@ -77,4 +63,9 @@ func CloseDatabase() error {
 // GetDB returns the database connection pool
 func GetDB() *sql.DB {
 	return DB
+}
+
+// IsInitialized checks if the database connection pool is initialized
+func IsInitialized() bool {
+	return DB != nil
 }
