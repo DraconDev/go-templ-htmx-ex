@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/config"
-	"github.com/DraconDev/go-templ-htmx-ex/models"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
 )
 
 // AuthService handles session management with the auth microservice
