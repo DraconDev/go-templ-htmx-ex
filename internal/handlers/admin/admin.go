@@ -3,7 +3,7 @@ package admin
 import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
-	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
+	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/database/sqlc"
 )
 
 // AdminHandler handles admin-specific operations
