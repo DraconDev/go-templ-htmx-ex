@@ -58,7 +58,7 @@ var RouteDefinitions = []Route{
 		Name:        "oauth_login",
 		Method:      "GET",
 		Pattern:     "/auth/login",
-		HandlerFunc: auth.LoginHandler,
+		HandlerFunc: auth,
 	},
 
 	// OAuth callback handler
