@@ -38,7 +38,7 @@ generate:
 
 dev: generate
 	@echo "Starting development server..."
-	go run main.go
+	go run cmd/main.go
 
 watch: generate
 	@echo "Starting comprehensive watch mode (Go + Templ files)..."
