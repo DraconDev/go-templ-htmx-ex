@@ -3,7 +3,6 @@ package routes
 import (
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/gorilla/mux"
 )
 
