@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
