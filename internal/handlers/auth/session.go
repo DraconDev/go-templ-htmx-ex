@@ -18,25 +18,6 @@ import (
 // =============================================================================
 
 
-// LogoutHandler handles user logout
-func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Clear session cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-	})
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true,
-		"message": "Logged out successfully",
-	})
-}
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
 func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
