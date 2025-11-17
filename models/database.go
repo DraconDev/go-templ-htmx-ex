@@ -2,9 +2,7 @@ package models
 
 import (
 	"time"
-    "github.com/google/uuid"
 )
-
 
 // User represents a user in the application
 // Complements the external auth service by storing app-level user data
