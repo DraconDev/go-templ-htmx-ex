@@ -13,8 +13,8 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
-	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
-	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
+	dbInit "github.com/DraconDev/go-templ-htmx-ex/database"
+	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/database/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
 	authHandlers "github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth"
