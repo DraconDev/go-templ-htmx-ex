@@ -79,6 +79,10 @@ A centralized, multi-tenant payment system that eliminates redundant Stripe inte
 - Health check endpoints
 - Type-safe templating with proper package organization
 - HTMX for dynamic interactions
+- **Clean MVC architecture** with `cmd/` and `internal/` pattern
+- **No circular dependencies** - proper import hierarchy
+- **Centralized routing** - all route definitions in one place
+- **Scalable structure** - easy to add new features
 
 ## 🚀 Quick Start
 
