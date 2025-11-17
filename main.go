@@ -45,7 +45,7 @@ func main() {
 	if dbURL != "" {
 		log.Printf("🔗 Connecting to database for runtime...")
 		var err error
-		db, err = sql.Open("postgres", dbURL)
+		sqlDB, err = sql.Open("postgres", dbURL)
 		if err != nil {
 			log.Printf("❌ Database connection failed: %v", err)
 			log.Println("⚠️  Continuing without database...")
@@ -60,7 +60,7 @@ func main() {
 				log.Println("✅ Database connected successfully")
 
 				// Initialize SQLC queries
-				queries = dbSqlc.New(db)
+				queries = dbSqlc.New(sqlDB)
 				log.Println("✅ SQLC queries initialized")
 			}
 		}
