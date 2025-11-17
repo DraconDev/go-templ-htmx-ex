@@ -12,18 +12,6 @@ var (
 	ErrDatabaseNotConnected = errors.New("database not connected")
 )
 
-// User represents a user in the application
-type User struct {
-	ID        uuid.UUID `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
-	Picture   string    `json:"picture"`
-	IsAdmin   bool      `json:"is_admin"`
-	Provider  string    `json:"provider"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 // AuthResponse represents the response from the auth service
 type AuthResponse struct {
 	Success bool   `json:"success"`
