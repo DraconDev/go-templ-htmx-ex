@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/models"
@@ -25,24 +26,27 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (*mo
 		return nil, models.ErrDatabaseNotConnected
 	}
 
+	picture := sql.NullString{String: user.Picture, Valid: user.Picture != ""}
+	isAdmin := sql.NullBool{Bool: user.IsAdmin, Valid: true}
+	provider := sql.NullString{String: user.Provider, Valid: user.Provider != ""}
+
 	dbUser, err := r.queries.CreateUser(ctx, dbSqlc.CreateUserParams{
+		AuthID:   user.ID,
 		Email:    user.Email,
 		Name:     user.Name,
-		Picture:  user.Picture,
-		IsAdmin:  user.IsAdmin,
-		Provider: user.Provider,
+		Picture:  picture,
+		IsAdmin:  isAdmin,
+		Provider: provider,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &models.User{
-		ID:        dbUser.ID,
+		ID:        dbUser.ID.String(),
 		Email:     dbUser.Email,
 		Name:      dbUser.Name,
 		Picture:   dbUser.Picture.String,
-		IsAdmin:   dbUser.IsAdmin.Bool,
-		Provider:  dbUser.Provider.String,
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -60,12 +64,10 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 	}
 
 	return &models.User{
-		ID:        dbUser.ID,
+		ID:        dbUser.ID.String(),
 		Email:     dbUser.Email,
 		Name:      dbUser.Name,
 		Picture:   dbUser.Picture.String,
-		IsAdmin:   dbUser.IsAdmin.Bool,
-		Provider:  dbUser.Provider.String,
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -85,12 +87,10 @@ func (r *UserRepository) GetAllUsers(ctx context.Context) ([]models.User, error)
 	users := make([]models.User, len(dbUsers))
 	for i, dbUser := range dbUsers {
 		users[i] = models.User{
-			ID:        dbUser.ID,
+			ID:        dbUser.ID.String(),
 			Email:     dbUser.Email,
 			Name:      dbUser.Name,
 			Picture:   dbUser.Picture.String,
-			IsAdmin:   dbUser.IsAdmin.Bool,
-			Provider:  dbUser.Provider.String,
 			CreatedAt: dbUser.CreatedAt.Time,
 			UpdatedAt: dbUser.UpdatedAt.Time,
 		}
@@ -114,24 +114,22 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *models.User) (*mo
 		return nil, models.ErrDatabaseNotConnected
 	}
 
+	picture := sql.NullString{String: user.Picture, Valid: user.Picture != ""}
+
 	dbUser, err := r.queries.UpdateUser(ctx, dbSqlc.UpdateUserParams{
-		ID:       user.ID,
+		ID:       dbUser.ID, // This will need to be converted from string to uuid
 		Name:     user.Name,
-		Picture:  user.Picture,
-		IsAdmin:  user.IsAdmin,
-		Provider: user.Provider,
+		Picture:  picture,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &models.User{
-		ID:        dbUser.ID,
+		ID:        dbUser.ID.String(),
 		Email:     dbUser.Email,
 		Name:      dbUser.Name,
 		Picture:   dbUser.Picture.String,
-		IsAdmin:   dbUser.IsAdmin.Bool,
-		Provider:  dbUser.Provider.String,
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -151,12 +149,10 @@ func (r *UserRepository) GetRecentUsers(ctx context.Context) ([]models.User, err
 	users := make([]models.User, len(dbUsers))
 	for i, dbUser := range dbUsers {
 		users[i] = models.User{
-			ID:        dbUser.ID,
+			ID:        dbUser.ID.String(),
 			Email:     dbUser.Email,
 			Name:      dbUser.Name,
 			Picture:   dbUser.Picture.String,
-			IsAdmin:   dbUser.IsAdmin.Bool,
-			Provider:  dbUser.Provider.String,
 			CreatedAt: dbUser.CreatedAt.Time,
 			UpdatedAt: dbUser.UpdatedAt.Time,
 		}
