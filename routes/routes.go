@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/handlers/admin"
-	authHandlers "github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
+	"github.com/DraconDev/go-templ-htmx-ex/handlers/auth"
 	"github.com/DraconDev/go-templ-htmx-ex/middleware"
 )
 
@@ -58,7 +58,7 @@ var RouteDefinitions = []Route{
 		Name:        "oauth_login",
 		Method:      "GET",
 		Pattern:     "/auth/login",
-		HandlerFunc: authHandlers.LoginHandler,
+		HandlerFunc: auth.LoginHandler,
 	},
 
 	// OAuth callback handler
