@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -120,27 +121,6 @@ func GetRouteCategory(path string) string {
 	return "UNKNOWN"
 }
 
-// SetupRoutes configures and returns the router with all routes
-// This approach accepts handler instances to avoid method reference issues
-func SetupRoutes() *mux.Router {
-	router := mux.NewRouter()
-
-	// Add authentication middleware to all routes
-	router.Use(middleware.AuthMiddleware)
-
-	// =============================================================================
-	// PUBLIC ROUTES - No authentication required
-	// =============================================================================
-
-	// Note: These routes are configured in main.go since they use functions from handlers package
-	// The routes structure here is for organizational purposes
-
-	// Static files (for CSS, JS, etc.)
-	router.PathPrefix("/static/").Handler(
-		http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
-
-	return router
-}
 
 // RouteInfo provides information about application routes
 type RouteInfo struct {
