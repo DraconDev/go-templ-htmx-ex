@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	dbInit "github.com/DraconDev/go-templ-htmx-ex/db"
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/db/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers"
