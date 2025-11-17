@@ -262,6 +262,13 @@ vim templates/pages/your_feature.templ
 
 ## 🔍 Recent Updates
 
+- **✅ Project Architecture Reorganization:** Complete restructuring with `cmd/` and `internal/` patterns following Go best practices
+- **✅ MVC Architecture Implementation:** Clean separation of Models, Views, Controllers with proper package organization
+- **✅ Centralized Routing System:** Eliminated circular dependencies with `internal/routing/` package for route definitions
+- **✅ No Redundancy:** Removed duplicate route definitions between middleware and routes packages
+- **✅ Clean Dependencies:** Fixed import hierarchy - routing → middleware → routes (no circular imports)
+- **✅ Scalable Structure:** Easy to add new routes, handlers, and services without affecting multiple files
+- **✅ Build Tools Updated:** Makefile and Air configuration fully compatible with new structure
 - **✅ Complete Auth Service Refactoring:** Transformed 293-line monolithic file into 7 focused components under 100 lines each
 - **✅ Clean Architecture:** Organized auth service with http/, builder/, parsers/, services/ folders
 - **✅ Binary Naming Configuration:** Updated Makefile to build as 'server' instead of 'go-templ-htmx-ex'
