@@ -26,7 +26,7 @@ func InitDatabase(dbURL string) error {
 	log.Println("✅ Connected to database for initialization")
 
 	// Read and execute migration script
-	migrationSQL, err := os.ReadFile("db/migrations/001_initial_schema.sql")
+	migrationSQL, err := os.ReadFile("database/migrations/001_initial_schema.sql")
 	if err != nil {
 		return fmt.Errorf("failed to read migration script: %w", err)
 	}

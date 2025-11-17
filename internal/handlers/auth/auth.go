@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/DraconDev/go-templ-htmx-ex/internal/config"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 )
 
