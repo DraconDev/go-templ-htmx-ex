@@ -1,4 +1,4 @@
-package session
+package auth
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 
 // GetUserInfo returns current user information for server-side rendering
 // This function is responsible ONLY for extracting user info from session cookies
-func (h *auth.AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
+func (h *AuthHandler) GetUserInfo(r *http.Request) layouts.UserInfo {
 	// Use session utility to get session cookie
 	sessionID, err := GetSessionCookie(r)
 	if err != nil {
