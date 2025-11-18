@@ -83,6 +83,11 @@ func getRouteCategory(path string) string {
 
 // requiresAuthentication checks if a route requires authentication
 func requiresAuthentication(path string) bool {
+	// Authentication API routes should NOT require authentication (they handle auth tokens)
+	if hasPrefix(path, "/api/auth/") {
+		return false
+	}
+	
 	return path == "/profile" || path == "/admin" || hasPrefix(path, "/api/admin")
 }
 
