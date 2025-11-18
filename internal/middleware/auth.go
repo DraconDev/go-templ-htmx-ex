@@ -22,8 +22,13 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		fmt.Printf("🔐 MIDDLEWARE: Processing route %s [Category: %s]\n", path, category)
 
-		// Always validate session for all routes (to show logged-in status)
-		userInfo := validateSession(r)
+		// Skip session validation for auth callback route (no session yet during callback flow)
+		var userInfo layouts.UserInfo
+		if path != "/auth/callback" {
+			userInfo = validateSession(r)
+		} else {
+			userInfo = layouts.UserInfo{LoggedIn: false}
+		}
 		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
 		// Check if this route requires authentication
