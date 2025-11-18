@@ -23,12 +23,12 @@ type AuthService struct {
 func NewAuthService(cfg *config.Config) *AuthService {
 	return &AuthService{
 		config:  cfg,
-		client:  &http.Client{Timeout: 10 * time.Second},
-		timeout: 10 * time.Second,
+		client:  &http.Client{Timeout: 5 * time.Second}, // Reduced timeout
+		timeout: 5 * time.Second,
 	}
 }
 
-	// Returns map with session_id and user_context for session establishment
+// CreateSession returns map with session_id and user_context for session establishment
 func (s *AuthService) CreateSession(auth_code string) (map[string]interface{}, error) {
 	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
@@ -154,26 +154,32 @@ func (s *AuthService) makeRequest(endpoint string, params map[string]string) ([]
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", s.config.AuthServiceURL+endpoint, bytes.NewBuffer(jsonData))
+	url := s.config.AuthServiceURL + endpoint
+	fmt.Printf("🔍 AUTH-SERVICE: Making request to %s\n", url)
+	fmt.Printf("🔍 AUTH-SERVICE: Payload: %s\n", string(jsonData))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
+	fmt.Printf("🔍 AUTH-SERVICE: Sending HTTP request...\n")
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return nil, err
+		fmt.Printf("🔍 AUTH-SERVICE: ❌ Request failed: %v\n", err)
+		return nil, fmt.Errorf("failed to connect to auth service at %s: %v", s.config.AuthServiceURL, err)
 	}
 	defer resp.Body.Close()
 
 	// Debug logging
-	fmt.Printf("🔍 AUTH-SERVICE: Request to %s\n", s.config.AuthServiceURL+endpoint)
-	fmt.Printf("🔍 AUTH-SERVICE: Response status: %s\n", resp.Status)
+	fmt.Printf("🔍 AUTH-SERVICE: ✅ Response received - Status: %s\n", resp.Status)
 	fmt.Printf("🔍 AUTH-SERVICE: Response headers: %v\n", resp.Header)
 
 	// Read response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("🔍 AUTH-SERVICE: ❌ Failed to read response body: %v\n", err)
 		return nil, err
 	}
 
@@ -182,6 +188,7 @@ func (s *AuthService) makeRequest(endpoint string, params map[string]string) ([]
 
 	// Check if response is successful
 	if resp.StatusCode >= 400 {
+		fmt.Printf("🔍 AUTH-SERVICE: ❌ HTTP error %d: %s\n", resp.StatusCode, string(bodyBytes))
 		return nil, fmt.Errorf("auth service error: %s - %s", resp.Status, string(bodyBytes))
 	}
 
