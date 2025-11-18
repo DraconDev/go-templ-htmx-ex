@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
 	"github.com/a-h/templ"
