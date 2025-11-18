@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
 func TestAuthMiddlewareBehavior(t *testing.T) {
