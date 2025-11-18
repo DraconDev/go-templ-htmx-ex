@@ -42,7 +42,7 @@ func (s *AuthService) ExchangeCodeForTokens(auth_code string) (*models.AuthRespo
 		"auth_code": auth_code,
 	})
 }
-}
+
 
 // RefreshSession refreshes an existing session_id
 func (s *AuthService) RefreshSession(session_id string) (*models.AuthResponse, error) {
