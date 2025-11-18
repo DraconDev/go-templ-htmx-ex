@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
 func TestGetRouteCategory(t *testing.T) {
