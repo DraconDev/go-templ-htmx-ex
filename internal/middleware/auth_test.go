@@ -209,12 +209,7 @@ func TestGetUserFromContext(t *testing.T) {
 		t.Error("Expected user to not be logged in with no context")
 	}
 
-	// Test with user context
-	testUser := layouts.UserInfo{
-		LoggedIn: true,
-		Name:     "Test User",
-		Email:    "test@example.com",
-	}
+	// Test with user context (context setup would be done by middleware)
 	req = req.WithContext(req.Context())
 
 	// Note: In actual usage, the user context is set by the middleware
