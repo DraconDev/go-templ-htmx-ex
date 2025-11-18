@@ -32,6 +32,7 @@ func NewAuthService(cfg *config.Config) *AuthService {
 func (s *AuthService) CreateSession(auth_code string) (map[string]interface{}, error) {
 	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
+}
 	})
 // ExchangeCodeForTokens exchanges OAuth authorization code for session tokens
 func (s *AuthService) ExchangeCodeForTokens(auth_code string) (*models.AuthResponse, error) {
