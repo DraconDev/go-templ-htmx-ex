@@ -22,7 +22,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var authHandler *authHandlers.AuthHandler
 var adminHandler *admin.AdminHandler
 var userService *services.UserService
 var authService *services.AuthService
@@ -81,7 +80,7 @@ func main() {
 		log.Println("⚠️  Admin handler not initialized - no database connection")
 	}
 
-	authHandler = authHandlers.NewAuthHandler(cfg)
+	loginHandler := handlers.LoginHandler.NewAuthHandler(cfg)
 
 	// Create router using new route structure
 	router := SetupRoutes()
