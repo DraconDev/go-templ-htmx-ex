@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 )
 
@@ -19,7 +18,7 @@ const userContextKey UserContextKey = "user"
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		category := routes.GetRouteCategory(path)
+		category := getRouteCategory(path)
 
 		fmt.Printf("🔐 MIDDLEWARE: Processing route %s [Category: %s]\n", path, category)
 
@@ -28,7 +27,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), userContextKey, userInfo)
 
 		// Check if this route requires authentication
-		if routes.RequiresAuthentication(path) {
+		if requiresAuthentication(path) {
 			// If route requires auth but user is not logged in, redirect
 			if !userInfo.LoggedIn {
 				if r.URL.Path[:5] == "/api/" {
@@ -60,4 +59,34 @@ func GetUserFromContext(r *http.Request) layouts.UserInfo {
 		return layouts.UserInfo{LoggedIn: false}
 	}
 	return userInfo
+}
+
+// getRouteCategory returns the category of a route for debugging
+func getRouteCategory(path string) string {
+	// Protected routes that require authentication
+	if path == "/profile" || path == "/admin" || hasPrefix(path, "/api/admin") {
+		return "PROTECTED"
+	}
+	
+	// Public routes
+	if path == "/" || path == "/health" || path == "/login" || path == "/test" || hasPrefix(path, "/auth/") {
+		return "PUBLIC"
+	}
+	
+	// Auth API routes
+	if hasPrefix(path, "/api/auth/") {
+		return "AUTH_API"
+	}
+	
+	return "UNKNOWN"
+}
+
+// requiresAuthentication checks if a route requires authentication
+func requiresAuthentication(path string) bool {
+	return path == "/profile" || path == "/admin" || hasPrefix(path, "/api/admin")
+}
+
+// hasPrefix is a simple string prefix check
+func hasPrefix(s, prefix string) bool {
+	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
 }
