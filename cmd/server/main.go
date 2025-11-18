@@ -18,6 +18,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	database "github.com/DraconDev/go-templ-htmx-ex/internal/utils/database"
@@ -89,7 +90,7 @@ func main() {
 	sessionHandler = session.NewSessionHandler(cfg)
 	log.Println("✅ Login and session handlers initialized")
 
-	// Create router using new route structure
+	// Create router using centralized route structure
 	router := SetupRoutes()
 
 	// Create HTTP server
@@ -130,69 +131,18 @@ func main() {
 
 // SetupRoutes creates and configures the router with all routes
 func SetupRoutes() *mux.Router {
-	router := mux.NewRouter()
-
-	// Add authentication middleware to all routes
-	router.Use(middleware.AuthMiddleware)
-
-	// =============================================================================
-	// PUBLIC ROUTES - No authentication required
-	// =============================================================================
-
-	// Homepage - Main landing page with platform showcase
-	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
-
-	// Health check - API health monitoring endpoint
-	router.HandleFunc("/health", handlers.HealthHandler).Methods("GET")
-
-	// Login page - OAuth provider selection UI
-	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
-
-	// =============================================================================
-	// OAUTH AUTHENTICATION FLOW
-	// =============================================================================
-
-	// OAuth Login Route - Consolidated with provider parameter
-	router.HandleFunc("/auth/login", loginHandler.LoginHandler).Methods("GET")
-
-	// OAuth callback handler
-	router.HandleFunc("/auth/callback", loginHandler.AuthCallbackHandler).Methods("GET")
-
-	// =============================================================================
-	// PROTECTED USER ROUTES - Authentication required
-	// =============================================================================
-
-	// User profile page - Display user information and account details
-	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
-
-	// =============================================================================
-	// ADMIN ROUTES - Admin authentication required
-	// =============================================================================
-
-	// Admin dashboard - Main admin interface for platform management
-	if adminHandler != nil {
-		router.HandleFunc("/admin", adminHandler.AdminDashboardHandler).Methods("GET")
-		router.HandleFunc("/api/admin/users", adminHandler.GetUsersHandler).Methods("GET")
-		router.HandleFunc("/api/admin/analytics", adminHandler.GetAnalyticsHandler).Methods("GET")
-		router.HandleFunc("/api/admin/settings", adminHandler.GetSettingsHandler).Methods("GET")
-		router.HandleFunc("/api/admin/logs", adminHandler.GetLogsHandler).Methods("GET")
+	// Create handler instances for the routes package
+	handlerInstances := &routes.HandlerInstances{
+		AdminHandler:   adminHandler,
+		LoginHandler:   loginHandler,
+		SessionHandler: sessionHandler,
 	}
 
-	// =============================================================================
-	// SESSION MANAGEMENT API - Authentication required
-	// =============================================================================
+	// Use centralized route setup
+	router := routes.SetupRoutes(handlerInstances)
 
-	// Logout user - Destroy current session and clear cookies
-	router.HandleFunc("/api/auth/logout", sessionHandler.LogoutHandler).Methods("POST")
-
-	// Set session - Create new server session with provided session ID
-	router.HandleFunc("/api/auth/set-session", sessionHandler.SetSessionHandler).Methods("POST")
-
-	// Exchange code - Exchange OAuth authorization code for session tokens
-	router.HandleFunc("/api/auth/exchange-code", sessionHandler.ExchangeCodeHandler).Methods("POST")
-
-	// Static files (for CSS, JS, etc.)
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+	// Add middleware after routes are set up
+	router.Use(middleware.AuthMiddleware)
 
 	return router
 }
