@@ -56,12 +56,12 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 
 	fmt.Printf("🔐 MIDDLEWARE: Auth service response: %v\n", respData)
 
-	// Check if session is valid by looking for user_context
+	// Check if session is valid by looking for user_context or success response
+	var userInfo layouts.UserInfo
+	
+	// Try user_context first (existing format)
 	if userContext, ok := respData["user_context"].(map[string]interface{}); ok && userContext != nil {
-		// Session is valid - extract user info from user_context
-		userInfo := layouts.UserInfo{
-			LoggedIn: true,
-		}
+		userInfo.LoggedIn = true
 
 		if name, ok := userContext["name"].(string); ok && name != "" {
 			userInfo.Name = name
@@ -76,6 +76,15 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 			fmt.Printf("🔐 MIDDLEWARE: Session valid for user: %s (%s)\n", userInfo.Name, userInfo.Email)
 		}
 
+		return userInfo, nil
+	}
+	
+	// Try session_id validation response (new format from working reference)
+	if success, ok := respData["success"].(bool); ok && success {
+		// For session_id based validation, just mark as logged in
+		// User details would come from other endpoints if needed
+		userInfo.LoggedIn = true
+		fmt.Printf("🔐 MIDDLEWARE: Session validated successfully (session_id format)\n")
 		return userInfo, nil
 	}
 
