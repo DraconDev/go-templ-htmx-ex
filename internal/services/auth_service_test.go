@@ -58,7 +58,7 @@ func testConfig() *config.Config {
 }
 
 func TestNewAuthService(t *testing.T) {
-	cfg := TestConfig()
+	cfg := testConfig()
 	authService := services.NewAuthService(cfg)
 
 	if authService == nil {
