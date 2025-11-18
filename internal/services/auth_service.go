@@ -33,6 +33,15 @@ func (s *AuthService) CreateSession(auth_code string) (map[string]interface{}, e
 	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
 	})
+// ExchangeCodeForTokens exchanges OAuth authorization code for session tokens
+func (s *AuthService) ExchangeCodeForTokens(auth_code string) (*models.AuthResponse, error) {
+	fmt.Printf("🔐 AUTH-SERVICE: Exchanging code for tokens...\n")
+	
+	// Use the existing callAuthService method
+	return s.callAuthService("/auth/session/create", map[string]string{
+		"auth_code": auth_code,
+	})
+}
 }
 
 // RefreshSession refreshes an existing session_id
