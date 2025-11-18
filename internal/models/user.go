@@ -27,7 +27,7 @@ type AuthResponse struct {
 type TokenExchangeResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-	IdToken string `json:"id_token"` // Server session token
+	IdToken string `json:"id_token"` // Server session token (session_id from auth service)
 	Error   string `json:"error,omitempty"`
 }
 
