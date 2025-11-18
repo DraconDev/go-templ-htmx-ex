@@ -42,21 +42,18 @@ func main() {
 		log.Println("💡 Continuing without database functionality")
 	}
 
-	// Get database URL from environment for runtime connection
+	// Get database connection for runtime use
 	dbURL := os.Getenv("DB_URL")
 	if dbURL != "" {
-		log.Printf("🔗 Connecting to database for runtime...")
 		var err error
 		sqlDB, err = sql.Open("postgres", dbURL)
 		if err != nil {
 			log.Printf("❌ Database connection failed: %v", err)
-			log.Println("⚠️  Continuing without database...")
 			sqlDB = nil
 		} else {
 			// Test connection
 			if err := sqlDB.Ping(); err != nil {
 				log.Printf("❌ Database ping failed: %v", err)
-				log.Println("⚠️  Continuing without database...")
 				sqlDB = nil
 			} else {
 				log.Println("✅ Database connected successfully")
