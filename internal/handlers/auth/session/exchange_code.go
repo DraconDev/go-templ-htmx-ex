@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
 )
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
@@ -12,15 +11,19 @@ import (
 func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔄 CODE: === Exchange authorization code STARTED ===\n")
 	fmt.Printf("🔄 CODE: Request URL: %s\n", r.URL.String())
+	fmt.Printf("🔄 CODE: Method: %s\n", r.Method)
+	fmt.Printf("🔄 CODE: Headers: %v\n", r.Header)
 
 	w.Header().Set("Content-Type", "application/json")
 
+	// STEP 1: Decode the request body
+	fmt.Printf("🔄 CODE: Decoding request body...\n")
 	var req struct {
 		AuthCode string `json:"auth_code"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		fmt.Printf("🔄 CODE: Failed to decode request: %v\n", err)
+		fmt.Printf("🔄 CODE: ❌ Failed to decode request: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Invalid request body",
@@ -28,8 +31,10 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	fmt.Printf("🔄 CODE: ✅ Request decoded successfully: %s\n", req.AuthCode)
+
 	if req.AuthCode == "" {
-		fmt.Printf("🔄 CODE: Missing authorization code\n")
+		fmt.Printf("🔄 CODE: ❌ Missing authorization code\n")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Missing authorization code",
@@ -37,13 +42,15 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.AuthCode))
+	fmt.Printf("🔄 CODE: ✅ Authorization code received, length: %d\n", len(req.AuthCode))
 
-	// Exchange code for tokens via auth service (using the working reference logic)
+	// STEP 2: Call the auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
+	fmt.Printf("🔄 CODE: AuthService address: %p\n", h.AuthService)
+	
 	authResp, err := h.AuthService.ExchangeCodeForTokens(req.AuthCode)
 	if err != nil {
-		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
+		fmt.Printf("🔄 CODE: ❌ Auth service call failed: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": err.Error(),
@@ -51,8 +58,11 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	fmt.Printf("🔄 CODE: ✅ Auth service call completed successfully\n")
+	fmt.Printf("🔄 CODE: Auth response: %+v\n", authResp)
+
 	if !authResp.Success {
-		fmt.Printf("❌ CODE: Auth service returned failure: %s\n", authResp.Error)
+		fmt.Printf("🔄 CODE: ❌ Auth service returned failure: %s\n", authResp.Error)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": authResp.Error,
@@ -60,10 +70,10 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	fmt.Printf("✅ CODE: Auth service returned success: %v\n", authResp.Success)
-	fmt.Printf("🔄 CODE: Auth response: %+v\n", authResp)
+	fmt.Printf("🔄 CODE: ✅ Auth service returned success: %v\n", authResp.Success)
 
-	// Set session_id cookie for server sessions (same as reference)
+	// STEP 3: Set the session cookie
+	fmt.Printf("🔄 CODE: Setting session cookie with UserID: %s\n", authResp.UserID)
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    authResp.UserID, // Using UserID as the session identifier
@@ -74,13 +84,15 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	http.SetCookie(w, sessionCookie)
+	fmt.Printf("🔄 CODE: ✅ Session cookie set successfully\n")
 
-	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(authResp.UserID))
-	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
-
+	// STEP 4: Return success response
+	fmt.Printf("🔄 CODE: Returning success response...\n")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Tokens exchanged successfully",
 	})
+	
+	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 }
