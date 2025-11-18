@@ -28,13 +28,11 @@ func NewAuthService(cfg *config.Config) *AuthService {
 	}
 }
 
-// CreateSession exchanges OAuth authorization code for session_id and user info
+	// Returns map with session_id and user_context for session establishment
 func (s *AuthService) CreateSession(auth_code string) (map[string]interface{}, error) {
 	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
 	})
-	// Returns map with session_id and user_context for session establishment
-
 }
 
 // ExchangeCodeForTokens exchanges OAuth authorization code for session tokens
