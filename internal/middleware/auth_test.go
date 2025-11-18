@@ -134,16 +134,7 @@ func TestGetUserFromContextBehavior(t *testing.T) {
 	t.Run("with_user_context", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
 		
-		// Simulate what the middleware does
-		testUser := layouts.UserInfo{
-			LoggedIn: true,
-			Name:     "Test User",
-			Email:    "test@example.com",
-		}
-		
 		// In the actual middleware, this would be set by validateSession
-		ctx := req.Context()
-		// This simulates the middleware setting the user context
 		// We can't easily test this without accessing internal middleware logic
 		
 		userInfo := GetUserFromContext(req)
