@@ -59,7 +59,7 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	fmt.Printf("🔄 CODE: ✅ Auth service call completed successfully\n")
-	fmt.Printf("🔄 CODE: Auth response: %+v\n", authResp)
+	fmt.Printf("🔄 CODE: Auth response: success=%v, id_token length=%d\n", authResp.Success, len(authResp.IdToken))
 
 	if !authResp.Success {
 		fmt.Printf("🔄 CODE: ❌ Auth service returned failure: %s\n", authResp.Error)
