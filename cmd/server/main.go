@@ -29,6 +29,8 @@ var userService *services.UserService
 var authService *services.AuthService
 var sqlDB *sql.DB
 var queries *dbSqlc.Queries
+var loginHandler *login.LoginHandler
+var sessionHandler *session.SessionHandler
 
 func main() {
 	// Load configuration
@@ -83,11 +85,12 @@ func main() {
 	}
 
 	// Initialize login and session handlers
-	loginHandler := login.NewLoginHandler(cfg)
-	sessionHandler := session.NewSessionHandler(cfg)
+	loginHandler = login.NewLoginHandler(cfg)
+	sessionHandler = session.NewSessionHandler(cfg)
+	log.Println("✅ Login and session handlers initialized")
 
 	// Create router using new route structure
-	router := SetupRoutes(loginHandler, sessionHandler)
+	router := SetupRoutes()
 
 	// Create HTTP server
 	server := &http.Server{
@@ -126,7 +129,7 @@ func main() {
 }
 
 // SetupRoutes creates and configures the router with all routes
-func SetupRoutes(loginHandler *login.LoginHandler, sessionHandler *session.SessionHandler) *mux.Router {
+func SetupRoutes() *mux.Router {
 	router := mux.NewRouter()
 
 	// Add authentication middleware to all routes
