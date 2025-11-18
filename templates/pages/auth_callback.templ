@@ -103,9 +103,9 @@ templ AuthCallbackContent() {
 			console.log('🔐 CALLBACK: Authorization code received, length:', code.length);
 			console.log('🔐 CALLBACK: Code preview:', code.substring(0, 20) + '...');
 
-			console.log('🔐 CALLBACK: === ABOUT TO MAKE FETCH CALL ===');
+			console.log('🔐 CALLBACK: === ABOUT TO MAKE AUTH SERVICE CALL ===');
 			
-			// Exchange code for session directly with auth service
+			// Step 1: Call auth service to get session_id
 			fetch('http://localhost:8080/auth/session/create', {
 				method: 'POST',
 				headers: {
@@ -116,27 +116,52 @@ templ AuthCallbackContent() {
 				})
 			})
 			.then(response => {
-				console.log('🔐 CALLBACK: === FETCH RESPONSE RECEIVED ===');
-				console.log('🔐 CALLBACK: Exchange code response status:', response.status);
+				console.log('🔐 CALLBACK: === AUTH SERVICE RESPONSE RECEIVED ===');
+				console.log('🔐 CALLBACK: Auth service response status:', response.status);
 				console.log('🔐 CALLBACK: Response ok:', response.ok);
-				return response.json().then(data => {
-					console.log('🔐 CALLBACK: Exchange code response data:', data);
-					return { ok: response.ok, data: data };
-				});
+				if (!response.ok) {
+					throw new Error('Auth service returned error: ' + response.status);
+				}
+				return response.json();
 			})
-			.then(result => {
-				console.log('🔐 CALLBACK: === PROCESSING FETCH RESULT ===');
-				console.log('🔐 CALLBACK: Result:', result);
-				if (result.ok && result.data.success) {
-					console.log('🔐 CALLBACK: Successfully exchanged code for tokens');
+			.then(authData => {
+				console.log('🔐 CALLBACK: === AUTH SERVICE SUCCESS ===');
+				console.log('🔐 CALLBACK: Auth service response:', authData);
+				
+				var sessionId = authData.session_id;
+				if (!sessionId) {
+					throw new Error('No session_id received from auth service');
+				}
+				
+				console.log('🔐 CALLBACK: Session ID received:', sessionId);
+				
+				// Step 2: Call main app to set session cookie
+				return fetch('/api/auth/set-session', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						session_id: sessionId
+					})
+				})
+				.then(setSessionResponse => {
+					console.log('🔐 CALLBACK: === SET SESSION RESPONSE ===');
+					console.log('🔐 CALLBACK: Set session response status:', setSessionResponse.status);
+					console.log('🔐 CALLBACK: Set session response ok:', setSessionResponse.ok);
+					if (!setSessionResponse.ok) {
+						throw new Error('Failed to set session: ' + setSessionResponse.status);
+					}
+					return setSessionResponse.json();
+				})
+				.then(setSessionData => {
+					console.log('🔐 CALLBACK: === SESSION SET SUCCESS ===');
+					console.log('🔐 CALLBACK: Set session response:', setSessionData);
 					showSuccess('Authentication successful! Redirecting to home...');
 					setTimeout(() => {
 						window.location.href = '/';
 					}, 1500);
-				} else {
-					console.error('🔐 CALLBACK: Fetch failed or unsuccessful:', result);
-					throw new Error(result.data.error || 'Failed to exchange authorization code');
-				}
+				});
 			})
 			.catch(error => {
 				console.error('🔐 CALLBACK: === FETCH ERROR ===');
@@ -146,7 +171,7 @@ templ AuthCallbackContent() {
 				showError('Error: ' + error.message);
 			});
 				
-			console.log('🔐 CALLBACK: === FETCH CALL INITIATED (async) ===');
+			console.log('🔐 CALLBACK: === ASYNC CALLS INITIATED ===');
 		}
 
 		function showError(message) {
