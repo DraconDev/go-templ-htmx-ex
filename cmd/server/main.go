@@ -146,7 +146,7 @@ func SetupRoutes() *mux.Router {
 	// =============================================================================
 
 	// OAuth Login Route - Consolidated with provider parameter
-	router.HandleFunc("/auth/login", handlers.LoginHandler.LoginHandler).Methods("GET")
+	router.HandleFunc("/auth/login", handlers.LoginHandler).Methods("GET")
 
 	// OAuth callback handler
 	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
