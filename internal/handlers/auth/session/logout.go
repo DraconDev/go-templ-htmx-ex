@@ -1,9 +1,8 @@
-package auth
+package session
 
 import (
 	"encoding/json"
 	"net/http"
-
 )
 
 // LogoutHandler handles user logout

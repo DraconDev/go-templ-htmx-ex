@@ -1,11 +1,9 @@
-package auth
-
+package session
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/errors"
 )
 
