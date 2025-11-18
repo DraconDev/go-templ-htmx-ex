@@ -54,13 +54,3 @@ func (c *SessionCache) Set(sessionID string, userInfo layouts.UserInfo) {
 		expiresAt: time.Now().Add(15 * time.Second),
 	}
 }
-
-// Clear removes all cached entries
-func (c *SessionCache) Clear() {
-	c.Lock()
-	defer c.Unlock()
-	c.entries = make(map[string]*cacheEntry)
-}
-
-// Global session cache instance
-var sessionCache = NewSessionCache()
