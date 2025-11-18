@@ -1,19 +1,20 @@
-package auth
+package login
+
 
 import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 )
 
-// AuthHandler handles authentication-related HTTP requests
-type AuthHandler struct {
+// LoginHandler handles authentication-related HTTP requests
+type LoginHandler struct {
 	Config      *config.Config // App configuration
 	AuthService *services.AuthService  // Auth service for session management (includes HTTP client)
 }
 
-// NewAuthHandler creates a new authentication handler
-func NewAuthHandler(config *config.Config) *AuthHandler {
-	return &AuthHandler{
+// NewLoginHandler creates a new authentication handler
+func NewLoginHandler(config *config.Config) *LoginHandler {
+	return &LoginHandler{
 		Config:      config,
 		AuthService: services.NewAuthService(config),
 	}

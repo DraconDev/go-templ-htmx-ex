@@ -1,4 +1,4 @@
-package auth
+package login
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ import (
 //	Auth service handles OAuth -> Returns to our callback with session token
 //
 // Usage: /auth/login?provider=google|github|discord|microsoft
-func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *LoginHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Get provider from query parameter
 	provider := r.URL.Query().Get("provider")
 	if provider == "" {
@@ -63,7 +63,7 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 // Flow: OAuth provider redirects here with authorization code in URL
 //
 //	Client-side JS extracts token and calls /api/auth/set-session
-func (h *AuthHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (h *LoginHandler) AuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("🔐 CALLBACK: === OAuth callback STARTED ===\n")
 	fmt.Printf("🔐 CALLBACK: URL = %s\n", r.URL.String())
 	fmt.Printf("🔐 CALLBACK: Query params = %v\n", r.URL.Query())
