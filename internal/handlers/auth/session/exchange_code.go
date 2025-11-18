@@ -10,6 +10,9 @@ import (
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
 // This handler is responsible ONLY for exchanging auth codes for session tokens
 func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("🔄 CODE: === Exchange authorization code STARTED ===\n")
+	fmt.Printf("🔄 CODE: Request URL: %s\n", r.URL.String())
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
@@ -17,46 +20,67 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		handleJSONError(w, "Invalid request body", err, nil) // Use nil for standard error for now
+		fmt.Printf("🔄 CODE: Failed to decode request: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Invalid request body",
+		})
 		return
 	}
 
 	if req.AuthCode == "" {
-		handleJSONError(w, "Missing authorization code", nil, nil)
+		fmt.Printf("🔄 CODE: Missing authorization code\n")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "Missing authorization code",
+		})
 		return
 	}
 
-	// Create session from authorization code
-	sessionData, err := h.AuthService.CreateSession(req.AuthCode)
+	fmt.Printf("🔄 CODE: Authorization code received, length: %d\n", len(req.AuthCode))
+
+	// Exchange code for tokens via auth service (using the working reference logic)
+	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
+	authResp, err := h.AuthService.ExchangeCodeForTokens(req.AuthCode)
 	if err != nil {
-		handleJSONError(w, err.Error(), err, nil)
+		fmt.Printf("❌ CODE: Auth service failed: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	// Extract session_id from the response
-	sessionID, err := extractSessionID(sessionData)
-	if err != nil {
-		handleJSONError(w, "No session_id received from auth service", nil, nil)
+	if !authResp.Success {
+		fmt.Printf("❌ CODE: Auth service returned failure: %s\n", authResp.Error)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": authResp.Error,
+		})
 		return
 	}
 
-	// Use session utility to set the cookie
-	sessionConfig := DefaultSessionCookieConfig()
-	SetSessionCookie(w, sessionID, sessionConfig)
+	fmt.Printf("✅ CODE: Auth service returned success: %v\n", authResp.Success)
+	fmt.Printf("🔄 CODE: Auth response: %+v\n", authResp)
+
+	// Set session_id cookie for server sessions (same as reference)
+	sessionCookie := &http.Cookie{
+		Name:     "session_id",
+		Value:    authResp.UserID, // Using UserID as the session identifier
+		Path:     "/",
+		MaxAge:   2592000, // 30 days
+		HttpOnly: true,
+		Secure:   false, // Set to true in production with HTTPS
+	}
+
+	http.SetCookie(w, sessionCookie)
+
+	fmt.Printf("✅ CODE: Session token cookie set successfully (length: %d)\n", len(authResp.UserID))
+	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Tokens exchanged successfully",
 	})
-}
-
-// extractSessionID extracts session_id from session data map
-func extractSessionID(sessionData map[string]interface{}) (string, error) {
-	if sid, exists := sessionData["session_id"]; exists {
-		if sidStr, ok := sid.(string); ok && sidStr != "" {
-			return sidStr, nil
-		}
-	}
-	return "", fmt.Errorf("no session_id in auth response")
 }
