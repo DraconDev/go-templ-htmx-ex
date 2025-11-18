@@ -105,8 +105,8 @@ templ AuthCallbackContent() {
 
 			console.log('🔐 CALLBACK: === ABOUT TO MAKE FETCH CALL ===');
 			
-			// Exchange code for tokens via server endpoint
-			fetch('/api/auth/exchange-code', {
+			// Exchange code for session directly with auth service
+			fetch('http://localhost:8080/auth/session/create', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
