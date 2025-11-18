@@ -149,7 +149,7 @@ func SetupRoutes() *mux.Router {
 	router.HandleFunc("/auth/login", handlers.LoginHandler).Methods("GET")
 
 	// OAuth callback handler
-	router.HandleFunc("/auth/callback", authHandler.AuthCallbackHandler).Methods("GET")
+	router.HandleFunc("/auth/callback", handlers.AuthCallbackHandler).Methods("GET")
 
 	// =============================================================================
 	// PROTECTED USER ROUTES - Authentication required
