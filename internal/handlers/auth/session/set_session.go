@@ -9,7 +9,7 @@ import (
 
 // SetSessionHandler handles setting a new session cookie
 // This handler is responsible ONLY for setting session cookies from a provided session ID
-func (h *AuthHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
+func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {

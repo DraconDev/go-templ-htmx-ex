@@ -7,7 +7,7 @@ import (
 
 // LogoutHandler handles user logout
 // This handler is responsible ONLY for clearing session cookies
-func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (h *SessionHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Use session utility to clear the cookie

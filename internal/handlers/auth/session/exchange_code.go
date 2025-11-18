@@ -10,7 +10,7 @@ import (
 
 // ExchangeCodeHandler exchanges OAuth authorization code for tokens
 // This handler is responsible ONLY for exchanging auth codes for session tokens
-func (h *AuthHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
+func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req struct {
