@@ -49,8 +49,8 @@ func (m *MockResponseWriter) WriteHeader(statusCode int) {
 	m.ResponseRecorder.WriteHeader(statusCode)
 }
 
-// TestConfig creates a test configuration
-func TestConfig() *config.Config {
+// testConfig creates a test configuration
+func testConfig() *config.Config {
 	return &config.Config{
 		AuthServiceURL: "http://test-auth-service:8080",
 		RedirectURL:    "http://localhost:8080",
