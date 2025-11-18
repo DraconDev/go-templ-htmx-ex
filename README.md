@@ -54,6 +54,8 @@ A centralized, multi-tenant payment system that eliminates redundant Stripe inte
 - **✅ Session Format Compatibility**: Supports both session_id and user_context response formats
 - **✅ Middleware Integration**: Auth API endpoints accessible without authentication blocking
 - **✅ Full Test Coverage**: 12/12 tests passing (services + middleware)
+- **✅ Auth Callback Flow**: Fixed hanging issue, OAuth callback processes smoothly
+- **✅ Build System**: Makefile corrected, all build commands working
 
 ### 💾 **Database Integration**
 - PostgreSQL with users table
@@ -129,7 +131,8 @@ cp .env.example .env
 ```
 go-templ-htmx-ex/
 ├── cmd/                          # Application entry points
-│   └── main.go                   # Main application entry
+│   └── server/
+│       └── main.go              # Main application entry (corrected path)
 ├── internal/                     # Private application code
 │   ├── config/                   # Configuration management
 │   ├── handlers/                 # HTTP request handlers (MVC Views)
@@ -175,7 +178,7 @@ go-templ-htmx-ex/
 │       ├── login.templ
 │       └── admin_dashboard.templ
 ├── Dockerfile                  # Production container
-├── Makefile                    # Build configuration
+├── Makefile                    # Build configuration (fixed)
 ├── .air.toml                   # Air live-reload config
 └── go.mod                      # Go module definition
 ```
@@ -246,6 +249,8 @@ docker run -p 8081:8081 your-app
 - **✅ Session validation middleware** with real-time session checking
 - **✅ Docker containerization** for production deployment
 - **✅ Template reorganization** completed with layouts/pages structure
+- **✅ Auth callback hanging issue resolved** - OAuth flow processes smoothly
+- **✅ Makefile build system fixed** - All commands work correctly
 
 ### 🎯 **Ready for Business Features**
 - ✅ Session timeout resolved - Token refresh mechanism working
@@ -318,6 +323,20 @@ vim templates/pages/your_feature.templ
 - ✅ **Security Enhancement** - HTTP-only cookies for session tokens
 - ✅ **Performance Optimization** - Server session validation with 15-second cache
 
+### **🔧 Latest Critical Fixes - RESOLVED**
+- ✅ **Auth Callback Hanging Issue** - Fixed middleware to skip session validation on `/auth/callback`
+  - **Root Cause**: Middleware was trying to validate non-existent session during OAuth callback
+  - **Solution**: Skip session validation specifically for `/auth/callback` route
+  - **Result**: OAuth flow processes smoothly without hanging
+- ✅ **Makefile Build Error** - Updated build paths from `cmd/main.go` to `cmd/server/main.go`
+  - **Root Cause**: Build system pointed to non-existent entry point
+  - **Solution**: Corrected all build commands to use `cmd/server/main.go`
+  - **Result**: `make build`, `make dev`, and `make run` all work correctly
+- ✅ **End-to-End Testing** - Verified complete authentication flow
+  - **Auth service response**: `{"session_id":"...", "user_context":{...}}`
+  - **API endpoint response**: `{"success":true}` with session cookie set
+  - **Frontend flow**: OAuth callback → JavaScript → API call → Redirect to home
+
 ### **🔍 Architecture Analysis & Fixes**
 - **Authentication Format Compatibility**: Fixed format mismatch between expected AuthResponse vs actual session_id response
 - **Middleware Cleanup**: Identified and addressed middleware file redundancy across auth.go, auth_http.go, session.go
@@ -329,6 +348,12 @@ vim templates/pages/your_feature.templ
 - ✅ **Authentication Flow Testing** - Full OAuth callback flow validation
 - ✅ **Integration Testing** - End-to-end authentication process verification
 - ✅ **Performance Testing** - Benchmark tests for middleware operations
+
+### **📋 Documentation & Build System**
+- ✅ **Documentation Consolidation** - Merged all important content into README.md
+- ✅ **Clean File Structure** - Only README.md, rules.md, and todo.md remain
+- ✅ **Makefile Fixed** - All build commands work with correct entry point
+- ✅ **Development Workflow** - `make dev` starts server with live reload
 
 ## 🔐 Authentication Flow Details
 
@@ -345,7 +370,13 @@ The authentication system was updated to handle both response formats:
 **Auth Service Response:**
 ```json
 {
-  "session_id": "actual-session-id-here"  // Response
+  "session_id": "actual-session-id-here",  // Response
+  "user_context": {
+    "user_id": "189289790288429057",
+    "name": "Dracon",
+    "email": "dracsharp@gmail.com",
+    "picture": "https://cdn.discordapp.com/avatars/..."
+  }
 }
 ```
 
@@ -361,6 +392,30 @@ The authentication system was updated to handle both response formats:
 - **Public Routes**: `/`, `/login`, `/health`, `/test`, `/auth/callback`, `/auth/*`
 - **Protected Routes**: `/profile`, `/admin`, `/api/admin/*`
 - **Auth API Routes**: `/api/auth/*` (accessible without authentication)
+
+### **Complete OAuth Flow**
+1. **User visits**: `/login` → Click "Login with Google"
+2. **Redirect to auth service**: `AUTH_SERVICE_URL/auth/google?redirect_uri=callback`
+3. **OAuth provider**: User authenticates with Google
+4. **Callback URL**: `/auth/callback?auth_code=google_...`
+5. **Middleware**: Skips session validation (no session exists yet)
+6. **JavaScript**: Extracts `auth_code` from URL parameters
+7. **API Call**: `POST /api/auth/exchange-code` with `{"auth_code": "google_..."}`
+8. **Backend**: Calls auth service → Returns session_id → Sets session cookie
+9. **Success Response**: `{"success": true}` → JavaScript redirects to `/`
+10. **Session Active**: User is now logged in, middleware validates session on subsequent requests
+
+## 🚀 Next Steps
+
+**Current Status**: Authentication system is **production-ready** with comprehensive testing.
+
+**Next Major Milestone**: **Payment Infrastructure Platform**
+- Multi-tenant database schema design
+- Stripe integration core
+- Webhook routing system
+- Subscription management API
+
+**Architecture Vision**: Frontend app (8081) + Auth microservice (8080) + **Payment microservice (planned)**
 
 ## 📄 License
 
