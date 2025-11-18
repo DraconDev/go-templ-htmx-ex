@@ -89,7 +89,7 @@ func TestAuthServiceExchangeCodeForTokens(t *testing.T) {
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
 		} else if result != nil {
-			t.Logf("ExchangeCodeForTokens returned: %+v", result)
+			t.Logf("ExchangeCodeForTokens returned success: %v, id_token length: %d", result.Success, len(result.IdToken))
 		}
 	})
 }
