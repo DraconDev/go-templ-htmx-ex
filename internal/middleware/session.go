@@ -1,6 +1,18 @@
 package middleware
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
+	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
+)
+package middleware
+
+import (
 	"fmt"
 	"net/http"
 
