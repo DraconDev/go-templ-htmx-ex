@@ -1,14 +1,15 @@
-package handlers_test
+package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 )
