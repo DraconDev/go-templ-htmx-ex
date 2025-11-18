@@ -69,7 +69,7 @@ func getRouteCategory(path string) string {
 	}
 
 	// Public routes
-	if path == "/" || path == "/health" || path == "/login" || path == "/test" || hasPrefix(path, "/auth/") {
+	if path == "/" || path == "/health" || path == "/login" || path == "/test" || path == "/auth/callback" || hasPrefix(path, "/auth/") {
 		return "PUBLIC"
 	}
 
