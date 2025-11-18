@@ -36,13 +36,58 @@ func (s *AuthService) CreateSession(auth_code string) (map[string]interface{}, e
 }
 
 // ExchangeCodeForTokens exchanges OAuth authorization code for session tokens
-func (s *AuthService) ExchangeCodeForTokens(auth_code string) (*models.AuthResponse, error) {
+func (s *AuthService) ExchangeCodeForTokens(auth_code string) (*models.TokenExchangeResponse, error) {
 	fmt.Printf("🔐 AUTH-SERVICE: Exchanging code for tokens...\n")
 
-	// Use the existing callAuthService method
-	return s.callAuthService("/auth/session/create", map[string]string{
+	// Call auth service and extract session_id like the working reference
+	return s.extractSessionFromResponse(auth_code)
+}
+
+// extractSessionFromResponse extracts session_id from auth service response
+func (s *AuthService) extractSessionFromResponse(auth_code string) (*models.TokenExchangeResponse, error) {
+	// Get raw response like working reference
+	response, err := s.makeRequest("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
 	})
+	if err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to call auth service: " + err.Error(),
+		}, err
+	}
+
+	// Parse response as map to extract session_id
+	var respData map[string]interface{}
+	if err := json.Unmarshal(response, &respData); err != nil {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Failed to parse response: " + err.Error(),
+		}, err
+	}
+
+	// Extract session_id like working reference
+	var sessionID string
+	var hasSessionID bool
+
+	if sessionInterface, exists := respData["session_id"]; exists {
+		if sessionStr, ok := sessionInterface.(string); ok {
+			sessionID = sessionStr
+			hasSessionID = true
+		}
+	}
+
+	if !hasSessionID || sessionID == "" {
+		return &models.TokenExchangeResponse{
+			Success: false,
+			Error:   "Missing session_id in auth service response",
+		}, fmt.Errorf("missing session_id")
+	}
+
+	// Return session_id as IdToken like working reference
+	return &models.TokenExchangeResponse{
+		Success: true,
+		IdToken: sessionID,
+	}, nil
 }
 
 // RefreshSession refreshes an existing session_id
