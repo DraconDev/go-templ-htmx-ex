@@ -111,10 +111,23 @@ func (s *AuthService) makeRequest(endpoint string, params map[string]string) ([]
 	}
 	defer resp.Body.Close()
 
+	// Debug logging
+	fmt.Printf("🔍 AUTH-SERVICE: Request to %s\n", s.config.AuthServiceURL+endpoint)
+	fmt.Printf("🔍 AUTH-SERVICE: Response status: %s\n", resp.Status)
+	fmt.Printf("🔍 AUTH-SERVICE: Response headers: %v\n", resp.Header)
+
 	// Read response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	fmt.Printf("🔍 AUTH-SERVICE: Raw response body: %s\n", string(bodyBytes))
+	fmt.Printf("🔍 AUTH-SERVICE: Body length: %d\n", len(bodyBytes))
+
+	// Check if response is successful
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("auth service error: %s - %s", resp.Status, string(bodyBytes))
 	}
 
 	return bodyBytes, nil
