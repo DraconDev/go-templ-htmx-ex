@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 )
 
 // AuthService handles session management with the auth microservice
@@ -32,18 +32,20 @@ func NewAuthService(cfg *config.Config) *AuthService {
 func (s *AuthService) CreateSession(auth_code string) (map[string]interface{}, error) {
 	return s.callAuthServiceGeneric("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
-}
 	})
+	// Returns map with session_id and user_context for session establishment
+
+}
+
 // ExchangeCodeForTokens exchanges OAuth authorization code for session tokens
 func (s *AuthService) ExchangeCodeForTokens(auth_code string) (*models.AuthResponse, error) {
 	fmt.Printf("🔐 AUTH-SERVICE: Exchanging code for tokens...\n")
-	
+
 	// Use the existing callAuthService method
 	return s.callAuthService("/auth/session/create", map[string]string{
 		"auth_code": auth_code,
 	})
 }
-
 
 // RefreshSession refreshes an existing session_id
 func (s *AuthService) RefreshSession(session_id string) (*models.AuthResponse, error) {
