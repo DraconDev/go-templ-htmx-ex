@@ -47,12 +47,13 @@ func (s *AuthService) GetUserInfo(session_id string) (*models.AuthResponse, erro
 	return s.callAuthService("/auth/userinfo", map[string]string{
 		"session_id": session_id,
 	})
+}
+
 // ValidateSession validates a session_id and returns user information for middleware
 func (s *AuthService) ValidateSession(session_id string) (*models.AuthResponse, error) {
 	return s.callAuthService("/auth/session/refresh", map[string]string{
 		"session_id": session_id,
 	})
-}
 }
 
 // Logout logs out a user using session_id

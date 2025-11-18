@@ -7,6 +7,13 @@ import (
 	"net/http"
 
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
+// Global auth service instance for middleware
+var authService *services.AuthService
+
+// SetAuthService sets the auth service for middleware
+func SetAuthService(service *services.AuthService) {
+	authService = service
+}
 )
 
 // UserContextKey is the key used to store user info in request context
