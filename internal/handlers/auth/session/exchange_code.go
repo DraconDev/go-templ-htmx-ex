@@ -73,10 +73,10 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	fmt.Printf("🔄 CODE: ✅ Auth service returned success: %v\n", authResp.Success)
 
 	// STEP 3: Set the session cookie
-	fmt.Printf("🔄 CODE: Setting session cookie with UserID: %s\n", authResp.UserID)
+	fmt.Printf("🔄 CODE: Setting session cookie with session_id: %s\n", authResp.IdToken)
 	sessionCookie := &http.Cookie{
 		Name:     "session_id",
-		Value:    authResp.UserID, // Using UserID as the session identifier
+		Value:    authResp.IdToken, // Using session_id from response
 		Path:     "/",
 		MaxAge:   2592000, // 30 days
 		HttpOnly: true,
