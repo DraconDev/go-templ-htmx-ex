@@ -13,7 +13,7 @@ GOFMT=$(GOCMD) fmt
 
 build: generate clean
 	@echo "Building $(BINARY_NAME)..."
-	$(GOBUILD) -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/main.go
+	$(GOBUILD) -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/server/main.go
 	@echo "Built $(BINARY_NAME) successfully!"
 
 clean:
@@ -39,7 +39,7 @@ generate:
 
 dev: generate
 	@echo "Starting development server..."
-	go run cmd/main.go
+	go run cmd/server/main.go
 
 watch: generate
 	@echo "Starting comprehensive watch mode (Go + Templ files)..."
