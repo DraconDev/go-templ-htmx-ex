@@ -1,15 +1,9 @@
 package services
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
-	"time"
 
-	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 )
 
@@ -45,16 +39,11 @@ func TestAuthServiceCreateSession(t *testing.T) {
 
 	// Test with empty auth code
 	t.Run("empty_auth_code", func(t *testing.T) {
-		result, err := authService.CreateSession("")
+		_, err := authService.CreateSession("")
 		
 		// Should handle empty auth code gracefully
 		if err == nil {
-			// If no error, result might be nil or contain error info
-			if result != nil {
-				if success, ok := result["success"]; ok && !success.(bool) {
-					t.Log("Empty auth code handled correctly")
-				}
-			}
+			t.Log("Empty auth code handled (no error returned)")
 		} else {
 			t.Logf("Expected error handling for empty auth code: %v", err)
 		}
@@ -62,7 +51,7 @@ func TestAuthServiceCreateSession(t *testing.T) {
 
 	// Test with valid auth code (will fail due to no HTTP mock, but tests the structure)
 	t.Run("valid_auth_code", func(t *testing.T) {
-		result, err := authService.CreateSession("test-github-code")
+		_, err := authService.CreateSession("test-github-code")
 		
 		// This will likely fail due to no HTTP server, but that's expected in unit tests
 		if err != nil {
@@ -112,12 +101,12 @@ func TestAuthServiceRefreshSession(t *testing.T) {
 	authService := NewAuthService(cfg)
 
 	t.Run("refresh_session", func(t *testing.T) {
-		result, err := authService.RefreshSession("test-session-123")
+		_, err := authService.RefreshSession("test-session-123")
 		
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
-		} else if result != nil {
-			t.Logf("RefreshSession returned: %+v", result)
+		} else {
+			t.Log("RefreshSession executed successfully")
 		}
 	})
 }
@@ -129,12 +118,12 @@ func TestAuthServiceGetUserInfo(t *testing.T) {
 	authService := NewAuthService(cfg)
 
 	t.Run("get_user_info", func(t *testing.T) {
-		result, err := authService.GetUserInfo("test-session-123")
+		_, err := authService.GetUserInfo("test-session-123")
 		
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
-		} else if result != nil {
-			t.Logf("GetUserInfo returned: %+v", result)
+		} else {
+			t.Log("GetUserInfo executed successfully")
 		}
 	})
 }
@@ -164,12 +153,12 @@ func TestAuthServiceValidateSession(t *testing.T) {
 	authService := NewAuthService(cfg)
 
 	t.Run("validate_session", func(t *testing.T) {
-		result, err := authService.ValidateSession("test-session-123")
+		_, err := authService.ValidateSession("test-session-123")
 		
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
-		} else if result != nil {
-			t.Logf("ValidateSession returned: %+v", result)
+		} else {
+			t.Log("ValidateSession executed successfully")
 		}
 	})
 }
@@ -194,19 +183,15 @@ func TestAuthServiceIntegration(t *testing.T) {
 		}
 		
 		// Step 2: Get user info
-		userInfo, err := authService.GetUserInfo("test-session-id")
+		_, err = authService.GetUserInfo("test-session-id")
 		if err != nil {
 			t.Logf("Expected HTTP error (no mock): %v", err)
-		} else {
-			t.Logf("User info result: %+v", userInfo)
 		}
 		
 		// Step 3: Validate session
-		validateResp, err := authService.ValidateSession("test-session-id")
+		_, err = authService.ValidateSession("test-session-id")
 		if err != nil {
 			t.Logf("Expected HTTP error (no mock): %v", err)
-		} else {
-			t.Logf("Session validation result: %+v", validateResp)
 		}
 		
 		// Step 4: Logout
@@ -234,14 +219,4 @@ func TestAuthServiceHTTPConfiguration(t *testing.T) {
 		
 		t.Log("✅ AuthService properly initialized")
 	})
-}
-
-// Mock structures for potential future HTTP mocking
-type MockTransport struct {
-	Response *http.Response
-	Err      error
-}
-
-func (m *MockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	return m.Response, m.Err
 }
