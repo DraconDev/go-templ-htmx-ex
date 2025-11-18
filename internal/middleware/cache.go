@@ -61,3 +61,6 @@ func (c *SessionCache) Clear() {
 	defer c.Unlock()
 	c.entries = make(map[string]*cacheEntry)
 }
+
+// Global session cache instance
+var sessionCache = NewSessionCache()
