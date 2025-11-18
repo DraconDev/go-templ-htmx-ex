@@ -7,7 +7,6 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
-	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -21,9 +20,6 @@ type HandlerInstances struct {
 // SetupRoutes configures and returns the router with all routes
 func SetupRoutes(handlerInstances *HandlerInstances) *mux.Router {
 	router := mux.NewRouter()
-
-	// Add authentication middleware to all routes
-	router.Use(middleware.AuthMiddleware)
 
 	// =============================================================================
 	// PUBLIC ROUTES - No authentication required
