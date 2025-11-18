@@ -193,12 +193,30 @@ go test ./internal/services/ -v
 # ✅ Full Build: SUCCESS
 ```
 
+**🔄 Automated Testing Setup:**
+- **GitHub Actions CI/CD**: Tests run automatically on every push and pull request
+- **Pre-commit Hook**: Local testing before commits (run `./setup-automated-tests.sh` to install)
+- **Multi-version Testing**: Tests run on Go 1.21 and 1.22
+- **Code Quality Checks**: Formatting, linting, and dependency validation
+
 **Test Coverage:**
 - **450+ lines** of comprehensive authentication tests
 - **Session format compatibility** testing
 - **Middleware integration** verification
 - **OAuth flow validation** with real format expectations
 - **12/12 tests passing** across all authentication components
+
+**Quick Setup:**
+```bash
+# Install automated testing
+./setup-automated-tests.sh
+
+# Test the setup
+./pre-commit-hook.sh
+
+# Manual test run
+go test ./... -v
+```
 
 ## 🐳 Docker
 
