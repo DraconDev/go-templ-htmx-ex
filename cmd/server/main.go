@@ -15,6 +15,8 @@ import (
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/database/sqlc"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
@@ -80,10 +82,12 @@ func main() {
 		log.Println("⚠️  Admin handler not initialized - no database connection")
 	}
 
-	loginHandler := handlers.LoginHandler.NewAuthHandler(cfg)
+	// Initialize login and session handlers
+	loginHandler := login.NewLoginHandler(cfg)
+	sessionHandler := session.NewSessionHandler(cfg)
 
 	// Create router using new route structure
-	router := SetupRoutes()
+	router := SetupRoutes(loginHandler, sessionHandler)
 
 	// Create HTTP server
 	server := &http.Server{
@@ -122,7 +126,7 @@ func main() {
 }
 
 // SetupRoutes creates and configures the router with all routes
-func SetupRoutes() *mux.Router {
+func SetupRoutes(loginHandler *login.LoginHandler, sessionHandler *session.SessionHandler) *mux.Router {
 	router := mux.NewRouter()
 
 	// Add authentication middleware to all routes
@@ -146,10 +150,10 @@ func SetupRoutes() *mux.Router {
 	// =============================================================================
 
 	// OAuth Login Route - Consolidated with provider parameter
-	router.HandleFunc("/auth/login", handlers.LoginHandler).Methods("GET")
+	router.HandleFunc("/auth/login", loginHandler.LoginHandler).Methods("GET")
 
 	// OAuth callback handler
-	router.HandleFunc("/auth/callback", handlers.AuthCallbackHandler).Methods("GET")
+	router.HandleFunc("/auth/callback", loginHandler.AuthCallbackHandler).Methods("GET")
 
 	// =============================================================================
 	// PROTECTED USER ROUTES - Authentication required
@@ -176,10 +180,13 @@ func SetupRoutes() *mux.Router {
 	// =============================================================================
 
 	// Logout user - Destroy current session and clear cookies
-	router.HandleFunc("/api/auth/logout", authHandler.LogoutHandler).Methods("POST")
+	router.HandleFunc("/api/auth/logout", sessionHandler.LogoutHandler).Methods("POST")
 
 	// Set session - Create new server session with provided session ID
-	router.HandleFunc("/api/auth/set-session", authHandler.SetSessionHandler).Methods("POST")
+	router.HandleFunc("/api/auth/set-session", sessionHandler.SetSessionHandler).Methods("POST")
+
+	// Exchange code - Exchange OAuth authorization code for session tokens
+	router.HandleFunc("/api/auth/exchange-code", sessionHandler.ExchangeCodeHandler).Methods("POST")
 
 	// Static files (for CSS, JS, etc.)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
