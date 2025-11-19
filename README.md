@@ -122,7 +122,7 @@ cp .env.example .env
 # Edit these values:
 # PORT=8081
 # AUTH_SERVICE_URL=http://localhost:8080  # Your auth service
-# DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
+# DB_URL=postgresql://user:pass@localhost:5432/dbname
 # ADMIN_EMAIL=admin@yourdomain.com
 ```
 
