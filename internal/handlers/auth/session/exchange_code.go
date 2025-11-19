@@ -36,7 +36,7 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	if req.AuthCode == "" {
 		fmt.Printf("🔄 CODE: ❌ Missing authorization code\n")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Missing authorization code",
 		})
 		return
@@ -52,7 +52,7 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		fmt.Printf("🔄 CODE: ❌ Auth service call failed: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": err.Error(),
 		})
 		return
