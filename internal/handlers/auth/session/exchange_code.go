@@ -25,7 +25,7 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		fmt.Printf("🔄 CODE: ❌ Failed to decode request: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
-		_, _ = json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "Invalid request body",
 		})
 		return
