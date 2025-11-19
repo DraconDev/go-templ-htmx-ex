@@ -64,7 +64,7 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	if !authResp.Success {
 		fmt.Printf("🔄 CODE: ❌ Auth service returned failure: %s\n", authResp.Error)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": authResp.Error,
 		})
 		return
