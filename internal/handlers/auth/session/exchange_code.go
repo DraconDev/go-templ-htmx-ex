@@ -47,7 +47,7 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	// STEP 2: Call the auth service
 	fmt.Printf("🔄 CODE: Calling auth service to exchange code for tokens...\n")
 	fmt.Printf("🔄 CODE: AuthService address: %p\n", h.AuthService)
-	
+
 	authResp, err := h.AuthService.ExchangeCodeForTokens(req.AuthCode)
 	if err != nil {
 		fmt.Printf("🔄 CODE: ❌ Auth service call failed: %v\n", err)
@@ -93,6 +93,6 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 		"success": true,
 		"message": "Tokens exchanged successfully",
 	})
-	
+
 	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 }

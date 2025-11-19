@@ -32,11 +32,11 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (*mo
 	isAdmin := sql.NullBool{Bool: user.IsAdmin, Valid: true}
 
 	dbUser, err := r.queries.CreateUser(ctx, dbSqlc.CreateUserParams{
-		AuthID:   user.AuthID,
-		Email:    user.Email,
-		Name:     user.Name,
-		Picture:  picture,
-		IsAdmin:  isAdmin,
+		AuthID:  user.AuthID,
+		Email:   user.Email,
+		Name:    user.Name,
+		Picture: picture,
+		IsAdmin: isAdmin,
 	})
 	if err != nil {
 		return nil, err
@@ -132,9 +132,9 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *models.User) (*mo
 	}
 
 	err = r.queries.UpdateUser(ctx, dbSqlc.UpdateUserParams{
-		ID:       userID,
-		Name:     user.Name,
-		Picture:  picture,
+		ID:      userID,
+		Name:    user.Name,
+		Picture: picture,
 	})
 	if err != nil {
 		return nil, err
@@ -162,9 +162,9 @@ func (r *UserRepository) GetRecentUsers(ctx context.Context) ([]models.User, err
 			AuthID:    "", // Recent users query doesn't return auth_id
 			Email:     dbUser.Email,
 			Name:      dbUser.Name,
-			Picture:   "", // Recent users query doesn't return picture
+			Picture:   "",    // Recent users query doesn't return picture
 			IsAdmin:   false, // Recent users query doesn't return is_admin
-			Provider:  "", // Recent users query doesn't return provider
+			Provider:  "",    // Recent users query doesn't return provider
 			CreatedAt: dbUser.CreatedAt.Time,
 			UpdatedAt: time.Time{}, // Recent users query doesn't return updated_at
 		}

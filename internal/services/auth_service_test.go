@@ -17,7 +17,7 @@ func testConfig() *config.Config {
 
 func TestNewAuthService(t *testing.T) {
 	fmt.Println("🧪 Testing NewAuthService")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
@@ -33,14 +33,14 @@ func TestNewAuthService(t *testing.T) {
 
 func TestAuthServiceCreateSession(t *testing.T) {
 	fmt.Println("🧪 Testing CreateSession")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	// Test with empty auth code
 	t.Run("empty_auth_code", func(t *testing.T) {
 		_, err := authService.CreateSession("")
-		
+
 		// Should handle empty auth code gracefully
 		if err == nil {
 			t.Log("Empty auth code handled (no error returned)")
@@ -52,7 +52,7 @@ func TestAuthServiceCreateSession(t *testing.T) {
 	// Test with valid auth code (will fail due to no HTTP mock, but tests the structure)
 	t.Run("valid_auth_code", func(t *testing.T) {
 		_, err := authService.CreateSession("test-github-code")
-		
+
 		// This will likely fail due to no HTTP server, but that's expected in unit tests
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
@@ -64,14 +64,14 @@ func TestAuthServiceCreateSession(t *testing.T) {
 
 func TestAuthServiceExchangeCodeForTokens(t *testing.T) {
 	fmt.Println("🧪 Testing ExchangeCodeForTokens")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	// Test empty authorization code
 	t.Run("empty_auth_code", func(t *testing.T) {
 		result, err := authService.ExchangeCodeForTokens("")
-		
+
 		// Should handle empty code appropriately
 		if err == nil {
 			if result != nil && !result.Success {
@@ -85,7 +85,7 @@ func TestAuthServiceExchangeCodeForTokens(t *testing.T) {
 	// Test valid authorization code
 	t.Run("valid_auth_code", func(t *testing.T) {
 		result, err := authService.ExchangeCodeForTokens("test-github-code")
-		
+
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
 		} else if result != nil {
@@ -96,13 +96,13 @@ func TestAuthServiceExchangeCodeForTokens(t *testing.T) {
 
 func TestAuthServiceRefreshSession(t *testing.T) {
 	fmt.Println("🧪 Testing RefreshSession")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	t.Run("refresh_session", func(t *testing.T) {
 		_, err := authService.RefreshSession("test-session-123")
-		
+
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
 		} else {
@@ -113,13 +113,13 @@ func TestAuthServiceRefreshSession(t *testing.T) {
 
 func TestAuthServiceGetUserInfo(t *testing.T) {
 	fmt.Println("🧪 Testing GetUserInfo")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	t.Run("get_user_info", func(t *testing.T) {
 		_, err := authService.GetUserInfo("test-session-123")
-		
+
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
 		} else {
@@ -130,13 +130,13 @@ func TestAuthServiceGetUserInfo(t *testing.T) {
 
 func TestAuthServiceLogout(t *testing.T) {
 	fmt.Println("🧪 Testing Logout")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	t.Run("logout", func(t *testing.T) {
 		err := authService.Logout("test-session-123")
-		
+
 		// Logout should not return error in this implementation
 		if err != nil {
 			t.Errorf("Logout should not return error, got: %v", err)
@@ -148,13 +148,13 @@ func TestAuthServiceLogout(t *testing.T) {
 
 func TestAuthServiceValidateSession(t *testing.T) {
 	fmt.Println("🧪 Testing ValidateSession")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	t.Run("validate_session", func(t *testing.T) {
 		_, err := authService.ValidateSession("test-session-123")
-		
+
 		if err != nil {
 			t.Logf("Expected HTTP connection error (no mock server): %v", err)
 		} else {
@@ -166,14 +166,14 @@ func TestAuthServiceValidateSession(t *testing.T) {
 // Integration-style tests
 func TestAuthServiceIntegration(t *testing.T) {
 	fmt.Println("🧪 Testing AuthService Integration Flow")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
 	t.Run("complete_auth_flow", func(t *testing.T) {
 		// Simulate the OAuth callback flow
 		authCode := "github_12345_cb67890"
-		
+
 		// Step 1: Exchange code for tokens
 		tokenResp, err := authService.ExchangeCodeForTokens(authCode)
 		if err != nil {
@@ -181,19 +181,19 @@ func TestAuthServiceIntegration(t *testing.T) {
 		} else {
 			t.Logf("Token exchange result: %+v", tokenResp)
 		}
-		
+
 		// Step 2: Get user info
 		_, err = authService.GetUserInfo("test-session-id")
 		if err != nil {
 			t.Logf("Expected HTTP error (no mock): %v", err)
 		}
-		
+
 		// Step 3: Validate session
 		_, err = authService.ValidateSession("test-session-id")
 		if err != nil {
 			t.Logf("Expected HTTP error (no mock): %v", err)
 		}
-		
+
 		// Step 4: Logout
 		err = authService.Logout("test-session-id")
 		if err != nil {
@@ -207,7 +207,7 @@ func TestAuthServiceIntegration(t *testing.T) {
 // Test HTTP client configuration indirectly
 func TestAuthServiceHTTPConfiguration(t *testing.T) {
 	fmt.Println("🧪 Testing AuthService HTTP Configuration")
-	
+
 	cfg := testConfig()
 	authService := NewAuthService(cfg)
 
@@ -216,7 +216,7 @@ func TestAuthServiceHTTPConfiguration(t *testing.T) {
 		if authService == nil {
 			t.Fatal("AuthService should not be nil")
 		}
-		
+
 		t.Log("✅ AuthService properly initialized")
 	})
 }

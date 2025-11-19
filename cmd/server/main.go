@@ -18,7 +18,6 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
-	"github.com/DraconDev/go-templ-htmx-ex/internal/services"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	database "github.com/DraconDev/go-templ-htmx-ex/internal/utils/database"
 	_ "github.com/lib/pq"

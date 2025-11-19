@@ -58,7 +58,7 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 
 	// Check if session is valid by looking for user_context or success response
 	var userInfo layouts.UserInfo
-	
+
 	// Try user_context first (existing format)
 	if userContext, ok := respData["user_context"].(map[string]interface{}); ok && userContext != nil {
 		userInfo.LoggedIn = true
@@ -78,7 +78,7 @@ func validateSessionWithAuthService(sessionID string) (layouts.UserInfo, error) 
 
 		return userInfo, nil
 	}
-	
+
 	// Try session_id validation response (new format from working reference)
 	if success, ok := respData["success"].(bool); ok && success {
 		// For session_id based validation, just mark as logged in

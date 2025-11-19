@@ -48,9 +48,9 @@ type UserSummary struct {
 
 // UserStats represents user statistics for admin dashboard
 type UserStats struct {
-	TotalUsers        int64 `json:"total_users"`
-	SignupsToday      int64 `json:"signups_today"`
-	UsersThisWeek     int64 `json:"users_this_week"`
-	ActiveUsers       int64 `json:"active_users"`
-	InactiveUsers     int64 `json:"inactive_users"`
+	TotalUsers    int64 `json:"total_users"`
+	SignupsToday  int64 `json:"signups_today"`
+	UsersThisWeek int64 `json:"users_this_week"`
+	ActiveUsers   int64 `json:"active_users"`
+	InactiveUsers int64 `json:"inactive_users"`
 }

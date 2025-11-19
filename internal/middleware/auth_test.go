@@ -9,7 +9,7 @@ import (
 
 func TestAuthMiddlewareBehavior(t *testing.T) {
 	fmt.Println("🧪 Testing AuthMiddleware Behavior")
-	
+
 	// Test that middleware properly chains handlers
 	t.Run("handler_chain", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
@@ -18,7 +18,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 		// Create a test handler that always succeeds
 		testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("OK"))
+			_, _ = w.Write([]byte("OK"))
 		})
 
 		// Apply middleware
@@ -34,7 +34,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 	// Test public routes behavior
 	t.Run("public_routes", func(t *testing.T) {
 		publicRoutes := []string{"/", "/login", "/health", "/test"}
-		
+
 		for _, route := range publicRoutes {
 			t.Run("route_"+route, func(t *testing.T) {
 				req := httptest.NewRequest("GET", route, nil)
@@ -42,7 +42,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 
 				testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
-					w.Write([]byte("OK"))
+					_, _ = w.Write([]byte("OK"))
 				})
 
 				AuthMiddleware(testHandler).ServeHTTP(rr, req)
@@ -58,7 +58,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 	// Test protected routes redirect
 	t.Run("protected_routes_redirect", func(t *testing.T) {
 		protectedRoutes := []string{"/profile", "/admin"}
-		
+
 		for _, route := range protectedRoutes {
 			t.Run("route_"+route, func(t *testing.T) {
 				req := httptest.NewRequest("GET", route, nil)
@@ -66,7 +66,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 
 				testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
-					w.Write([]byte("OK"))
+					_, _ = w.Write([]byte("OK"))
 				})
 
 				AuthMiddleware(testHandler).ServeHTTP(rr, req)
@@ -75,7 +75,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 				if rr.Code != http.StatusFound {
 					t.Errorf("Protected route %q should redirect, got status %d", route, rr.Code)
 				}
-				
+
 				location := rr.Header().Get("Location")
 				if location != "/login" {
 					t.Errorf("Expected redirect to /login, got %q", location)
@@ -87,7 +87,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 	// Test API routes return 401
 	t.Run("api_routes_401", func(t *testing.T) {
 		apiRoutes := []string{"/api/admin/users", "/api/admin/analytics"}
-		
+
 		for _, route := range apiRoutes {
 			t.Run("route_"+route, func(t *testing.T) {
 				req := httptest.NewRequest("GET", route, nil)
@@ -104,7 +104,7 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 				if rr.Code != http.StatusUnauthorized {
 					t.Errorf("Protected API route %q should return 401, got status %d", route, rr.Code)
 				}
-				
+
 				contentType := rr.Header().Get("Content-Type")
 				if contentType != "application/json" {
 					t.Errorf("Expected JSON response, got %q", contentType)
@@ -116,13 +116,13 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 
 func TestGetUserFromContextBehavior(t *testing.T) {
 	fmt.Println("🧪 Testing GetUserFromContext Behavior")
-	
+
 	// Test with empty context
 	t.Run("empty_context", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
-		
+
 		userInfo := GetUserFromContext(req)
-		
+
 		if userInfo.LoggedIn {
 			t.Error("Expected user to not be logged in with empty context")
 		}
@@ -131,24 +131,24 @@ func TestGetUserFromContextBehavior(t *testing.T) {
 	// Test context with user info (simulating middleware behavior)
 	t.Run("with_user_context", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
-		
+
 		// In the actual middleware, this would be set by validateSession
 		// We can't easily test this without accessing internal middleware logic
-		
+
 		userInfo := GetUserFromContext(req)
-		
+
 		// Since we didn't set the context, user should not be logged in
 		if userInfo.LoggedIn {
 			t.Error("Expected user to not be logged in without proper context setup")
 		}
-		
+
 		t.Log("GetUserFromContext behaves correctly with empty context")
 	})
 }
 
 func TestMiddlewareIntegration(t *testing.T) {
 	fmt.Println("🧪 Testing Middleware Integration")
-	
+
 	// Test the complete middleware flow
 	t.Run("complete_flow", func(t *testing.T) {
 		// Step 1: Test public route flow
@@ -190,10 +190,10 @@ func TestMiddlewareIntegration(t *testing.T) {
 	t.Run("auth_api_accessibility", func(t *testing.T) {
 		authAPIRoutes := []string{
 			"/api/auth/exchange-code",
-			"/api/auth/set-session", 
+			"/api/auth/set-session",
 			"/api/auth/logout",
 		}
-		
+
 		for _, route := range authAPIRoutes {
 			t.Run("route_"+route, func(t *testing.T) {
 				req := httptest.NewRequest("POST", route, nil)
@@ -223,24 +223,24 @@ func BenchmarkAuthMiddleware(b *testing.B) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-	
+
 	middleware := AuthMiddleware(handler)
-	
+
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		req := httptest.NewRequest("GET", "/", nil)
 		rr := httptest.NewRecorder()
-		
+
 		middleware.ServeHTTP(rr, req)
 	}
 }
 
 func BenchmarkGetUserFromContext(b *testing.B) {
 	req := httptest.NewRequest("GET", "/", nil)
-	
+
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		GetUserFromContext(req)
 	}

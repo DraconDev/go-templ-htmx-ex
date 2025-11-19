@@ -92,7 +92,7 @@ func requiresAuthentication(path string) bool {
 	if hasPrefix(path, "/api/auth/") {
 		return false
 	}
-	
+
 	return path == "/profile" || path == "/admin" || hasPrefix(path, "/api/admin")
 }
 
