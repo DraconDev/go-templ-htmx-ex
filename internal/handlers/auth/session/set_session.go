@@ -40,11 +40,10 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 // handleJSONError is a helper to standardize error responses
 func handleJSONError(w http.ResponseWriter, message string, err error, errorType func(string) *errors.AppError) {
 	if err != nil {
-		// Log the error for debugging
-		// This would typically use a proper logger
+		fmt.Printf("Error in handleJSONError: %v\n", err)
 	}
 	w.WriteHeader(errorType(message).Code)
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"error": message,
 	})
 }
