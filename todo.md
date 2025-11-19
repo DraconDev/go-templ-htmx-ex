@@ -77,7 +77,7 @@
 
 ### **🔧 Priority 3: Technical Debt & Polish**
 - [ ] **Middleware Consolidation** - Merge auth.go, auth_http.go, session.go into single auth.go
-- [ ] **Environment Variable Standardization** - Fix DATABASE_URL vs DB_URL inconsistency
+- [x] **Environment Variable Standardization** - Fix DATABASE_URL vs DB_URL inconsistency
 - [ ] **Service Layer Standardization** - Consistent initialization patterns
 - [ ] **Handler Refactoring** - Better dependency injection patterns
 
