@@ -103,13 +103,16 @@ make deps
 # Generate templates
 make generate
 
-# Setup database
-createdb startup_platform
-make db-migrate
+# Setup database (optional)
+# createdb startup_platform
+# cp .env.example .env
+# Edit DB_URL in .env for auto-migration on startup
 
 # Run development
 make dev
 ```
+
+Database auto-migrates on first startup if DB_URL is set.
 
 **Visit:** `http://localhost:8081`
 
