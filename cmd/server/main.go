@@ -25,8 +25,6 @@ import (
 )
 
 var adminHandler *admin.AdminHandler
-var userService *services.UserService
-var authService *services.AuthService
 var sqlDB *sql.DB
 var queries *dbSqlc.Queries
 var loginHandler *login.LoginHandler
@@ -65,14 +63,10 @@ func main() {
 		}
 	}
 
-	// Initialize services
+	// Services ready (user service not currently used)
 	if queries != nil {
-		userService = services.NewUserService(queries)
-		log.Println("✅ User service initialized")
+		log.Println("✅ Database services ready")
 	}
-
-	authService = services.NewAuthService(cfg)
-	log.Println("✅ Auth service initialized")
 
 	// Create handlers with services
 	if queries != nil {
