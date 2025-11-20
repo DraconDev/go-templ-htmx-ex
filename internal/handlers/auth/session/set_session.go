@@ -38,6 +38,8 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 	}); err != nil {
 		// Log error but don't fail session establishment
 		// In production, you might want to log this to a proper logger
+		// For now, we'll just continue since session was established successfully
+		_ = err // Suppress unused variable warning
 	}
 }
 
