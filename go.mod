@@ -4,6 +4,7 @@ go 1.24
 
 require (
 	github.com/a-h/templ v0.3.960
+	github.com/dracondev/go-templ-htmx-ex/libs/cachex v0.0.0
 	github.com/dracondev/go-templ-htmx-ex/libs/configx v0.0.0
 	github.com/dracondev/go-templ-htmx-ex/libs/dbx v0.0.0
 	github.com/dracondev/go-templ-htmx-ex/libs/httperrx v0.0.0
