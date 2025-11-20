@@ -74,10 +74,16 @@ watch: generate
 
 air: generate
 	@echo "Starting development server with Air live reload..."
+	@echo "Killing any existing process on port 8081..."
+	@-kill $(lsof -t -i :8081) 2>/dev/null || true
+	@sleep 1
 	air
 
 air-watch: generate
 	@echo "Starting development server with Air live reload (alternative name)..."
+	@echo "Killing any existing process on port 8081..."
+	@-kill $(lsof -t -i :8081) 2>/dev/null || true
+	@sleep 1
 	air
 
 dev-watch: generate

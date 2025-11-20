@@ -278,10 +278,11 @@ docker run -p 8081:8081 your-app
 - **✅ Built-in structured data** with meta tags and JSON-LD
 
 ### **Development Experience**
-- **🛠️ Air auto-reload system** - 3-4ms rebuild times
+- **🛠️ Air auto-reload system** - 3-4ms rebuild times with polling mode
 - **📋 Type-safe templates** - Compile-time validation
 - **🏗️ Microservice ready** - Scalable architecture
 - **🔐 Server session validation** - 5-10ms vs API calls
+- **⚡ Live reload proxy** - Air proxy on port 4200 for seamless development
 
 ## 💡 For Your Startup
 
