@@ -49,12 +49,14 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 			},
 		}
 
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		if err := json.NewEncoder(w).Encode(map[string]interface{}{
 			"users":    users,
 			"total":    len(users),
 			"active":   len(users),
 			"inactive": 0,
-		})
+		}); err != nil {
+			fmt.Printf("❌ Error encoding users JSON (fallback): %v\n", err)
+		}
 		return
 	}
 
@@ -80,12 +82,14 @@ func (h *AdminHandler) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"users":    userMaps,
 		"total":    len(userMaps),
 		"active":   len(userMaps),
 		"inactive": 0,
-	})
+	}); err != nil {
+		fmt.Printf("❌ Error encoding users JSON: %v\n", err)
+	}
 }
 
 // GetAnalyticsHandler returns analytics data (stub for now)
@@ -187,8 +191,10 @@ func (h *AdminHandler) GetLogsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("📊 LOGS: No UserService available - showing empty logs\n")
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"logs":  logs,
 		"total": len(logs),
-	})
+	}); err != nil {
+		fmt.Printf("❌ Error encoding logs JSON: %v\n", err)
+	}
 }
