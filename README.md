@@ -108,13 +108,13 @@ make generate
 # cp .env.example .env
 # Edit DB_URL in .env for auto-migration on startup
 
-# Run development
-make dev
+# Run development with live reload
+make air
 ```
 
 Database auto-migrates on first startup if DB_URL is set.
 
-**Visit:** `http://localhost:8081`
+**Visit:** `http://localhost:4200` (Air proxy) or `http://localhost:8081` (direct)
 
 ## 🔧 Configuration
 
