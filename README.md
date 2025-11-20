@@ -136,6 +136,19 @@ go-templ-htmx-ex/
 ├── cmd/                          # Application entry points
 │   └── server/
 │       └── main.go              # Main application entry (corrected path)
+├── libs/                         # Reusable library packages
+│   ├── configx/                 # Configuration management library
+│   │   ├── config.go           # Flexible config loader with env support
+│   │   ├── go.mod              # Independent module
+│   │   └── README.md           # Usage documentation
+│   ├── httperrx/               # HTTP error handling library
+│   │   ├── errors.go           # Structured HTTP errors
+│   │   ├── go.mod              # Independent module
+│   │   └── README.md           # Usage documentation
+│   └── dbx/                    # Database utilities library
+│       ├── database.go         # Connection management & health checks
+│       ├── go.mod              # Independent module
+│       └── README.md           # Usage documentation
 ├── internal/                     # Private application code
 │   ├── config/                   # Configuration management
 │   ├── handlers/                 # HTTP request handlers (MVC Views)
@@ -163,10 +176,10 @@ go-templ-htmx-ex/
 │   ├── services/                # Business logic (MVC Controllers)
 │   │   ├── auth_service.go
 │   │   └── user_service.go
-│   └── utils/                   # Utility packages
-│       ├── config/             # Configuration utilities
-│       ├── database/           # Database utilities
-│       └── errors/             # Error handling
+│   └── utils/                   # Utility packages (wrappers for libs/)
+│       ├── config/             # App-specific config (uses libs/configx)
+│       ├── database/           # App-specific DB utils (uses libs/dbx)
+│       └── errors/             # App-specific errors (uses libs/httperrx)
 ├── database/                    # Database files
 │   ├── migrations/             # Database schema
 │   ├── queries/                # SQL queries for SQLC
@@ -185,6 +198,58 @@ go-templ-htmx-ex/
 ├── .air.toml                   # Air live-reload config
 └── go.mod                      # Go module definition
 ```
+
+## 📚 Reusable Libraries
+
+This project includes three reusable libraries that can be imported into other Go projects:
+
+### **configx** - Configuration Management
+Flexible environment variable loading with defaults and validation.
+
+```go
+import "github.com/dracondev/go-templ-htmx-ex/libs/configx"
+
+fields := []configx.ConfigField{
+    {Key: "PORT", DefaultValue: "8080", Required: false},
+    {Key: "DATABASE_URL", DefaultValue: "", Required: true},
+}
+config, _ := configx.Load(fields, configx.DefaultOptions())
+port := config.Get("PORT")
+```
+
+### **httperrx** - HTTP Error Handling
+Structured HTTP errors with JSON responses and middleware support.
+
+```go
+import "github.com/dracondev/go-templ-htmx-ex/libs/httperrx"
+
+// Create and write errors
+err := httperrx.NewBadRequestError("Invalid input")
+err.WriteJSON(w)
+
+// Use error handler middleware
+router.Use(httperrx.ErrorHandler)
+```
+
+### **dbx** - Database Utilities
+PostgreSQL connection management with health checks and pooling.
+
+```go
+import "github.com/dracondev/go-templ-htmx-ex/libs/dbx"
+
+// Initialize database
+dbx.InitDatabase() // Uses DB_URL env var
+
+// Get connection
+db := dbx.GetDB()
+
+// Health check
+if err := dbx.HealthCheck(); err != nil {
+    log.Fatal(err)
+}
+```
+
+**Note:** These libraries are designed to be extracted and published as standalone packages. They use local module replacement in `go.mod` for development.
 
 ## 🧪 Testing
 
