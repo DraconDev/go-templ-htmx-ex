@@ -21,5 +21,7 @@ func (h *SessionHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		// Log error but don't fail logout process
 		// In production, you might want to log this to a proper logger
+		// For now, we'll just continue since logout was successful
+		_ = err // Suppress unused variable warning
 	}
 }

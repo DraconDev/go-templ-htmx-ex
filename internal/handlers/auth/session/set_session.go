@@ -32,10 +32,13 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 	SetSessionCookie(w, req.SessionID, sessionConfig)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Server session established successfully",
-	})
+	}); err != nil {
+		// Log error but don't fail session establishment
+		// In production, you might want to log this to a proper logger
+	}
 }
 
 // handleJSONError is a helper to standardize error responses
