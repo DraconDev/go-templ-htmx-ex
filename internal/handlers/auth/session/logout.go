@@ -15,8 +15,11 @@ func (h *SessionHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	ClearSessionCookie(w, sessionConfig)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Logged out successfully",
-	})
+	}); err != nil {
+		// Log error but don't fail logout process
+		// In production, you might want to log this to a proper logger
+	}
 }
