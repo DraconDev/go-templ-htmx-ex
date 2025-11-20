@@ -3,13 +3,13 @@ package config
 import (
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/dracondev/go-templ-htmx-ex/libs/configx"
 )
 
 // Config holds application configuration
 type Config struct {
+	*configx.Config
 	ServerPort     string
 	AuthServiceURL string
 	RedirectURL    string
@@ -21,26 +21,46 @@ var (
 	Current *Config
 )
 
-// getEnvOrDefault returns environment variable or default value
-func getEnvOrDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
-
 // LoadConfig loads configuration from environment variables
 func LoadConfig() *Config {
-	// Load environment variables from .env file if it exists
-	if err := godotenv.Load(); err != nil {
-		log.Printf("Warning: .env file not found or could not be loaded: %v", err)
+	fields := []configx.ConfigField{
+		{
+			Key:          "PORT",
+			DefaultValue: "8081",
+			Required:     false,
+			Description:  "Server port",
+		},
+		{
+			Key:          "AUTH_SERVICE_URL",
+			DefaultValue: "http://localhost:8080",
+			Required:     false,
+			Description:  "Authentication service URL",
+		},
+		{
+			Key:          "REDIRECT_URL",
+			DefaultValue: "http://localhost:8081",
+			Required:     false,
+			Description:  "OAuth redirect URL",
+		},
+		{
+			Key:          "ADMIN_EMAIL",
+			DefaultValue: "admin@startup-platform.local",
+			Required:     false,
+			Description:  "Admin email address",
+		},
+	}
+
+	baseConfig, err := configx.Load(fields, configx.DefaultOptions())
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
 	config := &Config{
-		ServerPort:     getEnvOrDefault("PORT", "8081"),
-		AuthServiceURL: getEnvOrDefault("AUTH_SERVICE_URL", "http://localhost:8080"),
-		RedirectURL:    getEnvOrDefault("REDIRECT_URL", "http://localhost:8081"),
-		AdminEmail:     getEnvOrDefault("ADMIN_EMAIL", "admin@startup-platform.local"),
+		Config:         baseConfig,
+		ServerPort:     baseConfig.Get("PORT"),
+		AuthServiceURL: baseConfig.Get("AUTH_SERVICE_URL"),
+		RedirectURL:    baseConfig.Get("REDIRECT_URL"),
+		AdminEmail:     baseConfig.Get("ADMIN_EMAIL"),
 	}
 
 	Current = config
