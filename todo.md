@@ -36,6 +36,7 @@
 - [x] **Auth Service Refactoring Complete** - Transformed 293-line monolithic file into 7 focused components under 100 lines each
 - [x] **Clean Architecture** - Organized with http/, builder/, parsers/, services/ folders
 - [x] **Binary Naming Configuration** - Updated Makefile to build as 'server' instead of 'go-templ-htmx-ex'
+- [x] **Air Configuration Fix** - Resolved "too many open files" error with polling mode and restricted watch directories
 - [x] **Documentation Updated** - README and TODO updated with refactoring details
 
 ### **🧪 Priority 0: Authentication Testing & Format Fixes - ✅ COMPLETED**
