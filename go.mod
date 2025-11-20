@@ -8,6 +8,15 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/dracondev/go-templ-htmx-ex/libs/configx v0.0.0
+	github.com/dracondev/go-templ-htmx-ex/libs/httperrx v0.0.0
+	github.com/dracondev/go-templ-htmx-ex/libs/dbx v0.0.0
 )
 
 require github.com/google/go-cmp v0.7.0 // indirect
+
+replace (
+	github.com/dracondev/go-templ-htmx-ex/libs/configx => ./libs/configx
+	github.com/dracondev/go-templ-htmx-ex/libs/httperrx => ./libs/httperrx
+	github.com/dracondev/go-templ-htmx-ex/libs/dbx => ./libs/dbx
+)
