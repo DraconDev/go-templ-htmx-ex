@@ -95,7 +95,10 @@ func TestAuthMiddlewareBehavior(t *testing.T) {
 
 				testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
-					w.Write([]byte("OK"))
+					if _, err := w.Write([]byte("OK")); err != nil {
+						t.Errorf("Failed to write response: %v", err)
+					}
+					
 				})
 
 				AuthMiddleware(testHandler).ServeHTTP(rr, req)
@@ -201,7 +204,9 @@ func TestMiddlewareIntegration(t *testing.T) {
 
 				handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
-					w.Write([]byte("OK"))
+					if _, err := w.Write([]byte("OK")); err != nil {
+						t.Errorf("Failed to write response: %v", err)
+					}
 				})
 
 				AuthMiddleware(handler).ServeHTTP(rr, req)
