@@ -327,6 +327,11 @@ vim templates/pages/your_feature.templ
 - ✅ **Performance Optimization** - Server session validation with 15-second cache
 
 ### **🔧 Latest Critical Fixes - RESOLVED**
+- ✅ **Air "Too Many Open Files" Error** - Fixed by enabling polling mode and restricting watched directories
+  - **Root Cause**: Air was trying to watch too many files using inotify file watchers
+  - **Solution**: Enabled polling mode, restricted to `cmd`, `internal`, `templates` directories only
+  - **Configuration**: Updated `.air.toml` with `poll = true`, `poll_interval = 500ms`
+  - **Result**: Air starts successfully with live reload working
 - ✅ **Auth Callback Hanging Issue** - Fixed middleware to skip session validation on `/auth/callback`
   - **Root Cause**: Middleware was trying to validate non-existent session during OAuth callback
   - **Solution**: Skip session validation specifically for `/auth/callback` route
