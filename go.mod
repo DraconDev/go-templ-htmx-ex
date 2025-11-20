@@ -19,6 +19,7 @@ require (
 )
 
 replace (
+	github.com/dracondev/go-templ-htmx-ex/libs/cachex => ./libs/cachex
 	github.com/dracondev/go-templ-htmx-ex/libs/configx => ./libs/configx
 	github.com/dracondev/go-templ-htmx-ex/libs/dbx => ./libs/dbx
 	github.com/dracondev/go-templ-htmx-ex/libs/httperrx => ./libs/httperrx
