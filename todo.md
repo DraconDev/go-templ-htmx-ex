@@ -17,7 +17,6 @@
 ### **🧹 Optional Cleanup**
 - [ ] Merge auth middleware files (auth.go + auth_http.go + session.go)
 - [ ] Add README for cachex library
-- [ ] Standardize service initialization patterns
 
 ---
 
