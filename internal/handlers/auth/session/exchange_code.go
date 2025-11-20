@@ -89,10 +89,12 @@ func (h *SessionHandler) ExchangeCodeHandler(w http.ResponseWriter, r *http.Requ
 	// STEP 4: Return success response
 	fmt.Printf("🔄 CODE: Returning success response...\n")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Tokens exchanged successfully",
-	})
+	}); err != nil {
+		fmt.Printf("🔄 CODE: ❌ Error encoding success response: %v\n", err)
+	}
 
 	fmt.Printf("🔄 CODE: === Token exchange COMPLETED ===\n")
 }
