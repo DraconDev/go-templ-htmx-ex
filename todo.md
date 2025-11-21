@@ -8,6 +8,8 @@
 ## 🎯 **WHAT NEEDS TO BE DONE**
 
 ### **💳 Payment Integration (Simple Purchase Flow)**
+- [ ] Extend UserInfo struct to include subscription/plan status
+- [ ] Update auth service to return plan information from auth server
 - [ ] Payment page UI in frontend app
 - [ ] Payment microservice integration endpoint
 - [ ] Purchase initiation flow (single item purchase)
@@ -18,15 +20,21 @@
 
 ## 📝 **NOTES**
 
+**Missing Architecture Component:**
+- Current UserInfo struct lacks subscription/plan fields
+- Auth server needs to return current plan status
+- Payment microservice only processes payment + updates auth server
+- Frontend polls auth server for plan changes
+
 **Simple Payment Model:**
 - Single item purchase (no complex basket/fulfillment)
 - Content access control (subscription-based)
-- Auth server = single source of truth for user status
+- Auth server = single source of truth for user status + plan
 - Payment microservice = payment processor only
 
 **Current Architecture:**
 - Frontend app (8081) handles UI
-- Auth microservice (8080) handles authentication + user status
+- Auth microservice (8080) handles authentication + user status + plan
 - Payment microservice processes payments, updates auth server
 - Libraries provide reusable utilities (configx, httperrx, cachex, dbx)
 
