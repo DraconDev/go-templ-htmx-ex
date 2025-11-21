@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 	"github.com/DraconDev/go-templ-htmx-ex/templates/pages"
-	"github.com/a-h/templ"
 )
 
 // PaymentHandler handles payment-related requests
@@ -62,7 +62,7 @@ func (h *PaymentHandler) CheckoutHandler(w http.ResponseWriter, r *http.Request)
 
 	// Parse request body
 	var req struct {
-		PriceID string `json:"price_id"`
+		PriceID   string `json:"price_id"`
 		ProductID string `json:"product_id"`
 		SuccessURL string `json:"success_url"`
 		CancelURL string `json:"cancel_url"`
@@ -108,8 +108,8 @@ func (h *PaymentHandler) CheckoutHandler(w http.ResponseWriter, r *http.Request)
 	// Return checkout URL to frontend
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"checkout_url": checkoutResp.CheckoutURL,
-		"checkout_session_id": checkoutResp.CheckoutSessionID,
+		"checkout_url":         checkoutResp.CheckoutURL,
+		"checkout_session_id":  checkoutResp.CheckoutSessionID,
 	})
 }
 
@@ -117,10 +117,10 @@ func (h *PaymentHandler) CheckoutHandler(w http.ResponseWriter, r *http.Request)
 func (h *PaymentHandler) createCheckoutSession(userInfo layouts.UserInfo, priceID, productID, successURL, cancelURL string) (*CheckoutResponse, error) {
 	// Create payment microservice request
 	paymentReq := map[string]interface{}{
-		"user_id": userInfo.Email, // Using email as user ID for now
-		"email": userInfo.Email,
+		"user_id":    userInfo.Email, // Using email as user ID for now
+		"email":      userInfo.Email,
 		"product_id": productID,
-		"price_id": priceID,
+		"price_id":   priceID,
 		"success_url": successURL,
 		"cancel_url": cancelURL,
 	}
@@ -133,13 +133,13 @@ func (h *PaymentHandler) createCheckoutSession(userInfo layouts.UserInfo, priceI
 	}
 
 	// Get API key from environment or config
-	apiKey := h.Config.GetEnv("PAYMENT_MS_API_KEY", "")
+	apiKey := h.Config.Get("PAYMENT_MS_API_KEY")
 	if apiKey == "" {
 		return nil, fmt.Errorf("payment microservice API key not configured")
 	}
 
 	req, err := http.NewRequest("POST", "http://localhost:9000/api/v1/checkout/subscription", 
-		http.NoBody)
+		bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -164,7 +164,7 @@ func (h *PaymentHandler) createCheckoutSession(userInfo layouts.UserInfo, priceI
 // CheckoutResponse represents the response from payment microservice
 type CheckoutResponse struct {
 	CheckoutSessionID string `json:"checkout_session_id"`
-	CheckoutURL string `json:"checkout_url"`
+	CheckoutURL       string `json:"checkout_url"`
 }
 
 // SuccessHandler handles successful payment redirects
