@@ -7,55 +7,64 @@
 
 ## 🎯 **WHAT NEEDS TO BE DONE**
 
-### **Frontend App Payment Integration (Minimal Hookup)**
+### **Frontend App Payment Integration (Based on Payment MS API)**
 
 **Frontend App Changes Needed:**
+- [ ] Configure Stripe price/product IDs (hardcoded or config file)
 - [ ] Add `/payment` route + handler
-- [ ] Payment page template with "Buy Now" button
-- [ ] Add `/api/payment/initiate` route
-- [ ] Payment API handler that calls payment microservice
-- [ ] Add payment page link to navigation
-- [ ] Extend UserInfo to show current plan status
+- [ ] Payment page template with product selection + "Buy Now" buttons
+- [ ] Add `/api/payment/checkout` route (our API)
+- [ ] Payment API handler that calls payment microservice with API key
+- [ ] Add payment page link to navigation  
+- [ ] Handle success/cancel URLs from Stripe checkout
+- [ ] Display current subscription status (call payment MS status endpoint)
 
-**Payment Microservice Handles:**
-- ✅ Stripe integration (everything)
-- ✅ Webhook processing 
+**Payment Microservice Handles (from API):**
+- ✅ All Stripe integration (checkout sessions, webhooks)
+- ✅ Subscription tracking per user/product
+- ✅ Customer portal (subscription management)
 - ✅ Updating auth server with plan status
-- ✅ Payment confirmation/success handling
 
 ---
 
 ## 📝 **ARCHITECTURE BREAKDOWN**
 
 **Frontend App (8081) - Our Work:**
+- Product configuration (price/product IDs)
 - Payment page UI (`/payment`)
-- API endpoint (`/api/payment/initiate`) 
-- Navigation link to payment page
-- Display current plan in profile
+- API proxy to payment microservice (`/api/payment/checkout`)
+- Success/cancel URL handling
+- Subscription status display
 
-**Payment Microservice - Their Work:**
-- All Stripe processing
-- All webhook handling  
+**Payment Microservice (9000) - Their Work:**
+- Stripe checkout session creation (`/api/v1/checkout/subscription`)
+- Subscription status tracking (`/api/v1/subscriptions/{user_id}/{product_id}`)
+- Webhook processing
 - Update auth server after payment
-- Return payment status to frontend
 
 **Auth Microservice (8080) - Already Done:**
-- Store user plan status ✅
-- Return plan info in user data ✅  
-- Handle auth updates ✅
+- Store user subscription status ✅
+- Return plan info in user data ✅
 
-**Current Infrastructure - Already Done:**
-- Auth middleware for protected routes ✅
-- User context flowing through app ✅
-- Frequent auth server polling ✅
+**Product Management:**
+- Payment MS: Uses Stripe price/product IDs (no product database)
+- Frontend App: Needs to know which price IDs to offer
+- Auth Server: Just stores subscription status/plan access
 
 ---
 
-## 📝 **PAYMENT FLOW**
+## 📝 **API INTEGRATION**
 
-1. User clicks "Payment" in nav → goes to `/payment`
-2. Clicks "Buy Now" → calls `/api/payment/initiate` 
-3. Our app calls payment microservice with payment details
-4. Payment microservice handles Stripe + updates auth server
-5. Our app shows success/failure from payment microservice
-6. User profile shows updated plan (via existing polling)
+**Payment MS Endpoints:**
+- `POST /api/v1/checkout/subscription` - Create Stripe checkout
+- `GET /api/v1/subscriptions/{user_id}/{product_id}` - Get status
+- Requires API key in `X-API-Key` header
+
+**Frontend Flow:**
+1. User visits `/payment` → sees available products (configured in app)
+2. Clicks "Subscribe" → calls `/api/payment/checkout` 
+3. Our handler calls payment MS with user data + price ID
+4. Payment MS creates Stripe checkout session
+5. User redirected to Stripe, completes payment
+6. Webhook updates auth server
+7. Success/cancel URLs handled by our app
