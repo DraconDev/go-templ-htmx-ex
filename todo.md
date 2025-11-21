@@ -1,45 +1,61 @@
 # Current Status & Next Steps
 
 **Updated:** November 21, 2025
-**Status:** ✅ All Infrastructure Complete → 💳 Simple Payment Page
+**Status:** ✅ All Infrastructure Complete → 💳 Frontend App Payment Hookup
 
 ---
 
 ## 🎯 **WHAT NEEDS TO BE DONE**
 
-### **💳 Payment Integration (Simple - Just Add Payment Page)**
-- [ ] Payment page template (new route `/payment` or `/subscribe`)
-- [ ] "Buy Now" button that calls payment microservice
-- [ ] Payment microservice endpoint (exists elsewhere - just need URL/config)
+### **Frontend App Payment Integration (Minimal Hookup)**
 
-**That's it!** The existing infrastructure handles the rest:
-- Auth server already fetches user data frequently
-- Payment microservice updates auth server after payment
-- Frontend automatically sees updated status through existing `GetUserInfo()`
+**Frontend App Changes Needed:**
+- [ ] Add `/payment` route + handler
+- [ ] Payment page template with "Buy Now" button
+- [ ] Add `/api/payment/initiate` route
+- [ ] Payment API handler that calls payment microservice
+- [ ] Add payment page link to navigation
+- [ ] Extend UserInfo to show current plan status
+
+**Payment Microservice Handles:**
+- ✅ Stripe integration (everything)
+- ✅ Webhook processing 
+- ✅ Updating auth server with plan status
+- ✅ Payment confirmation/success handling
 
 ---
 
-## 📝 **NOTES**
+## 📝 **ARCHITECTURE BREAKDOWN**
 
-**Why This Is Simple:**
-- Current auth architecture already polls user data regularly
-- Payment microservice just needs to update auth server after payment
-- Frontend uses existing user info structure (will need plan field added)
-- No complex polling, webhooks, or status management needed
+**Frontend App (8081) - Our Work:**
+- Payment page UI (`/payment`)
+- API endpoint (`/api/payment/initiate`) 
+- Navigation link to payment page
+- Display current plan in profile
 
-**Current Architecture:**
-- Frontend app (8081) - handles UI ✅
-- Auth microservice (8080) - authentication + user status ✅ 
-- Payment microservice - processes payments, updates auth server ✅
-- Libraries - reusable utilities ✅
+**Payment Microservice - Their Work:**
+- All Stripe processing
+- All webhook handling  
+- Update auth server after payment
+- Return payment status to frontend
 
-**The Only Missing Piece:**
-- A simple payment page with a "Buy Now" button
-- Extend UserInfo to include plan status (minimal change)
+**Auth Microservice (8080) - Already Done:**
+- Store user plan status ✅
+- Return plan info in user data ✅  
+- Handle auth updates ✅
 
-**Payment Flow:**
-1. User visits `/payment` page
-2. Clicks "Buy Now" 
-3. Frontend calls payment microservice
-4. Payment processed, auth server updated
-5. Frontend automatically sees new status via existing user info polling
+**Current Infrastructure - Already Done:**
+- Auth middleware for protected routes ✅
+- User context flowing through app ✅
+- Frequent auth server polling ✅
+
+---
+
+## 📝 **PAYMENT FLOW**
+
+1. User clicks "Payment" in nav → goes to `/payment`
+2. Clicks "Buy Now" → calls `/api/payment/initiate` 
+3. Our app calls payment microservice with payment details
+4. Payment microservice handles Stripe + updates auth server
+5. Our app shows success/failure from payment microservice
+6. User profile shows updated plan (via existing polling)
