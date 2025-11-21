@@ -68,3 +68,20 @@
 5. User redirected to Stripe, completes payment
 6. Webhook updates auth server
 7. Success/cancel URLs handled by our app
+
+---
+
+## 📋 **REFERENCE**
+
+**Payment Microservice API:**
+- Base URL: `http://localhost:9000`
+- OpenAPI Schema: `http://localhost:9000/openapi.json`
+- API Docs: `http://localhost:9000/docs`
+- Health Check: `http://localhost:9000/health`
+
+**Key Endpoints:**
+- `POST /api/v1/checkout/subscription` - Create subscription checkout
+- `GET /api/v1/subscriptions/{user_id}/{product_id}` - Get subscription status
+- `POST /api/v1/checkout/item` - Single item purchase
+- `POST /api/v1/checkout/cart` - Multi-item cart checkout
+- `POST /api/v1/portal` - Customer portal (subscription management)
