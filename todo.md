@@ -1,42 +1,44 @@
 # Current Status & Next Steps
 
 **Updated:** November 21, 2025
-**Status:** ✅ All Infrastructure Complete → 🚀 Ready for Payment Infrastructure
+**Status:** ✅ All Infrastructure Complete → 💳 Simple Payment Integration
 
 ---
 
 ## 🎯 **WHAT NEEDS TO BE DONE**
 
-### **💳 Payment Infrastructure (Next Major Milestone)**
-- [ ] Multi-tenant database schema design
-- [ ] Stripe integration core
-- [ ] Webhook routing system
-- [ ] Subscription management API
-- [ ] Payment status middleware
-
-**Potential Additional Tasks (if needed):**
-- [ ] Feature enhancement planning
-- [ ] Performance optimization review
-- [ ] Additional testing scenarios
-- [ ] Documentation updates
+### **💳 Payment Integration (Simple Purchase Flow)**
+- [ ] Payment page UI in frontend app
+- [ ] Payment microservice integration endpoint
+- [ ] Purchase initiation flow (single item purchase)
+- [ ] Auth server status updates from payment microservice
+- [ ] Frontend polling for updated user status
 
 ---
 
 ## 📝 **NOTES**
 
-**Current State:**
-- All core infrastructure is production-ready
-- 44 total tests passing (32 library + 12 auth)
-- All libraries have comprehensive READMEs
-- Application builds and runs successfully
-- Auth middleware properly separated by concern (102 + 93 + 61 lines)
+**Simple Payment Model:**
+- Single item purchase (no complex basket/fulfillment)
+- Content access control (subscription-based)
+- Auth server = single source of truth for user status
+- Payment microservice = payment processor only
 
-**Architecture:**
+**Current Architecture:**
 - Frontend app (8081) handles UI
-- Auth microservice (8080) handles authentication
-- Payment microservice (planned) will handle subscriptions
+- Auth microservice (8080) handles authentication + user status
+- Payment microservice processes payments, updates auth server
 - Libraries provide reusable utilities (configx, httperrx, cachex, dbx)
 
-**Next Focus:**
-- Payment infrastructure is the next major feature
-- All infrastructure work is complete
+**What We DON'T Need:**
+- Complex multi-tenant database design (auth server already has this)
+- Complex webhook routing systems
+- Subscription management in frontend (auth server handles it)
+- Basket/fulfillment systems (we're selling access, not products)
+
+**Payment Flow:**
+1. User visits payment page
+2. Clicks "Buy Now" for single item
+3. Frontend calls payment microservice
+4. Payment processed, auth server updated
+5. Frontend polls auth server for status change
