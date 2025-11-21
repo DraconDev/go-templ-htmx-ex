@@ -7,6 +7,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
 	"github.com/gorilla/mux"
 )
 
@@ -15,6 +16,7 @@ type HandlerInstances struct {
 	AdminHandler   *admin.AdminHandler
 	LoginHandler   *login.LoginHandler
 	SessionHandler *session.SessionHandler
+	PaymentHandler *payment.PaymentHandler
 }
 
 // SetupRoutes configures and returns the router with all routes
@@ -51,6 +53,13 @@ func SetupRoutes(handlerInstances *HandlerInstances) *mux.Router {
 	// User profile page - Display user information and account details
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
 
+	// Payment page - Subscription and billing management
+	if handlerInstances.PaymentHandler != nil {
+		router.HandleFunc("/payment", handlerInstances.PaymentHandler.PaymentPageHandler).Methods("GET")
+		router.HandleFunc("/payment/success", handlerInstances.PaymentHandler.SuccessHandler).Methods("GET")
+		router.HandleFunc("/payment/cancel", handlerInstances.PaymentHandler.CancelHandler).Methods("GET")
+	}
+
 	// =============================================================================
 	// ADMIN ROUTES - Admin authentication required
 	// =============================================================================
@@ -77,6 +86,14 @@ func SetupRoutes(handlerInstances *HandlerInstances) *mux.Router {
 
 		// Exchange code - Exchange OAuth authorization code for session tokens
 		router.HandleFunc("/api/auth/exchange-code", handlerInstances.SessionHandler.ExchangeCodeHandler).Methods("POST")
+	}
+
+	// =============================================================================
+	// PAYMENT API - Payment processing endpoints
+	// =============================================================================
+
+	if handlerInstances.PaymentHandler != nil {
+		router.HandleFunc("/api/payment/checkout", handlerInstances.PaymentHandler.CheckoutHandler).Methods("POST")
 	}
 
 	// Static files (for CSS, JS, etc.)
@@ -107,6 +124,9 @@ func GetAllRoutes() []RouteInfo {
 
 		// Protected Routes
 		{Name: "profile", Method: "GET", Pattern: "/profile", Description: "User profile page"},
+		{Name: "payment", Method: "GET", Pattern: "/payment", Description: "Payment and subscription page"},
+		{Name: "payment_success", Method: "GET", Pattern: "/payment/success", Description: "Payment success page"},
+		{Name: "payment_cancel", Method: "GET", Pattern: "/payment/cancel", Description: "Payment cancelled page"},
 
 		// Admin Routes
 		{Name: "admin_dashboard", Method: "GET", Pattern: "/admin", Description: "Admin dashboard"},
@@ -119,25 +139,30 @@ func GetAllRoutes() []RouteInfo {
 		{Name: "logout", Method: "POST", Pattern: "/api/auth/logout", Description: "User logout"},
 		{Name: "set_session", Method: "POST", Pattern: "/api/auth/set-session", Description: "Set session"},
 		{Name: "exchange_code", Method: "POST", Pattern: "/api/auth/exchange-code", Description: "Exchange auth code"},
+
+		// Payment API Routes
+		{Name: "payment_checkout", Method: "POST", Pattern: "/api/payment/checkout", Description: "Create payment checkout session"},
 	}
 }
 
 // RouteSummary provides a summary of all registered routes
 type RouteSummary struct {
-	TotalRoutes     int `json:"total_routes"`
-	PublicRoutes    int `json:"public_routes"`
-	ProtectedRoutes int `json:"protected_routes"`
-	AdminRoutes     int `json:"admin_routes"`
-	AuthAPIRoutes   int `json:"auth_api_routes"`
+	TotalRoutes      int `json:"total_routes"`
+	PublicRoutes     int `json:"public_routes"`
+	ProtectedRoutes  int `json:"protected_routes"`
+	AdminRoutes      int `json:"admin_routes"`
+	AuthAPIRoutes    int `json:"auth_api_routes"`
+	PaymentAPIRoutes int `json:"payment_api_routes"`
 }
 
 // CountRoutes provides a count of all route types
 func CountRoutes() RouteSummary {
 	return RouteSummary{
-		TotalRoutes:     13,
-		PublicRoutes:    3,
-		ProtectedRoutes: 1,
-		AdminRoutes:     5,
-		AuthAPIRoutes:   4,
+		TotalRoutes:      17,
+		PublicRoutes:     3,
+		ProtectedRoutes:  4,
+		AdminRoutes:      5,
+		AuthAPIRoutes:    4,
+		PaymentAPIRoutes: 1,
 	}
 }
