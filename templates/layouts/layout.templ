@@ -149,7 +149,7 @@ templ Layout(title string, description string, navigation templ.Component, conte
 				});
 			</script>
 		</head>
-		<body class="ultra-dark-bg min-h-screen text-white">
+		<body class="ultra-dark-bg min-h-screen text-white overflow-x-hidden">
 			@navigation
 			<main class="container mx-auto py-12 px-4" role="main">
 				@content
@@ -160,16 +160,16 @@ templ Layout(title string, description string, navigation templ.Component, conte
 
 // NavigationLoggedIn renders the logged-in navigation
 templ NavigationLoggedIn(user UserInfo) {
-	<nav class="glass-nav">
+	<nav class="glass-nav overflow-x-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6">
 			<div class="flex justify-between items-center h-16">
 				<div class="flex items-center flex-shrink-0">
-					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
+					<a href="/" class="text-sm sm:text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
 				</div>
-				<div class="flex items-center space-x-4 sm:space-x-6">
-					<a href="/payment" class="text-white hover:text-cyan-400 transition-colors duration-200 font-medium whitespace-nowrap">Pricing</a>
+				<div class="flex items-center space-x-3 sm:space-x-4">
+					<a href="/payment" class="text-sm sm:text-base text-white hover:text-cyan-400 transition-colors duration-200 font-medium whitespace-nowrap">Pricing</a>
 					<div class="relative">
-						<button onclick="toggleProfileDropdown()" class="flex items-center justify-center w-11 h-11 rounded-full overflow-hidden hover:scale-105 transition-transform duration-200">
+						<button onclick="toggleProfileDropdown()" class="flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 rounded-full overflow-hidden hover:scale-105 transition-transform duration-200">
 							@UserAvatar(user)
 						</button>
 						<div id="profile-dropdown" class="hidden absolute right-0 top-13 w-48 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-xl shadow-2xl z-50 transform transition-all duration-200 ease-out">
@@ -202,7 +202,7 @@ templ NavigationLoggedIn(user UserInfo) {
 }
 
 templ UserAvatar(user UserInfo) {
-	<div class={ "w-11 h-11 rounded-full overflow-hidden shadow-lg ring-2 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:scale-105", fmt.Sprintf("bg-gradient-to-br %s", getAvatarGradient(user.Name)) }>
+	<div class={ fmt.Sprintf("w-full h-full rounded-full overflow-hidden shadow-lg ring-2 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:scale-105 bg-gradient-to-br %s", getAvatarGradient(user.Name)) }>
 		if user.Picture != "" {
 			<img
 				src={ user.Picture }
@@ -211,7 +211,7 @@ templ UserAvatar(user UserInfo) {
 				onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'; this.parentElement.classList.remove('bg-gradient-to-br'); this.parentElement.classList.add('bg-gradient-to-br','from-gray-600','to-gray-800');"
 			/>
 		}
-		<div class="w-full h-full flex items-center justify-center text-white font-bold text-sm tracking-wide">
+		<div class="w-full h-full flex items-center justify-center text-white font-bold text-xs sm:text-sm tracking-wide">
 			@UserInitials(user)
 		</div>
 	</div>
@@ -220,9 +220,9 @@ templ UserAvatar(user UserInfo) {
 // UserInitials returns formatted initials with fallback
 templ UserInitials(user UserInfo) {
 	if user.Name != "" {
-		<span class="text-lg">{ getFormattedInitials(user.Name) }</span>
+		<span class="text-xs sm:text-sm">{ getFormattedInitials(user.Name) }</span>
 	} else {
-		<span class="text-lg">U</span>
+		<span class="text-xs sm:text-sm">U</span>
 	}
 }
 
@@ -275,15 +275,15 @@ func getFormattedInitials(name string) string {
 
 // NavigationLoggedOut renders the logged-out navigation
 templ NavigationLoggedOut() {
-	<nav class="glass-nav">
+	<nav class="glass-nav overflow-x-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6">
 			<div class="flex justify-between items-center h-16">
 				<div class="flex items-center flex-shrink-0">
-					<a href="/" class="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
+					<a href="/" class="text-sm sm:text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200">🚀 Startup Platform</a>
 				</div>
-				<div class="flex items-center space-x-4">
-					<a href="/payment" class="text-white hover:text-cyan-400 transition-colors duration-200 font-medium whitespace-nowrap">Pricing</a>
-					<a href="/login" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-lg text-base font-semibold transition-all duration-200 whitespace-nowrap">Login</a>
+				<div class="flex items-center space-x-3 sm:space-x-4">
+					<a href="/payment" class="text-sm sm:text-base text-white hover:text-cyan-400 transition-colors duration-200 font-medium whitespace-nowrap">Pricing</a>
+					<a href="/login" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 sm:px-5 sm:py-2.5 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 whitespace-nowrap">Login</a>
 				</div>
 			</div>
 		</div>
