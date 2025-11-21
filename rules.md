@@ -60,4 +60,3 @@ go_project/
         ├── database/       // Package for DB connection setup
         └── errors/         // Package for custom error types
 
-        
