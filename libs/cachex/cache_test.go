@@ -13,6 +13,7 @@ func TestNew(t *testing.T) {
 	if cache.ttl != 5*time.Second {
 		t.Errorf("TTL = %v, want 5s", cache.ttl)
 	}
+	
 }
 
 func TestCacheSetAndGet(t *testing.T) {
