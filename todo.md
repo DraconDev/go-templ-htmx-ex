@@ -1,52 +1,45 @@
 # Current Status & Next Steps
 
 **Updated:** November 21, 2025
-**Status:** ✅ All Infrastructure Complete → 💳 Simple Payment Integration
+**Status:** ✅ All Infrastructure Complete → 💳 Simple Payment Page
 
 ---
 
 ## 🎯 **WHAT NEEDS TO BE DONE**
 
-### **💳 Payment Integration (Simple Purchase Flow)**
-- [ ] Extend UserInfo struct to include subscription/plan status
-- [ ] Update auth service to return plan information from auth server
-- [ ] Payment page UI in frontend app
-- [ ] Payment microservice integration endpoint
-- [ ] Purchase initiation flow (single item purchase)
-- [ ] Auth server status updates from payment microservice
-- [ ] Frontend polling for updated user status
+### **💳 Payment Integration (Simple - Just Add Payment Page)**
+- [ ] Payment page template (new route `/payment` or `/subscribe`)
+- [ ] "Buy Now" button that calls payment microservice
+- [ ] Payment microservice endpoint (exists elsewhere - just need URL/config)
+
+**That's it!** The existing infrastructure handles the rest:
+- Auth server already fetches user data frequently
+- Payment microservice updates auth server after payment
+- Frontend automatically sees updated status through existing `GetUserInfo()`
 
 ---
 
 ## 📝 **NOTES**
 
-**Missing Architecture Component:**
-- Current UserInfo struct lacks subscription/plan fields
-- Auth server needs to return current plan status
-- Payment microservice only processes payment + updates auth server
-- Frontend polls auth server for plan changes
-
-**Simple Payment Model:**
-- Single item purchase (no complex basket/fulfillment)
-- Content access control (subscription-based)
-- Auth server = single source of truth for user status + plan
-- Payment microservice = payment processor only
+**Why This Is Simple:**
+- Current auth architecture already polls user data regularly
+- Payment microservice just needs to update auth server after payment
+- Frontend uses existing user info structure (will need plan field added)
+- No complex polling, webhooks, or status management needed
 
 **Current Architecture:**
-- Frontend app (8081) handles UI
-- Auth microservice (8080) handles authentication + user status + plan
-- Payment microservice processes payments, updates auth server
-- Libraries provide reusable utilities (configx, httperrx, cachex, dbx)
+- Frontend app (8081) - handles UI ✅
+- Auth microservice (8080) - authentication + user status ✅ 
+- Payment microservice - processes payments, updates auth server ✅
+- Libraries - reusable utilities ✅
 
-**What We DON'T Need:**
-- Complex multi-tenant database design (auth server already has this)
-- Complex webhook routing systems
-- Subscription management in frontend (auth server handles it)
-- Basket/fulfillment systems (we're selling access, not products)
+**The Only Missing Piece:**
+- A simple payment page with a "Buy Now" button
+- Extend UserInfo to include plan status (minimal change)
 
 **Payment Flow:**
-1. User visits payment page
-2. Clicks "Buy Now" for single item
+1. User visits `/payment` page
+2. Clicks "Buy Now" 
 3. Frontend calls payment microservice
 4. Payment processed, auth server updated
-5. Frontend polls auth server for status change
+5. Frontend automatically sees new status via existing user info polling
