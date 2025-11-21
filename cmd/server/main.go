@@ -16,6 +16,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
@@ -28,6 +29,7 @@ var sqlDB *sql.DB
 var queries *dbSqlc.Queries
 var loginHandler *login.LoginHandler
 var sessionHandler *session.SessionHandler
+var paymentHandler *payment.PaymentHandler
 
 func main() {
 	// Load configuration
@@ -79,6 +81,10 @@ func main() {
 	sessionHandler = session.NewSessionHandler(cfg)
 	log.Println("✅ Login and session handlers initialized")
 
+	// Initialize payment handler
+	paymentHandler = payment.NewPaymentHandler(cfg)
+	log.Println("✅ Payment handler initialized")
+
 	// Create router using centralized route structure
 	router := SetupRoutes()
 
@@ -125,6 +131,7 @@ func SetupRoutes() *mux.Router {
 		AdminHandler:   adminHandler,
 		LoginHandler:   loginHandler,
 		SessionHandler: sessionHandler,
+		PaymentHandler: paymentHandler,
 	}
 
 	// Use centralized route setup
