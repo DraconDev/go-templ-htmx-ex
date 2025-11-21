@@ -10,6 +10,7 @@ type Cache[T any] struct {
 	sync.RWMutex
 	entries map[string]*entry[T]
 	ttl     time.Duration
+	
 }
 
 // entry represents a cached value with expiration

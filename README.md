@@ -11,6 +11,7 @@ This platform is evolving into a **reusable payment infrastructure** that other 
 - Real-time payment status updates
 - White-labeled checkout flows
 
+
 ## 🎯 What This Is
 
 - **🚀 Fast startup foundation** with real authentication & database
@@ -453,6 +454,7 @@ The authentication system was updated to handle both response formats:
   }
 }
 ```
+
 
 **API Response to Frontend:**
 ```json
