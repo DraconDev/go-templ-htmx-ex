@@ -7,16 +7,18 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/dashboard"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
 	"github.com/gorilla/mux"
 )
 
 // HandlerInstances holds all handler instances for route registration
 type HandlerInstances struct {
-	AdminHandler   *admin.AdminHandler
-	LoginHandler   *login.LoginHandler
-	SessionHandler *session.SessionHandler
-	PaymentHandler *payment.PaymentHandler
+	AdminHandler     *admin.AdminHandler
+	LoginHandler     *login.LoginHandler
+	SessionHandler   *session.SessionHandler
+	PaymentHandler   *payment.PaymentHandler
+	DashboardHandler *dashboard.DashboardHandler
 }
 
 // SetupRoutes configures and returns the router with all routes
@@ -49,6 +51,11 @@ func SetupRoutes(handlerInstances *HandlerInstances) *mux.Router {
 	// =============================================================================
 	// PROTECTED USER ROUTES - Authentication required
 	// =============================================================================
+
+	// Dashboard - Main user interface
+	if handlerInstances.DashboardHandler != nil {
+		router.HandleFunc("/dashboard", handlerInstances.DashboardHandler.DashboardHandler).Methods("GET")
+	}
 
 	// User profile page - Display user information and account details
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
@@ -123,6 +130,7 @@ func GetAllRoutes() []RouteInfo {
 		{Name: "oauth_callback", Method: "GET", Pattern: "/auth/callback", Description: "OAuth callback handler"},
 
 		// Protected Routes
+		{Name: "dashboard", Method: "GET", Pattern: "/dashboard", Description: "User dashboard"},
 		{Name: "profile", Method: "GET", Pattern: "/profile", Description: "User profile page"},
 		{Name: "payment", Method: "GET", Pattern: "/payment", Description: "Payment and subscription page"},
 		{Name: "payment_success", Method: "GET", Pattern: "/payment/success", Description: "Payment success page"},
