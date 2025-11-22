@@ -160,7 +160,7 @@ templ Layout(title string, description string, navigation templ.Component, conte
 
 // NavigationLoggedIn renders the logged-in navigation
 templ NavigationLoggedIn(user UserInfo) {
-	<nav class="glass-nav overflow-x-hidden">
+	<nav class="glass-nav overflow-x-hidden w-full">
 		<div class="w-full px-3 sm:px-4 lg:px-6 xl:px-8">
 			<div class="flex justify-between items-center h-14 sm:h-16">
 				<div class="flex items-center flex-shrink-0 min-w-0 flex-1">
@@ -276,7 +276,7 @@ func getFormattedInitials(name string) string {
 
 // NavigationLoggedOut renders the logged-out navigation
 templ NavigationLoggedOut() {
-	<nav class="glass-nav overflow-x-hidden">
+	<nav class="glass-nav overflow-x-hidden w-full">
 		<div class="w-full px-3 sm:px-4 lg:px-6 xl:px-8">
 			<div class="flex justify-between items-center h-14 sm:h-16">
 				<div class="flex items-center flex-shrink-0 min-w-0 flex-1">
