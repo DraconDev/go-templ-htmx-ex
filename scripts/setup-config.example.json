@@ -1,19 +1,53 @@
 {
-  "project_name": "my-awesome-saas",
+  "project_name": "my-saas-app",
   "plans": [
     {
-      "name": "Pro Plan",
-      "description": "Professional features for power users",
+      "name": "Starter",
+      "description": "Perfect for individuals and small projects",
+      "features": [
+        "up_to_3_projects",
+        "basic_analytics",
+        "community_support",
+        "5gb_storage"
+      ],
+      "pricing": {
+        "monthly": 900,
+        "yearly": 9000
+      }
+    },
+    {
+      "name": "Pro",
+      "description": "For professionals and growing teams",
       "features": [
         "unlimited_projects",
         "advanced_analytics",
         "priority_support",
-        "api_access"
+        "api_access",
+        "50gb_storage",
+        "custom_domains"
       ],
       "pricing": {
         "monthly": 2900,
         "yearly": 29000
       }
+    },
+    {
+      "name": "Business",
+      "description": "For teams and businesses at scale",
+      "features": [
+        "everything_in_pro",
+        "team_collaboration",
+        "sso_saml",
+        "advanced_security",
+        "unlimited_storage",
+        "dedicated_support",
+        "sla_guarantee"
+      ],
+      "pricing": {
+        "monthly": 9900,
+        "yearly": 99000
+      }
     }
   ]
 }
+
