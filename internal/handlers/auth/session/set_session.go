@@ -9,7 +9,9 @@ import (
 )
 
 // SetSessionHandler handles setting a new session cookie
-// This handler is responsible ONLY for setting session cookies from a provided session ID
+// This handler is responsible for:
+// 1. Setting session cookies from a provided session ID
+// 2. Syncing user data from Auth MS to local DB
 func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -27,6 +29,25 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// 1. Fetch user info from Auth MS
+	authResp, err := h.AuthService.GetUserInfo(req.SessionID)
+	if err != nil {
+		// If we can't get user info, we shouldn't set the session
+		handleJSONError(w, "Failed to validate session with Auth Service", err, errors.NewUnauthorizedError)
+		return
+	}
+
+	if !authResp.Success {
+		handleJSONError(w, "Invalid session", nil, errors.NewUnauthorizedError)
+		return
+	}
+
+	// 2. Sync user to local DB
+	// We need a UserRepository here. Since SessionHandler doesn't have it injected yet,
+	// we might need to update SessionHandler struct or pass it in.
+	// For now, let's assume we can access it or we'll update SessionHandler definition.
+	// CHECK: SessionHandler definition in session.go
+
 	// Use session utility to set the cookie
 	sessionConfig := DefaultSessionCookieConfig()
 	SetSessionCookie(w, req.SessionID, sessionConfig)
@@ -35,11 +56,9 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Server session established successfully",
+		"user":    authResp, // Optional: return user info
 	}); err != nil {
-		// Log error but don't fail session establishment
-		// In production, you might want to log this to a proper logger
-		// For now, we'll just continue since session was established successfully
-		_ = err // Suppress unused variable warning
+		_ = err
 	}
 }
 

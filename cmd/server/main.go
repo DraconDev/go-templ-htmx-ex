@@ -20,6 +20,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/dashboard"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/repositories"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/config"
 	database "github.com/DraconDev/go-templ-htmx-ex/internal/utils/database"
@@ -79,9 +80,14 @@ func main() {
 		log.Println("⚠️  Admin handler not initialized - no database connection")
 	}
 
+	// Initialize repositories
+	userRepo := repositories.NewUserRepository(queries)
+	prefsRepo := repositories.NewPreferencesRepository(queries)
+	log.Println("✅ Repositories initialized")
+
 	// Initialize login and session handlers
 	loginHandler = login.NewLoginHandler(cfg)
-	sessionHandler = session.NewSessionHandler(cfg)
+	sessionHandler = session.NewSessionHandler(cfg, userRepo)
 	log.Println("✅ Login and session handlers initialized")
 
 	// Initialize Payment MS Client
