@@ -10,10 +10,13 @@ import (
 // Config holds application configuration
 type Config struct {
 	*configx.Config
-	ServerPort     string
-	AuthServiceURL string
-	RedirectURL    string
-	AdminEmail     string
+	ServerPort           string
+	AuthServiceURL       string
+	RedirectURL          string
+	AdminEmail           string
+	PaymentServiceURL    string
+	PaymentServiceAPIKey string
+	StripeProductID      string
 }
 
 var (
@@ -48,6 +51,24 @@ func LoadConfig() *Config {
 			Required:     false,
 			Description:  "Admin email address",
 		},
+		{
+			Key:          "PAYMENT_MS_URL",
+			DefaultValue: "http://localhost:9000",
+			Required:     false,
+			Description:  "Payment service URL",
+		},
+		{
+			Key:          "PAYMENT_MS_API_KEY",
+			DefaultValue: "",
+			Required:     false,
+			Description:  "Payment service API Key",
+		},
+		{
+			Key:          "STRIPE_PRODUCT_ID",
+			DefaultValue: "",
+			Required:     false,
+			Description:  "Stripe Product ID for subscriptions",
+		},
 	}
 
 	baseConfig, err := configx.Load(fields, configx.DefaultOptions())
@@ -56,11 +77,14 @@ func LoadConfig() *Config {
 	}
 
 	config := &Config{
-		Config:         baseConfig,
-		ServerPort:     baseConfig.Get("PORT"),
-		AuthServiceURL: baseConfig.Get("AUTH_SERVICE_URL"),
-		RedirectURL:    baseConfig.Get("REDIRECT_URL"),
-		AdminEmail:     baseConfig.Get("ADMIN_EMAIL"),
+		Config:               baseConfig,
+		ServerPort:           baseConfig.Get("PORT"),
+		AuthServiceURL:       baseConfig.Get("AUTH_SERVICE_URL"),
+		RedirectURL:          baseConfig.Get("REDIRECT_URL"),
+		AdminEmail:           baseConfig.Get("ADMIN_EMAIL"),
+		PaymentServiceURL:    baseConfig.Get("PAYMENT_MS_URL"),
+		PaymentServiceAPIKey: baseConfig.Get("PAYMENT_MS_API_KEY"),
+		StripeProductID:      baseConfig.Get("STRIPE_PRODUCT_ID"),
 	}
 
 	Current = config
