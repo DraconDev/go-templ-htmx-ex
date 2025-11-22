@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/dracondev/go-templ-htmx-ex/libs/configx"
 )
@@ -113,6 +114,14 @@ func LoadConfig() *Config {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
+	// Parse session timeout with default
+	sessionTimeout := 3600
+	if timeoutStr := baseConfig.Get("SESSION_TIMEOUT"); timeoutStr != "" {
+		if parsed, err := strconv.Atoi(timeoutStr); err == nil {
+			sessionTimeout = parsed
+		}
+	}
+
 	config := &Config{
 		Config:               baseConfig,
 		ServerPort:           baseConfig.Get("PORT"),
@@ -126,7 +135,7 @@ func LoadConfig() *Config {
 		StripePriceMonthly:   baseConfig.Get("STRIPE_PRICE_MONTHLY"),
 		StripePriceYearly:    baseConfig.Get("STRIPE_PRICE_YEARLY"),
 		SessionSecret:        baseConfig.Get("SESSION_SECRET"),
-		SessionTimeout:       baseConfig.GetIntOr("SESSION_TIMEOUT", 3600),
+		SessionTimeout:       sessionTimeout,
 	}
 
 	Current = config
