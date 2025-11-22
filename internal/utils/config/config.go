@@ -85,6 +85,11 @@ func LoadConfig() *Config {
 		PaymentServiceURL:    baseConfig.Get("PAYMENT_MS_URL"),
 		PaymentServiceAPIKey: baseConfig.Get("PAYMENT_MS_API_KEY"),
 		StripeProductID:      baseConfig.Get("STRIPE_PRODUCT_ID"),
+		StripeProductPro:     baseConfig.Get("STRIPE_PRODUCT_PRO"),
+		StripePriceMonthly:   baseConfig.Get("STRIPE_PRICE_MONTHLY"),
+		StripePriceYearly:    baseConfig.Get("STRIPE_PRICE_YEARLY"),
+		SessionSecret:        baseConfig.Get("SESSION_SECRET"),
+		SessionTimeout:       baseConfig.GetInt("SESSION_TIMEOUT"),
 	}
 
 	Current = config
