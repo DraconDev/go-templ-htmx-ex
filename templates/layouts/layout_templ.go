@@ -131,7 +131,7 @@ func Layout(title string, description string, navigation templ.Component, conten
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<main class=\"w-full max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8\" role=\"main\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<main class=\"w-full lg:max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8\" role=\"main\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
