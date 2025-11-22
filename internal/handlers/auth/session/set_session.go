@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/DraconDev/go-templ-htmx-ex/internal/models"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/utils/errors"
 )
 
@@ -43,10 +44,26 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	// 2. Sync user to local DB
-	// We need a UserRepository here. Since SessionHandler doesn't have it injected yet,
-	// we might need to update SessionHandler struct or pass it in.
-	// For now, let's assume we can access it or we'll update SessionHandler definition.
-	// CHECK: SessionHandler definition in session.go
+	if h.UserRepository != nil {
+		// Convert AuthResponse to User model
+		user := &models.User{
+			AuthID:  authResp.UserId, // Assuming UserId is the AuthID
+			Email:   authResp.Email,
+			Name:    authResp.Name,
+			Picture: authResp.Picture,
+			IsAdmin: false, // Default to false, admin can update later
+		}
+
+		// Upsert user
+		// We use a background context or the request context
+		_, err := h.UserRepository.UpsertUser(r.Context(), user)
+		if err != nil {
+			fmt.Printf("⚠️ SESSION: Failed to sync user to local DB: %v\n", err)
+			// We continue even if sync fails, to allow login
+		} else {
+			fmt.Printf("✅ SESSION: Synced user %s to local DB\n", user.Email)
+		}
+	}
 
 	// Use session utility to set the cookie
 	sessionConfig := DefaultSessionCookieConfig()
