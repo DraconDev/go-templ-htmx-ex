@@ -214,3 +214,12 @@ func (r *UserRepository) UpsertUser(ctx context.Context, user *models.User) (*mo
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
 }
+
+// CountUsersCreatedThisWeek returns the count of users created this week
+func (r *UserRepository) CountUsersCreatedThisWeek(ctx context.Context) (int64, error) {
+	if r.queries == nil {
+		return 0, models.ErrDatabaseNotConnected
+	}
+
+	return r.queries.CountUsersCreatedThisWeek(ctx)
+}
