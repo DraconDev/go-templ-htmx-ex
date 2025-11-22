@@ -169,7 +169,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<nav class=\"glass-nav overflow-x-hidden\"><div class=\"w-full max-w-none mx-auto px-2 sm:px-4 lg:px-6\"><div class=\"flex justify-between items-center h-12 sm:h-14 lg:h-16\"><div class=\"flex items-center flex-shrink-0 min-w-0\"><a href=\"/\" class=\"text-sm sm:text-base lg:text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200 truncate pr-1\"><span class=\"hidden xs:inline sm:text-sm\">🚀 Startup Platform</span> <span class=\"xs:hidden sm:hidden text-base\">🚀</span> <span class=\"sm:inline lg:hidden text-sm\">🚀 Platform</span></a></div><div class=\"flex items-center space-x-2 lg:space-x-4\"><div class=\"relative\"><button onclick=\"toggleProfileDropdown()\" class=\"flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full overflow-hidden hover:scale-105 transition-transform duration-200 ring-1 ring-white/20\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<nav class=\"glass-nav overflow-x-hidden\"><div class=\"w-full max-w-none mx-auto px-1 sm:px-2 lg:px-6\"><div class=\"flex justify-between items-center h-14 sm:h-16 lg:h-18\"><div class=\"flex items-center flex-shrink-0 min-w-0 flex-1\"><a href=\"/\" class=\"text-sm sm:text-base lg:text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200 truncate\">🚀 Startup Platform</a></div><div class=\"flex items-center flex-shrink-0\"><div class=\"relative\"><button onclick=\"toggleProfileDropdown()\" class=\"flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full overflow-hidden hover:scale-105 transition-transform duration-200 ring-1 ring-white/20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -177,7 +177,7 @@ func NavigationLoggedIn(user UserInfo) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</button><div id=\"profile-dropdown\" class=\"hidden absolute right-0 top-9 sm:top-10 w-36 sm:w-40 lg:w-48 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-xl shadow-2xl z-50 transform transition-all duration-200\"><div class=\"p-1.5 space-y-0.5\"><a href=\"/profile\" class=\"flex items-center space-x-2 px-2 py-1.5 text-xs sm:text-sm text-white hover:bg-gray-700/80 rounded-lg transition-colors duration-200\"><svg class=\"w-3 h-3\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z\"></path></svg> <span>Profile</span></a> <a href=\"/payment\" class=\"flex items-center space-x-2 px-2 py-1.5 text-xs sm:text-sm text-white hover:bg-gray-700/80 rounded-lg transition-colors duration-200\"><svg class=\"w-3 h-3\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z\"></path></svg> <span>Billing</span></a> <button onclick=\"logout()\" class=\"flex items-center space-x-2 w-full text-left px-2 py-1.5 text-xs sm:text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-colors duration-200\"><svg class=\"w-3 h-3\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1\"></path></svg> <span>Sign Out</span></button></div></div></div></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</button><div id=\"profile-dropdown\" class=\"hidden absolute right-0 top-10 sm:top-12 w-40 sm:w-44 lg:w-48 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-xl shadow-2xl z-50 transform transition-all duration-200\"><div class=\"p-2 space-y-1\"><a href=\"/profile\" class=\"flex items-center space-x-3 px-3 py-2.5 text-sm text-white hover:bg-gray-700/80 rounded-lg transition-colors duration-200\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z\"></path></svg> <span>Profile</span></a> <a href=\"/payment\" class=\"flex items-center space-x-3 px-3 py-2.5 text-sm text-white hover:bg-gray-700/80 rounded-lg transition-colors duration-200\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z\"></path></svg> <span>Billing</span></a> <button onclick=\"logout()\" class=\"flex items-center space-x-3 w-full text-left px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-colors duration-200\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1\"></path></svg> <span>Sign Out</span></button></div></div></div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -236,7 +236,7 @@ func UserAvatar(user UserInfo) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(user.Picture)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/layout.templ`, Line: 211, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/layout.templ`, Line: 209, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -247,7 +247,7 @@ func UserAvatar(user UserInfo) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"w-full h-full flex items-center justify-center text-white font-bold text-xs tracking-wide\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"w-full h-full flex items-center justify-center text-white font-bold text-sm tracking-wide\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -286,14 +286,14 @@ func UserInitials(user UserInfo) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if user.Name != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"text-xs\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(getFormattedInitials(user.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/layout.templ`, Line: 226, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/layout.templ`, Line: 224, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -304,7 +304,7 @@ func UserInitials(user UserInfo) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span class=\"text-xs\">U</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span class=\"text-sm\">U</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -382,7 +382,7 @@ func NavigationLoggedOut() templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<nav class=\"glass-nav overflow-x-hidden\"><div class=\"w-full max-w-none mx-auto px-2 sm:px-4 lg:px-6\"><div class=\"flex justify-between items-center h-12 sm:h-14 lg:h-16\"><div class=\"flex items-center flex-shrink-0 min-w-0\"><a href=\"/\" class=\"text-sm sm:text-base lg:text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200 truncate pr-1\"><span class=\"hidden xs:inline sm:text-sm\">🚀 Startup Platform</span> <span class=\"xs:hidden sm:hidden text-base\">🚀</span> <span class=\"sm:inline lg:hidden text-sm\">🚀 Platform</span></a></div><div class=\"flex items-center\"><a href=\"/login\" class=\"bg-red-600 hover:bg-red-500 text-white px-2 py-1 sm:px-3 sm:py-1.5 lg:px-5 lg:py-2 rounded-lg text-xs sm:text-sm lg:text-base font-semibold transition-all duration-200 whitespace-nowrap\">Login</a></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<nav class=\"glass-nav overflow-x-hidden\"><div class=\"w-full max-w-none mx-auto px-1 sm:px-2 lg:px-6\"><div class=\"flex justify-between items-center h-14 sm:h-16 lg:h-18\"><div class=\"flex items-center flex-shrink-0 min-w-0 flex-1\"><a href=\"/\" class=\"text-sm sm:text-base lg:text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-200 truncate\">🚀 Startup Platform</a></div><div class=\"flex items-center flex-shrink-0\"><a href=\"/login\" class=\"bg-red-600 hover:bg-red-500 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap\">Login</a></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
