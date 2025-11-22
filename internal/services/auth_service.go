@@ -97,11 +97,22 @@ func (s *AuthService) RefreshSession(session_id string) (*models.AuthResponse, e
 	})
 }
 
-// GetUserInfo retrieves user information using session_id
-func (s *AuthService) GetUserInfo(session_id string) (*models.AuthResponse, error) {
-	return s.callAuthService("/auth/userinfo", map[string]string{
+// GetUserInfo retrieves user information using session_id by refreshing the session
+// This calls /auth/session/refresh which returns SessionRefreshResponse with user_context
+func (s *AuthService) GetUserInfo(session_id string) (*models.UserSessionContext, error) {
+	bodyBytes, err := s.makeRequest("/auth/session/refresh", map[string]string{
 		"session_id": session_id,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	var refreshResp models.SessionRefreshResponse
+	if err := json.Unmarshal(bodyBytes, &refreshResp); err != nil {
+		return nil, err
+	}
+
+	return &refreshResp.UserContext, nil
 }
 
 // ValidateSession validates a session_id and returns user information for middleware

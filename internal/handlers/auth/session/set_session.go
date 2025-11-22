@@ -30,27 +30,22 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// 1. Fetch user info from Auth MS
-	authResp, err := h.AuthService.GetUserInfo(req.SessionID)
+	// 1. Fetch user info from Auth MS (via session refresh)
+	userContext, err := h.AuthService.GetUserInfo(req.SessionID)
 	if err != nil {
 		// If we can't get user info, we shouldn't set the session
 		handleJSONError(w, "Failed to validate session with Auth Service", err, errors.NewUnauthorizedError)
 		return
 	}
 
-	if !authResp.Success {
-		handleJSONError(w, "Invalid session", nil, errors.NewUnauthorizedError)
-		return
-	}
-
 	// 2. Sync user to local DB
 	if h.UserRepository != nil {
-		// Convert AuthResponse to User model
+		// Convert UserSessionContext to User model
 		user := &models.User{
-			AuthID:  authResp.UserID, // Assuming UserId is the AuthID
-			Email:   authResp.Email,
-			Name:    authResp.Name,
-			Picture: authResp.Picture,
+			AuthID:  userContext.UserID,
+			Email:   userContext.Email,
+			Name:    userContext.Name,
+			Picture: userContext.Picture,
 			IsAdmin: false, // Default to false, admin can update later
 		}
 
@@ -73,7 +68,7 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Server session established successfully",
-		"user":    authResp, // Optional: return user info
+		"user":    userContext, // Optional: return user info
 	}); err != nil {
 		_ = err
 	}

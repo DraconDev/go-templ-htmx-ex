@@ -146,17 +146,23 @@ func (h *SettingsHandler) BillingPortalHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// 2. Call Payment MS to create portal session
-	// We need a return URL
+	// 2. Get local user for user_id
+	user, err := h.userRepo.GetUserByEmail(r.Context(), userInfo.Email)
+	if err != nil {
+		http.Error(w, "User record not found", http.StatusInternalServerError)
+		return
+	}
+
+	// 3. Call Payment MS to create portal session
 	returnURL := h.config.RedirectURL + "/settings"
 
-	portalResp, err := h.paymentClient.CreateCustomerPortal(r.Context(), userInfo.Email, returnURL)
+	portalURL, err := h.paymentClient.CreateCustomerPortal(r.Context(), user.ID, returnURL)
 	if err != nil {
 		fmt.Printf("Error creating portal session: %v\n", err)
 		http.Redirect(w, r, "/settings?error=portal_failed", http.StatusSeeOther)
 		return
 	}
 
-	// 3. Redirect to portal
-	http.Redirect(w, r, portalResp.PortalURL, http.StatusSeeOther)
+	// 4. Redirect to portal
+	http.Redirect(w, r, portalURL, http.StatusSeeOther)
 }
