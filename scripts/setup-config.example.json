@@ -1,5 +1,6 @@
 {
   "project_name": "my-saas-app",
+  "_pricing_strategy": "8× multiplier: monthly = yearly ÷ 8 (33% yearly discount)",
   "plans": [
     {
       "name": "Starter",
@@ -11,7 +12,7 @@
         "5gb_storage"
       ],
       "pricing": {
-        "monthly": 900,
+        "monthly": 1125,
         "yearly": 9000
       }
     },
@@ -27,7 +28,7 @@
         "custom_domains"
       ],
       "pricing": {
-        "monthly": 2900,
+        "monthly": 3625,
         "yearly": 29000
       }
     },
@@ -44,7 +45,7 @@
         "sla_guarantee"
       ],
       "pricing": {
-        "monthly": 9900,
+        "monthly": 12375,
         "yearly": 99000
       }
     }
