@@ -13,9 +13,11 @@ import (
 	"github.com/gorilla/mux"
 
 	dbSqlc "github.com/DraconDev/go-templ-htmx-ex/database/sqlc"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/clients/paymentms"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/admin"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/login"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/dashboard"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
@@ -30,6 +32,7 @@ var queries *dbSqlc.Queries
 var loginHandler *login.LoginHandler
 var sessionHandler *session.SessionHandler
 var paymentHandler *payment.PaymentHandler
+var dashboardHandler *dashboard.DashboardHandler
 
 func main() {
 	// Load configuration
@@ -85,6 +88,14 @@ func main() {
 	paymentHandler = payment.NewPaymentHandler(cfg)
 	log.Println("✅ Payment handler initialized")
 
+	// Initialize Payment MS Client
+	paymentClient := paymentms.New(cfg.PaymentServiceURL, cfg.PaymentServiceAPIKey)
+	log.Println("✅ Payment MS Client initialized")
+
+	// Initialize Dashboard Handler
+	dashboardHandler = dashboard.NewDashboardHandler(cfg, paymentClient, sessionHandler)
+	log.Println("✅ Dashboard handler initialized")
+
 	// Create router using centralized route structure
 	router := SetupRoutes()
 
@@ -128,10 +139,11 @@ func main() {
 func SetupRoutes() *mux.Router {
 	// Create handler instances for the routes package
 	handlerInstances := &routes.HandlerInstances{
-		AdminHandler:   adminHandler,
-		LoginHandler:   loginHandler,
-		SessionHandler: sessionHandler,
-		PaymentHandler: paymentHandler,
+		AdminHandler:     adminHandler,
+		LoginHandler:     loginHandler,
+		SessionHandler:   sessionHandler,
+		PaymentHandler:   paymentHandler,
+		DashboardHandler: dashboardHandler,
 	}
 
 	// Use centralized route setup

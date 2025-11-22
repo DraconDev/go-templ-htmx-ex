@@ -55,5 +55,7 @@ func (h *DashboardHandler) DashboardHandler(w http.ResponseWriter, r *http.Reque
 
 	// Render template
 	component := pages.Dashboard(userInfo.Name, userInfo.Email, userInfo.Picture, status, isPro, periodEnd)
-	component.Render(r.Context(), w)
+	if err := component.Render(r.Context(), w); err != nil {
+		http.Error(w, "Failed to render dashboard", http.StatusInternalServerError)
+	}
 }
