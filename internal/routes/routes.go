@@ -38,6 +38,11 @@ func SetupRoutes(handlerInstances *HandlerInstances) *mux.Router {
 	// Login page - OAuth provider selection UI
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 
+	// Pricing page - Public pricing information
+	if handlerInstances.PaymentHandler != nil {
+		router.HandleFunc("/pricing", handlerInstances.PaymentHandler.PricingPageHandler).Methods("GET")
+	}
+
 	// =============================================================================
 	// OAUTH AUTHENTICATION FLOW
 	// =============================================================================
@@ -124,6 +129,7 @@ func GetAllRoutes() []RouteInfo {
 		{Name: "home", Method: "GET", Pattern: "/", Description: "Main landing page"},
 		{Name: "health", Method: "GET", Pattern: "/health", Description: "Health check endpoint"},
 		{Name: "login", Method: "GET", Pattern: "/login", Description: "Login page"},
+		{Name: "pricing", Method: "GET", Pattern: "/pricing", Description: "Pricing page"},
 
 		// OAuth Routes
 		{Name: "oauth_login", Method: "GET", Pattern: "/auth/login", Description: "OAuth provider login"},

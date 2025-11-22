@@ -26,6 +26,21 @@ func NewPaymentHandler(config *config.Config, client *paymentms.Client) *Payment
 	}
 }
 
+// PricingPageHandler handles the pricing page display
+func (h *PaymentHandler) PricingPageHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	// Get user info from middleware context (optional for pricing page)
+	userInfo := middleware.GetUserFromContext(r)
+
+	// Render pricing page
+	component := pages.Pricing(userInfo)
+	if err := component.Render(r.Context(), w); err != nil {
+		http.Error(w, "Failed to render pricing page", http.StatusInternalServerError)
+		return
+	}
+}
+
 // PaymentPageHandler handles the payment page display
 func (h *PaymentHandler) PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
