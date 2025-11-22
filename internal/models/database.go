@@ -25,7 +25,9 @@ type UserPreferences struct {
 	UserID             string    `json:"user_id" db:"user_id"`
 	Theme              string    `json:"theme" db:"theme"`       // "dark", "light", "auto"
 	Language           string    `json:"language" db:"language"` // "en", "es", "fr", etc.
+	Timezone           string    `json:"timezone" db:"timezone"`
 	EmailNotifications bool      `json:"email_notifications" db:"email_notifications"`
+	EmailBilling       bool      `json:"email_billing" db:"email_billing"`
 	PushNotifications  bool      `json:"push_notifications" db:"push_notifications"`
 	CreatedAt          time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at" db:"updated_at"`

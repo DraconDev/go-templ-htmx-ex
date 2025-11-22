@@ -47,7 +47,7 @@ func (h *SessionHandler) SetSessionHandler(w http.ResponseWriter, r *http.Reques
 	if h.UserRepository != nil {
 		// Convert AuthResponse to User model
 		user := &models.User{
-			AuthID:  authResp.UserId, // Assuming UserId is the AuthID
+			AuthID:  authResp.UserID, // Assuming UserId is the AuthID
 			Email:   authResp.Email,
 			Name:    authResp.Name,
 			Picture: authResp.Picture,
