@@ -18,7 +18,7 @@ type UserInfo struct {
 // Base layout: HTML shell + SEO + core CSS/JS + navigation + content.
 templ Layout(title string, description string, navigation templ.Component, content templ.Component) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" style="max-width: 100vw; overflow-x: hidden;">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
