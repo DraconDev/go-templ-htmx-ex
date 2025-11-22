@@ -1,0 +1,19 @@
+{
+  "project_name": "my-awesome-saas",
+  "plans": [
+    {
+      "name": "Pro Plan",
+      "description": "Professional features for power users",
+      "features": [
+        "unlimited_projects",
+        "advanced_analytics",
+        "priority_support",
+        "api_access"
+      ],
+      "pricing": {
+        "monthly": 2900,
+        "yearly": 29000
+      }
+    }
+  ]
+}

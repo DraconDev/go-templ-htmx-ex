@@ -10,3 +10,6 @@
 *.env
 *.kilocode
 node_modules/
+
+# Setup config (may contain sensitive project names)
+scripts/setup-config.json
