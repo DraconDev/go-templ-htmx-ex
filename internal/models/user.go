@@ -12,7 +12,28 @@ var (
 	ErrDatabaseNotConnected = errors.New("database not connected")
 )
 
-// AuthResponse represents the response from the auth service
+// UserSessionContext represents the user context from Auth MS (session/create and session/refresh)
+type UserSessionContext struct {
+	UserID  string `json:"user_id"`
+	Name    string `json:"name"`
+	Email   string `json:"email,omitempty"`
+	Picture string `json:"picture,omitempty"`
+	// Projects map[string]ProjectSubscription `json:"projects"` // Not needed for our BFF
+}
+
+// SessionCreateResponse represents the response from /auth/session/create
+type SessionCreateResponse struct {
+	SessionID   string             `json:"session_id"`
+	UserContext UserSessionContext `json:"user_context"`
+}
+
+// SessionRefreshResponse represents the response from /auth/session/refresh
+type SessionRefreshResponse struct {
+	SessionID   string             `json:"session_id"`
+	UserContext UserSessionContext `json:"user_context"`
+}
+
+// AuthResponse represents a generic auth service response (for backwards compatibility)
 type AuthResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
