@@ -36,6 +36,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
+	if q.createUserPreferencesStmt, err = db.PrepareContext(ctx, createUserPreferences); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserPreferences: %w", err)
+	}
 	if q.getAdminUsersStmt, err = db.PrepareContext(ctx, getAdminUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAdminUsers: %w", err)
 	}
@@ -54,11 +57,20 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUserByIDStmt, err = db.PrepareContext(ctx, getUserByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByID: %w", err)
 	}
+	if q.getUserPreferencesStmt, err = db.PrepareContext(ctx, getUserPreferences); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserPreferences: %w", err)
+	}
 	if q.updateUserStmt, err = db.PrepareContext(ctx, updateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
 	}
 	if q.updateUserAdminStatusStmt, err = db.PrepareContext(ctx, updateUserAdminStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserAdminStatus: %w", err)
+	}
+	if q.updateUserPreferencesStmt, err = db.PrepareContext(ctx, updateUserPreferences); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUserPreferences: %w", err)
+	}
+	if q.upsertUserStmt, err = db.PrepareContext(ctx, upsertUser); err != nil {
+		return nil, fmt.Errorf("error preparing query UpsertUser: %w", err)
 	}
 	return &q, nil
 }
@@ -83,6 +95,11 @@ func (q *Queries) Close() error {
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.createUserPreferencesStmt != nil {
+		if cerr := q.createUserPreferencesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserPreferencesStmt: %w", cerr)
 		}
 	}
 	if q.getAdminUsersStmt != nil {
@@ -115,6 +132,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUserByIDStmt: %w", cerr)
 		}
 	}
+	if q.getUserPreferencesStmt != nil {
+		if cerr := q.getUserPreferencesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserPreferencesStmt: %w", cerr)
+		}
+	}
 	if q.updateUserStmt != nil {
 		if cerr := q.updateUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateUserStmt: %w", cerr)
@@ -123,6 +145,16 @@ func (q *Queries) Close() error {
 	if q.updateUserAdminStatusStmt != nil {
 		if cerr := q.updateUserAdminStatusStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateUserAdminStatusStmt: %w", cerr)
+		}
+	}
+	if q.updateUserPreferencesStmt != nil {
+		if cerr := q.updateUserPreferencesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserPreferencesStmt: %w", cerr)
+		}
+	}
+	if q.upsertUserStmt != nil {
+		if cerr := q.upsertUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing upsertUserStmt: %w", cerr)
 		}
 	}
 	return err
@@ -168,14 +200,18 @@ type Queries struct {
 	countUsersCreatedThisWeekStmt *sql.Stmt
 	countUsersCreatedTodayStmt    *sql.Stmt
 	createUserStmt                *sql.Stmt
+	createUserPreferencesStmt     *sql.Stmt
 	getAdminUsersStmt             *sql.Stmt
 	getAllUsersStmt               *sql.Stmt
 	getRecentUsersStmt            *sql.Stmt
 	getUserByAuthIDStmt           *sql.Stmt
 	getUserByEmailStmt            *sql.Stmt
 	getUserByIDStmt               *sql.Stmt
+	getUserPreferencesStmt        *sql.Stmt
 	updateUserStmt                *sql.Stmt
 	updateUserAdminStatusStmt     *sql.Stmt
+	updateUserPreferencesStmt     *sql.Stmt
+	upsertUserStmt                *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -186,13 +222,17 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		countUsersCreatedThisWeekStmt: q.countUsersCreatedThisWeekStmt,
 		countUsersCreatedTodayStmt:    q.countUsersCreatedTodayStmt,
 		createUserStmt:                q.createUserStmt,
+		createUserPreferencesStmt:     q.createUserPreferencesStmt,
 		getAdminUsersStmt:             q.getAdminUsersStmt,
 		getAllUsersStmt:               q.getAllUsersStmt,
 		getRecentUsersStmt:            q.getRecentUsersStmt,
 		getUserByAuthIDStmt:           q.getUserByAuthIDStmt,
 		getUserByEmailStmt:            q.getUserByEmailStmt,
 		getUserByIDStmt:               q.getUserByIDStmt,
+		getUserPreferencesStmt:        q.getUserPreferencesStmt,
 		updateUserStmt:                q.updateUserStmt,
 		updateUserAdminStatusStmt:     q.updateUserAdminStatusStmt,
+		updateUserPreferencesStmt:     q.updateUserPreferencesStmt,
+		upsertUserStmt:                q.upsertUserStmt,
 	}
 }

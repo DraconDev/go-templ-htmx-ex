@@ -182,11 +182,35 @@ func (r *UserRepository) CountUsersCreatedToday(ctx context.Context) (int64, err
 	return r.queries.CountUsersCreatedToday(ctx)
 }
 
-// CountUsersCreatedThisWeek returns count of users created this week
-func (r *UserRepository) CountUsersCreatedThisWeek(ctx context.Context) (int64, error) {
+// UpsertUser creates or updates a user
+func (r *UserRepository) UpsertUser(ctx context.Context, user *models.User) (*models.User, error) {
 	if r.queries == nil {
-		return 0, models.ErrDatabaseNotConnected
+		return nil, models.ErrDatabaseNotConnected
 	}
 
-	return r.queries.CountUsersCreatedThisWeek(ctx)
+	picture := sql.NullString{String: user.Picture, Valid: user.Picture != ""}
+	isAdmin := sql.NullBool{Bool: user.IsAdmin, Valid: true}
+
+	dbUser, err := r.queries.UpsertUser(ctx, dbSqlc.UpsertUserParams{
+		AuthID:  user.AuthID,
+		Email:   user.Email,
+		Name:    user.Name,
+		Picture: picture,
+		IsAdmin: isAdmin,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.User{
+		ID:        dbUser.ID.String(),
+		AuthID:    dbUser.AuthID,
+		Email:     dbUser.Email,
+		Name:      dbUser.Name,
+		Picture:   dbUser.Picture.String,
+		IsAdmin:   dbUser.IsAdmin.Bool,
+		Provider:  "", // SQLC User doesn't have Provider field
+		CreatedAt: dbUser.CreatedAt.Time,
+		UpdatedAt: dbUser.UpdatedAt.Time,
+	}, nil
 }

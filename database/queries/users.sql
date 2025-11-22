@@ -35,7 +35,22 @@ SELECT COUNT(*) FROM users;
 SELECT COUNT(*) FROM users WHERE DATE(created_at) = CURRENT_DATE;
 
 -- name: CountUsersCreatedThisWeek :one
-SELECT COUNT(*) FROM users WHERE created_at >= DATE_TRUNC('week', CURRENT_DATE);
+SELECT COUNT(*) FROM users
+WHERE created_at > NOW() - INTERVAL '1 week';
+
+-- name: UpsertUser :one
+INSERT INTO users (
+    auth_id, email, name, picture, is_admin
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+ON CONFLICT (auth_id) DO UPDATE
+SET
+    email = EXCLUDED.email,
+    name = EXCLUDED.name,
+    picture = EXCLUDED.picture,
+    updated_at = NOW()
+RETURNING *;
 
 -- name: GetRecentUsers :many
 SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 10;

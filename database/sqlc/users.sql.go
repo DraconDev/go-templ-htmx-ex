@@ -24,7 +24,8 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 }
 
 const countUsersCreatedThisWeek = `-- name: CountUsersCreatedThisWeek :one
-SELECT COUNT(*) FROM users WHERE created_at >= DATE_TRUNC('week', CURRENT_DATE)
+SELECT COUNT(*) FROM users
+WHERE created_at > NOW() - INTERVAL '1 week'
 `
 
 func (q *Queries) CountUsersCreatedThisWeek(ctx context.Context) (int64, error) {
@@ -283,4 +284,49 @@ type UpdateUserAdminStatusParams struct {
 func (q *Queries) UpdateUserAdminStatus(ctx context.Context, arg UpdateUserAdminStatusParams) error {
 	_, err := q.exec(ctx, q.updateUserAdminStatusStmt, updateUserAdminStatus, arg.Email, arg.IsAdmin)
 	return err
+}
+
+const upsertUser = `-- name: UpsertUser :one
+INSERT INTO users (
+    auth_id, email, name, picture, is_admin
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+ON CONFLICT (auth_id) DO UPDATE
+SET
+    email = EXCLUDED.email,
+    name = EXCLUDED.name,
+    picture = EXCLUDED.picture,
+    updated_at = NOW()
+RETURNING id, auth_id, email, name, picture, is_admin, created_at, updated_at
+`
+
+type UpsertUserParams struct {
+	AuthID  string         `json:"auth_id"`
+	Email   string         `json:"email"`
+	Name    string         `json:"name"`
+	Picture sql.NullString `json:"picture"`
+	IsAdmin sql.NullBool   `json:"is_admin"`
+}
+
+func (q *Queries) UpsertUser(ctx context.Context, arg UpsertUserParams) (User, error) {
+	row := q.queryRow(ctx, q.upsertUserStmt, upsertUser,
+		arg.AuthID,
+		arg.Email,
+		arg.Name,
+		arg.Picture,
+		arg.IsAdmin,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.AuthID,
+		&i.Email,
+		&i.Name,
+		&i.Picture,
+		&i.IsAdmin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

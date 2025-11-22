@@ -30,4 +30,6 @@ type UserPreference struct {
 	PushNotifications  sql.NullBool   `json:"push_notifications"`
 	CreatedAt          sql.NullTime   `json:"created_at"`
 	UpdatedAt          sql.NullTime   `json:"updated_at"`
+	Timezone           sql.NullString `json:"timezone"`
+	EmailBilling       sql.NullBool   `json:"email_billing"`
 }
