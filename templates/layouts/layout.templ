@@ -150,13 +150,11 @@ templ Layout(title string, description string, navigation templ.Component, conte
 			</script>
 		</head>
 		<body class="ultra-dark-bg min-h-screen text-white overflow-x-hidden">
-			@navigation
-			<main class="w-full py-12 px-4 sm:px-6 lg:px-8" role="main">
-				<div class="max-w-7xl mx-auto">
-					@content
-				</div>
-			</main>
-		</body>
+		@navigation
+		<main class="w-full max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8" role="main">
+			@content
+		</main>
+	</body>
 	</html>
 }
 
