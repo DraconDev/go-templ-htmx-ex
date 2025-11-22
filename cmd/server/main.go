@@ -19,6 +19,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/dashboard"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/settings"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/middleware"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/repositories"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/routes"
@@ -34,6 +35,7 @@ var loginHandler *login.LoginHandler
 var sessionHandler *session.SessionHandler
 var paymentHandler *payment.PaymentHandler
 var dashboardHandler *dashboard.DashboardHandler
+var settingsHandler *settings.SettingsHandler
 
 func main() {
 	// Load configuration
@@ -102,6 +104,10 @@ func main() {
 	dashboardHandler = dashboard.NewDashboardHandler(cfg, paymentClient, sessionHandler)
 	log.Println("✅ Dashboard handler initialized")
 
+	// Initialize Settings Handler
+	settingsHandler = settings.NewSettingsHandler(cfg, sessionHandler, userRepo, prefsRepo, paymentClient)
+	log.Println("✅ Settings handler initialized")
+
 	// Create router using centralized route structure
 	router := SetupRoutes()
 
@@ -150,6 +156,7 @@ func SetupRoutes() *mux.Router {
 		SessionHandler:   sessionHandler,
 		PaymentHandler:   paymentHandler,
 		DashboardHandler: dashboardHandler,
+		SettingsHandler:  settingsHandler,
 	}
 
 	// Use centralized route setup

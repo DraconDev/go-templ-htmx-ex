@@ -9,6 +9,7 @@ import (
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/auth/session"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/dashboard"
 	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/payment"
+	"github.com/DraconDev/go-templ-htmx-ex/internal/handlers/settings"
 	"github.com/gorilla/mux"
 )
 
@@ -19,6 +20,7 @@ type HandlerInstances struct {
 	SessionHandler   *session.SessionHandler
 	PaymentHandler   *payment.PaymentHandler
 	DashboardHandler *dashboard.DashboardHandler
+	SettingsHandler  *settings.SettingsHandler
 }
 
 // SetupRoutes configures and returns the router with all routes
@@ -64,6 +66,13 @@ func SetupRoutes(handlerInstances *HandlerInstances) *mux.Router {
 
 	// User profile page - Display user information and account details
 	router.HandleFunc("/profile", handlers.ProfileHandler).Methods("GET")
+
+	// Settings Routes
+	if handlerInstances.SettingsHandler != nil {
+		router.HandleFunc("/settings", handlerInstances.SettingsHandler.SettingsPageHandler).Methods("GET")
+		router.HandleFunc("/settings/update", handlerInstances.SettingsHandler.UpdateSettingsHandler).Methods("POST")
+		router.HandleFunc("/settings/billing", handlerInstances.SettingsHandler.BillingPortalHandler).Methods("POST", "GET")
+	}
 
 	// Payment page - Subscription and billing management
 	if handlerInstances.PaymentHandler != nil {
