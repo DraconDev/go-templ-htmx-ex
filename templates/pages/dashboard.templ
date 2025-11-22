@@ -3,7 +3,7 @@ package pages
 import "github.com/DraconDev/go-templ-htmx-ex/templates/layouts"
 
 templ Dashboard(name, email, picture, planStatus string, isPro bool, periodEnd string) {
-	@layouts.Layout("Dashboard | Startup Platform", "Manage your account and subscription", layouts.NavigationLoggedIn(name, email, picture), DashboardContent(name, email, picture, planStatus, isPro, periodEnd))
+	@layouts.Layout("Dashboard | Startup Platform", "Manage your account and subscription", layouts.NavigationLoggedIn(layouts.UserInfo{Name: name, Email: email, Picture: picture, LoggedIn: true}), DashboardContent(name, email, picture, planStatus, isPro, periodEnd))
 }
 
 templ DashboardContent(name, email, picture, planStatus string, isPro bool, periodEnd string) {

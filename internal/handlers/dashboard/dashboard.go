@@ -10,21 +10,23 @@ import (
 )
 
 type DashboardHandler struct {
-	config        *config.Config
-	paymentClient *paymentms.Client
+	config         *config.Config
+	paymentClient  *paymentms.Client
+	sessionHandler *session.SessionHandler
 }
 
-func NewDashboardHandler(cfg *config.Config, paymentClient *paymentms.Client) *DashboardHandler {
+func NewDashboardHandler(cfg *config.Config, paymentClient *paymentms.Client, sessionHandler *session.SessionHandler) *DashboardHandler {
 	return &DashboardHandler{
-		config:        cfg,
-		paymentClient: paymentClient,
+		config:         cfg,
+		paymentClient:  paymentClient,
+		sessionHandler: sessionHandler,
 	}
 }
 
 func (h *DashboardHandler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
-	// Get user info from session
-	user, err := session.GetUserFromSession(r)
-	if err != nil {
+	// Get user info from session using SessionHandler
+	userInfo := h.sessionHandler.GetUserInfo(r)
+	if !userInfo.LoggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -32,7 +34,7 @@ func (h *DashboardHandler) DashboardHandler(w http.ResponseWriter, r *http.Reque
 	// Get subscription status
 	// Note: In a real app, you'd get the user ID from the session.
 	// For now, we'll use the email or a placeholder if ID is missing.
-	userID := user.Email // Fallback since we might not have ID in session yet
+	userID := userInfo.Email // Fallback since we might not have ID in session yet
 
 	// Fetch subscription status
 	// We use the product ID from config
@@ -52,6 +54,6 @@ func (h *DashboardHandler) DashboardHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Render template
-	component := pages.Dashboard(user.Name, user.Email, user.Picture, status, isPro, periodEnd)
+	component := pages.Dashboard(userInfo.Name, userInfo.Email, userInfo.Picture, status, isPro, periodEnd)
 	component.Render(r.Context(), w)
 }

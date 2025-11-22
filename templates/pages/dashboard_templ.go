@@ -31,7 +31,7 @@ func Dashboard(name, email, picture, planStatus string, isPro bool, periodEnd st
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = layouts.Layout("Dashboard | Startup Platform", "Manage your account and subscription", layouts.NavigationLoggedIn(name, email, picture), DashboardContent(name, email, picture, planStatus, isPro, periodEnd)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layouts.Layout("Dashboard | Startup Platform", "Manage your account and subscription", layouts.NavigationLoggedIn(layouts.UserInfo{Name: name, Email: email, Picture: picture, LoggedIn: true}), DashboardContent(name, email, picture, planStatus, isPro, periodEnd)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
