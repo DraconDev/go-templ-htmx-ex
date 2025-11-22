@@ -84,13 +84,13 @@ func main() {
 	sessionHandler = session.NewSessionHandler(cfg)
 	log.Println("✅ Login and session handlers initialized")
 
-	// Initialize payment handler
-	paymentHandler = payment.NewPaymentHandler(cfg)
-	log.Println("✅ Payment handler initialized")
-
 	// Initialize Payment MS Client
 	paymentClient := paymentms.New(cfg.PaymentServiceURL, cfg.PaymentServiceAPIKey)
 	log.Println("✅ Payment MS Client initialized")
+
+	// Initialize payment handler
+	paymentHandler = payment.NewPaymentHandler(cfg, paymentClient)
+	log.Println("✅ Payment handler initialized")
 
 	// Initialize Dashboard Handler
 	dashboardHandler = dashboard.NewDashboardHandler(cfg, paymentClient, sessionHandler)
