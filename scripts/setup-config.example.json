@@ -28,8 +28,8 @@
         "custom_domains"
       ],
       "pricing": {
-        "monthly": 4833,
-        "yearly": 29000
+        "monthly": 5000,
+        "yearly":   30000
       }
     },
     {
@@ -45,8 +45,8 @@
         "sla_guarantee"
       ],
       "pricing": {
-        "monthly": 16500,
-        "yearly": 99000
+        "monthly": 20000,
+        "yearly": 120000
       }
     }
   ]
