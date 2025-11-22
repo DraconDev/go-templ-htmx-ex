@@ -17,6 +17,13 @@ type Config struct {
 	PaymentServiceURL    string
 	PaymentServiceAPIKey string
 	StripeProductID      string
+	// Stripe Product/Price Configuration
+	StripeProductPro   string
+	StripePriceMonthly string
+	StripePriceYearly  string
+	// Session Configuration
+	SessionSecret  string
+	SessionTimeout int
 }
 
 var (
@@ -69,6 +76,36 @@ func LoadConfig() *Config {
 			Required:     false,
 			Description:  "Stripe Product ID for subscriptions",
 		},
+		{
+			Key:          "STRIPE_PRODUCT_PRO",
+			DefaultValue: "",
+			Required:     false,
+			Description:  "Stripe Product ID for Pro plan",
+		},
+		{
+			Key:          "STRIPE_PRICE_MONTHLY",
+			DefaultValue: "",
+			Required:     false,
+			Description:  "Stripe Price ID for monthly billing",
+		},
+		{
+			Key:          "STRIPE_PRICE_YEARLY",
+			DefaultValue: "",
+			Required:     false,
+			Description:  "Stripe Price ID for yearly billing",
+		},
+		{
+			Key:          "SESSION_SECRET",
+			DefaultValue: "change-me-in-production",
+			Required:     false,
+			Description:  "Session encryption secret",
+		},
+		{
+			Key:          "SESSION_TIMEOUT",
+			DefaultValue: "3600",
+			Required:     false,
+			Description:  "Session timeout in seconds",
+		},
 	}
 
 	baseConfig, err := configx.Load(fields, configx.DefaultOptions())
@@ -89,7 +126,7 @@ func LoadConfig() *Config {
 		StripePriceMonthly:   baseConfig.Get("STRIPE_PRICE_MONTHLY"),
 		StripePriceYearly:    baseConfig.Get("STRIPE_PRICE_YEARLY"),
 		SessionSecret:        baseConfig.Get("SESSION_SECRET"),
-		SessionTimeout:       baseConfig.GetInt("SESSION_TIMEOUT"),
+		SessionTimeout:       baseConfig.GetIntOr("SESSION_TIMEOUT", 3600),
 	}
 
 	Current = config
